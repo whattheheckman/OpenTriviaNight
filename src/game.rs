@@ -1,20 +1,12 @@
-use crate::app_state::{Event, Game, GameState, Player, Question};
-
-#[derive(Clone, Debug)]
-pub enum GameError {
-    InvalidState,
-    QuestionNotFound,
-    PlayerNotFound,
-    UnexpectedError(&'static str),
-}
+use crate::app_state::{Event, Game, GameError, GameState, Player, Question};
 
 impl Game {
     /// Subscribe to events representing changes to the `Game`
-    pub fn subscribe(&mut self, handler: fn(Event)) {
+    pub fn subscribe<F>(&mut self, handler: F) where F: Fn(Event) -> () {
         self.subscribers.push(handler);
     }
 
-    fn publish(self, event: Event) {
+    pub fn publish(self, event: Event) {
         for func in self.subscribers.as_slice() {
             func(event.clone());
         }
@@ -22,14 +14,9 @@ impl Game {
 
     /// Start a game that is in the [`GameState::WaitingToStart`] state.
     pub fn start_game(&mut self) -> Result<(), GameError> {
-        let mut state = match self.state.lock() {
-            Ok(x) => x,
-            Err(poisoned) => poisoned.into_inner(),
-        };
-
-        match state.clone() {
+        match self.state {
             GameState::WaitingToStart => {
-                *state = GameState::PickQuestion;
+                self.state = GameState::PickQuestion;
                 return Ok(());
             }
             _ => return Err(GameError::InvalidState),
@@ -49,14 +36,9 @@ impl Game {
             None => return Err(GameError::QuestionNotFound),
         };
 
-        let mut state = match self.state.lock() {
-            Ok(x) => x,
-            Err(poisoned) => poisoned.into_inner(),
-        };
-
-        match state.clone() {
+        match self.state {
             GameState::PickQuestion => {
-                *state = GameState::ReadQuestion(question.clone());
+                self.state = GameState::ReadQuestion(question.clone());
                 return Ok(question.clone());
             }
             _ => return Err(GameError::InvalidState),
@@ -65,14 +47,9 @@ impl Game {
 
     /// Once the question has been read, move to [`GameState::WaitingForAnswer`] to allow answers to be accepted
     pub fn finish_reading_question(&mut self) -> Result<(), GameError> {
-        let mut state = match self.state.lock() {
-            Ok(x) => x,
-            Err(poisoned) => poisoned.into_inner(),
-        };
-
-        match state.clone() {
+        match &self.state {
             GameState::ReadQuestion(q) => {
-                *state = GameState::WaitingForAnswer(q.clone());
+                self.state = GameState::WaitingForAnswer(q.clone());
                 return Ok(());
             }
             _ => return Err(GameError::InvalidState),
@@ -85,21 +62,16 @@ impl Game {
             None => return Err(GameError::PlayerNotFound),
         };
 
-        let mut state = match self.state.lock() {
-            Ok(x) => x,
-            Err(poisoned) => poisoned.into_inner(),
-        };
-
-        match state.clone() {
+        match &self.state {
             GameState::WaitingForAnswer(q) => {
-                *state = GameState::CheckAnswer(q.clone(), player.username.clone()).into();
+                self.state = GameState::CheckAnswer(q.clone(), player.username.clone()).into();
                 return Ok(());
             }
             _ => return Err(GameError::InvalidState),
         }
     }
 
-    fn find_player(&mut self, username: String) -> Option<Player> {
+    fn find_player(&self, username: String) -> Option<Player> {
         self.players
             .iter()
             .find(|x| x.username == username)

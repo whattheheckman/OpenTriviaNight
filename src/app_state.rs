@@ -1,35 +1,60 @@
 use std::{collections::HashMap, sync::{Arc, Mutex}};
 
-#[derive(Clone, Debug)]
-pub struct AppState {
-    games: HashMap<String, Game>,
-}
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug)]
+pub struct AppState {
+    pub games: HashMap<String, Arc<Mutex<Game>>>,
+}
+
+impl AppState {
+    pub fn new() -> Self {
+        Self { games: HashMap::new() }
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub enum GameError {
+    InvalidState,
+    GameNotFound,
+    QuestionNotFound,
+    PlayerNotFound,
+    UnexpectedError(&'static str),
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Game {
     pub id: String,
     pub players: Vec<Player>,
     pub last_winner: String,
     pub rounds: Vec<HashMap<String, Question>>,
     pub round: usize,
-    pub state: Arc<Mutex<GameState>>,
-    pub subscribers: Vec<fn(event: Event)>,
+    pub state: GameState,
+    #[serde(skip)] pub subscribers: fn(Event),
 }
 
-#[derive(Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Player {
     pub username: String,
     pub points: i32,
+    pub role: PlayerRole
 }
 
-#[derive(Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub enum PlayerRole {
+    Host,
+    Contestant,
+    Observer
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Question {
     pub question: String,
     pub points: i32,
     pub answered: bool,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum GameState {
     /// Waiting for the game to start. This state is the default entry, and can never be re-entered
     WaitingToStart,
@@ -50,7 +75,7 @@ pub enum GameState {
     Finished,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum Event {
     GameStateChanged(GameState),
     GameDataChanged(Game),

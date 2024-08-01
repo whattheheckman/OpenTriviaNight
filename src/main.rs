@@ -1,17 +1,18 @@
 pub mod app_state;
-pub mod game_handler;
+pub mod game;
 
+use app_state::{AppState, Game, GameError};
 use axum::{
     extract::{
         ws::{WebSocket, WebSocketUpgrade},
-        Path, Query,
+        Path, Query, State,
     },
     response::IntoResponse,
     routing::{get, post},
     Router,
 };
 
-use std::net::SocketAddr;
+use std::{net::SocketAddr, sync::{Arc, Mutex}};
 use tower_http::trace::{DefaultMakeSpan, TraceLayer};
 
 use axum::extract::ws::Message::Text;
@@ -21,25 +22,27 @@ use futures::{sink::SinkExt, stream::StreamExt};
 
 #[tokio::main]
 async fn main() {
+    let state = AppState::new();
+
     let app = Router::new()
         .route(
             "/games",
             post({
-                // TODO: handle creating a game
+                // TODO: implement
             }),
         )
         .route(
             "/games/:game_id",
             get({
-                // TODO: handle getting the given game, if it exists
+                // TODO: implement
             }),
         )
         .route("/games/:game_id/ws", get(ws_handler))
-        // logging so we can see whats going on
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(DefaultMakeSpan::default().include_headers(true)),
-        );
+        )
+        .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
@@ -57,20 +60,34 @@ async fn ws_handler(
     ws: WebSocketUpgrade,
     Path(game_id): Path<String>,
     Query(username): Query<String>,
-) -> impl IntoResponse {
+    State(state): State<AppState>,
+) -> Result<(), GameError> {
     tracing::debug!("User {username} connected to game {game_id}");
-    ws.on_upgrade(move |socket| handle_socket(socket, game_id, username))
+
+    ws.on_upgrade(move |socket| handle_socket(socket, state, game_id, username));
+
+    return Ok(());
 }
 
 /// Actual websocket statemachine (one will be spawned per connection)
-async fn handle_socket(socket: WebSocket, game_id: String, username: String) {
+async fn handle_socket(socket: WebSocket, state: AppState, game_id: String, username: String) {
+    let game = match state.games.get(&game_id) {
+        Some(x) => x,
+        None => return,
+    };
+
     let (mut sender, mut receiver) = socket.split();
 
     let cloned_game_id = game_id.clone();
     let cloned_username = username.clone();
 
     let mut send_task = tokio::spawn(async move {
-        // TODO: Send messages based on what is entered in to the game state channel
+        // Register a handler that sends events back to the client
+        let locked_game = match game.lock() {
+            Ok(x) => x,
+            Err(poisoned) => poisoned.into_inner()
+        };
+        locked_game.subscribe(|e| { sender.send(axum::extract::ws::Message::Text("".to_string()))})
     });
 
     // This second task will receive messages from client and print them on server console
