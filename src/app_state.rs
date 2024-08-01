@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::{Arc, Mutex}};
 
 #[derive(Clone, Debug)]
 pub struct AppState {
@@ -12,7 +12,7 @@ pub struct Game {
     pub last_winner: String,
     pub rounds: Vec<HashMap<String, Question>>,
     pub round: usize,
-    pub state: GameState,
+    pub state: Arc<Mutex<GameState>>,
     pub subscribers: Vec<fn(event: Event)>,
 }
 
@@ -44,7 +44,7 @@ pub enum GameState {
     WaitingForAnswer(Question),
 
     /// A player has buzzed in an answer, and the quizmaster must check it. State can be entered from `WaitingForAnswer`
-    CheckAnswer(Question),
+    CheckAnswer(Question, String),
 
     /// There are no more questions left, so the game is finished. State can be entered from `CheckAnswer`.
     Finished,
