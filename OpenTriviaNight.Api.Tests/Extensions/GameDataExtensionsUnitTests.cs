@@ -21,7 +21,7 @@ public class GameDataExtensionsUnitTests
     public void VerifyGetQuestionWhenExists()
     {
         var game = CreateGame();
-        var expectedQuestionId = game.Rounds.First().First().QuestionId;
+        var expectedQuestionId = game.Rounds.First().First().Value.First().QuestionId;
 
         var result = game.GetQuestion(expectedQuestionId);
 
@@ -45,11 +45,15 @@ public class GameDataExtensionsUnitTests
 
         Assert.NotNull(game.AssertValidState<GameState.PickAQuestion>());
         Assert.Throws<InvalidOperationException>(game.AssertValidState<GameState.WaitingForAnswer>);
-        
+
         game.AssertValidState(GameStateEnum.PickAQuestion);
         game.AssertValidState(GameStateEnum.PickAQuestion, GameStateEnum.CheckAnswer);
-        Assert.Throws<InvalidOperationException>(() => game.AssertValidState(GameStateEnum.WaitingForAnswer));
-        Assert.Throws<InvalidOperationException>(() => game.AssertValidState(GameStateEnum.WaitingForAnswer, GameStateEnum.CheckAnswer));
+        Assert.Throws<InvalidOperationException>(
+            () => game.AssertValidState(GameStateEnum.WaitingForAnswer)
+        );
+        Assert.Throws<InvalidOperationException>(
+            () => game.AssertValidState(GameStateEnum.WaitingForAnswer, GameStateEnum.CheckAnswer)
+        );
     }
 
     private static GameData CreateGame() =>
@@ -61,15 +65,19 @@ public class GameDataExtensionsUnitTests
             State = new GameState.WaitingToStart(),
             Rounds =
             [
-                [
-                    new Question
-                    {
-                        QuestionId = Guid.NewGuid(),
-                        Detail = "Some Question",
-                        CorrectAnswer = "blas",
-                        Value = 100
-                    }
-                ]
+                new()
+                {
+                    ["Category 1"] =
+                    [
+                        new Question
+                        {
+                            QuestionId = Guid.NewGuid(),
+                            Detail = "Some Question",
+                            CorrectAnswer = "blas",
+                            Value = 100
+                        }
+                    ]
+                }
             ]
         };
 }

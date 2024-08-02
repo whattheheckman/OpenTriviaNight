@@ -12,7 +12,7 @@ public record GameCreateDto
     public required string Username { get; set; }
 
     /// <summary>
-    /// All the questions involved in this game, grouped by Round Number (0-indexed).
+    /// All the questions involved in this game, grouped by Round number (0-indexed), and by category.
     /// </summary>
-    public List<List<Question>> Rounds { get; init; } = [];
+    public List<Dictionary<string, List<Question>>> Rounds { get; init; } = [];
 }

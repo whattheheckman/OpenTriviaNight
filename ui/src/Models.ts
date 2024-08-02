@@ -2,14 +2,14 @@ export type Game = {
     id: string;
     players: [Player];
     lastWinner: string | undefined;
-    rounds: Question[][];
-    currentRound: Number;
+    rounds: {[category: string]: Question[]}[];
+    currentRound: number;
     state: GameState;
 }
 
 export type Player = {
     username: string;
-    score: Number;
+    score: number;
     role: "Host" | "Contestant" | "Spectator";
 }
 
@@ -17,7 +17,7 @@ export type Question = {
     questionId: string;
     detail: string;
     correctAnswer: string;
-    value: Number;
+    value: number;
     answered: Boolean;
 }
 
@@ -53,5 +53,5 @@ export type GSFinished = {
 
 export type CreateGameRequest = {
     username: string,
-    rounds: Question[][]
+    rounds: {[category: string]: Question[]}[]
 }

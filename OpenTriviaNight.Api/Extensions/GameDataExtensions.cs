@@ -17,24 +17,31 @@ public static class GameDataExtensions
 
     public static Question GetQuestion(this GameData game, Guid questionId)
     {
-        return game.Rounds[game.CurrentRound].FirstOrDefault(x => x.QuestionId == questionId)
+        return game.Rounds[game.CurrentRound]
+                .Values.SelectMany(x => x)
+                .FirstOrDefault(x => x.QuestionId == questionId)
             ?? throw new InvalidOperationException("Question {questionId} not found");
     }
 
-    public static T AssertValidState<T>(this GameData game) where T : GameState
+    public static T AssertValidState<T>(this GameData game)
+        where T : GameState
     {
         if (game.State is T casted)
         {
             return casted;
         }
-        throw new InvalidOperationException($"Game is in an invalid state for this operation {game.State.State}");
+        throw new InvalidOperationException(
+            $"Game is in an invalid state for this operation {game.State.State}"
+        );
     }
 
     public static void AssertValidState(this GameData game, params GameStateEnum[] expected)
     {
         if (!expected.Contains(game.State.State))
         {
-            throw new InvalidOperationException($"Game is in an invalid state for this operation {game.State.State}");
+            throw new InvalidOperationException(
+                $"Game is in an invalid state for this operation {game.State.State}"
+            );
         }
     }
 }

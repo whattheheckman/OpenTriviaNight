@@ -51,15 +51,19 @@ public sealed class GameManagerUnitTests
             State = new GameState.WaitingToStart(),
             Rounds =
             [
-                [
-                    new Question
-                    {
-                        QuestionId = Guid.NewGuid(),
-                        Detail = "Some Question",
-                        CorrectAnswer = "blas",
-                        Value = 100
-                    }
-                ]
+                new()
+                {
+                    ["1"] =
+                    [
+                        new()
+                        {
+                            QuestionId = Guid.NewGuid(),
+                            Detail = "Some Question",
+                            CorrectAnswer = "blas",
+                            Value = 100
+                        }
+                    ]
+                }
             ]
         };
 }
