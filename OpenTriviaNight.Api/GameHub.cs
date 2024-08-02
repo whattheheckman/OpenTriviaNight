@@ -3,10 +3,20 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace OpenTriviaNight.Api;
 
-public sealed class GameHub(GameManager manager, IMapper mapper) : Hub
+public sealed class GameHub(GameManager manager, IMapper mapper, ILogger<GameHub> logger) : Hub
 {
     private const string GameId = "GameId";
     private const string Username = "Username";
+
+    public override Task OnDisconnectedAsync(Exception? exception)
+    {
+        if (Context.Items.TryGetValue(GameId, out var gameId) && Context.Items.TryGetValue(Username, out var username))
+        {
+            logger.LogWarning("Client {Username} disconnected from game {GameId}", username, gameId);
+        }
+
+        return base.OnDisconnectedAsync(exception);
+    }
 
     public async Task<GameData> CreateGame(GameCreateDto createRequest)
     {

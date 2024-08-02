@@ -1,16 +1,28 @@
-using Microsoft.AspNetCore.SignalR;
+using System.Text.Json.Serialization;
 using OpenTriviaNight.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services
+builder
+    .Services.AddLogging(options => options.ClearProviders().AddSimpleConsole())
     .AddEndpointsApiExplorer()
-    .AddSwaggerGen();
+    .AddSwaggerGen()
+    .ConfigureHttpJsonOptions(options =>
+        options.SerializerOptions.Converters.Add(new JsonStringEnumConverter())
+    );
 
-builder.Services
+builder
+    .Services.AddAutoMapper(typeof(AutoMapperProfiles))
     .AddSingleton<GameManager>()
-    .AddSingleton<HubResponseFilter>()
-    .AddSignalR(options => options.AddFilter<HubResponseFilter>());
+    // .AddSingleton<HubResponseFilter>()
+    .AddSignalR(options =>
+    {
+        // options.AddFilter<HubResponseFilter>();
+        options.EnableDetailedErrors = true;
+    })
+    .AddJsonProtocol(opt =>
+        opt.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter())
+    );
 
 var app = builder.Build();
 
@@ -22,8 +34,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app
-    .MapHub<GameHub>("/api/stream")
-    .WithOpenApi();
+app.MapHub<GameHub>("/api/stream").WithOpenApi();
 
 app.Run();

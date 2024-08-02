@@ -16,7 +16,13 @@ public enum GameStateEnum
 /// The abstract base state of the game. 
 /// Actual game states are repesented as derived types which may contain extra data.
 /// </summary>
-[JsonDerivedType(typeof(WaitingToStart), nameof(State))]
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "state", UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FailSerialization)]
+[JsonDerivedType(typeof(WaitingToStart), nameof(GameStateEnum.WaitingToStart))]
+[JsonDerivedType(typeof(PickAQuestion), nameof(GameStateEnum.PickAQuestion))]
+[JsonDerivedType(typeof(ReadQuestion), nameof(GameStateEnum.ReadQuestion))]
+[JsonDerivedType(typeof(WaitingForAnswer), nameof(GameStateEnum.WaitingForAnswer))]
+[JsonDerivedType(typeof(CheckAnswer), nameof(GameStateEnum.CheckAnswer))]
+[JsonDerivedType(typeof(Finished), nameof(GameStateEnum.Finished))]
 public abstract record GameState
 {
     /// <summary>

@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-
 namespace OpenTriviaNight.Api;
 
 public sealed record GameData
