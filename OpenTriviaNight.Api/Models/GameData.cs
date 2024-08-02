@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+
 namespace OpenTriviaNight.Api;
 
 public sealed record GameData
@@ -22,6 +24,8 @@ public sealed record GameData
     /// All the questions involved in this game, grouped by Round Number (0-indexed).
     /// </summary>
     public List<List<Question>> Rounds { get; init; } = [];
+
+    public required int CurrentRound { get; init; } = 0;
 
     /// <summary>
     /// The current state of the game.
@@ -70,4 +74,9 @@ public sealed record Question
     /// The points value to be awarded to the <see cref="Player"/> who answers this question correctly.
     /// </summary>
     public required int Value { get; init; }
+
+    /// <summary>
+    /// Whether the question has already been answered or not.
+    /// </summary>
+    public bool Answered { get; set; } = false;
 }

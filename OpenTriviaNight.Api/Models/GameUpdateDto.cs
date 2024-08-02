@@ -17,6 +17,11 @@ public record GameUpdateDto
     public string? LastWinner { get; init; }
 
     /// <summary>
+    /// The list of players inside this game.
+    /// </summary>
+    public required List<Player> Players { get; init; } = [];
+
+    /// <summary>
     /// The current state of the game.
     /// </summary>
     public GameState State { get; set; } = new GameState.WaitingToStart();
