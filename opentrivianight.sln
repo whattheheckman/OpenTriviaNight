@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTriviaNight.Api", "OpenTriviaNight.Api\OpenTriviaNight.Api.csproj", "{37CAE07F-D245-4705-ADBB-6F1A41D7AF40}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTriviaNight.Api.Tests", "OpenTriviaNight.Api.Tests\OpenTriviaNight.Api.Tests.csproj", "{D8A456E0-A493-4D8D-B02E-65397686050E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{37CAE07F-D245-4705-ADBB-6F1A41D7AF40}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37CAE07F-D245-4705-ADBB-6F1A41D7AF40}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37CAE07F-D245-4705-ADBB-6F1A41D7AF40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8A456E0-A493-4D8D-B02E-65397686050E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8A456E0-A493-4D8D-B02E-65397686050E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8A456E0-A493-4D8D-B02E-65397686050E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8A456E0-A493-4D8D-B02E-65397686050E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
