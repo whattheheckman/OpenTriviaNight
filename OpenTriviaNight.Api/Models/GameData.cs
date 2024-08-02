@@ -25,7 +25,7 @@ public sealed record GameData
     /// </summary>
     public List<List<Question>> Rounds { get; init; } = [];
 
-    public required int CurrentRound { get; init; } = 0;
+    public required int CurrentRound { get; set; } = 0;
 
     /// <summary>
     /// The current state of the game.
