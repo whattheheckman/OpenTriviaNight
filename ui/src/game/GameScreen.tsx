@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { GameContext } from "../GameContext";
-import CreateGame from "./CreateGame";
+import CreateGame from "./create/CreateGame";
 
 export default function GameScreen() {
   const {game, setGame, signalR} = useContext(GameContext);
