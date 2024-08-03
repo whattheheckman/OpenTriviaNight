@@ -12,7 +12,7 @@ export default function HostPickAQuestion() {
   console.log(category)
 
   return (
-    <div className="flex flex-row overflow-x-auto mt-4 px-4 min-h-96 h-full grow">
+    <div className="flex flex-row overflow-x-auto mt-4 px-2 min-h-96 h-full grow">
       {category.map(([name, questions]) => {
         return <div className="flex flex-col min-w-48 grow flex-1 mx-2 gap-4">
           <h1 className="text-center text-2xl font-bold min-h-16">{name}</h1>
