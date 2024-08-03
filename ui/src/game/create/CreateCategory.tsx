@@ -1,4 +1,4 @@
-import { Button, TextInput } from "flowbite-react"
+import { Button, Textarea, TextInput } from "flowbite-react"
 import { CreateGameRequest, Question } from "../../Models"
 import LabeledTextInput from "../../LabeledTextInput"
 import { HiPlus, HiTrash } from "react-icons/hi"
@@ -46,7 +46,7 @@ export default function CreateCategory({ category, questions, roundNumber, setRe
     })
   }
 
-  const handleQuestionDataChange = (e: React.ChangeEvent<HTMLInputElement>, round: number, category: string, questionIdx: number) => {
+  const handleQuestionDataChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>, round: number, category: string, questionIdx: number) => {
     setRequest(r => {
       r.rounds[round][category][questionIdx] = { ...r.rounds[round][category][questionIdx], [e.target.name]: e.target.value };
       return { ...r };
@@ -63,7 +63,7 @@ export default function CreateCategory({ category, questions, roundNumber, setRe
   }
 
   return (
-    <div className="mb-auto flex flex-col gap-2 bg-sky-200 p-2 rounded-lg border-2 border-sky-500">
+    <div className="mb-auto flex flex-col grow md:grow-0 gap-2 bg-sky-200 p-2 rounded-lg border-2 border-sky-500">
       <div className="flex gap-2">
         <TextInput className="flex-grow font-semibold" id="category-name" type="text" required name="category" sizing="sm" value={category} onChange={(e) => handleCategoryNameChange(e, roundNumber, category)} />
         <Button size="sm" color="red" onClick={() => removeCategory(roundNumber, category)}><HiTrash /></Button>
@@ -76,8 +76,8 @@ export default function CreateCategory({ category, questions, roundNumber, setRe
               <h2>Question {questionIdx + 1}</h2>
               <Button size="sm" color="red" onClick={() => removeQuestion(roundNumber, category, questionIdx)}><HiTrash /></Button>
             </div>
-            <div className="flex flex-col gap-2">
-              <LabeledTextInput label="Question" name="detail" type="text" value={question.detail} onChange={(e) => handleQuestionDataChange(e, roundNumber, category, questionIdx)} />
+            <div className="flex flex-col gap-2 mt-1">
+              <Textarea className="p-1 px-2" placeholder="Question" name="detail" required value={question.detail} onChange={(e) => handleQuestionDataChange(e, roundNumber, category, questionIdx)} />
 
               <div className="flex flex-row gap-2">
                 <LabeledTextInput className="grow" label="Correct Answer" name="correctAnswer" type="text" value={question.correctAnswer} onChange={(e) => handleQuestionDataChange(e, roundNumber, category, questionIdx)} />

@@ -12,6 +12,7 @@ export default function GenerateCategory({ onAdd }: Props) {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [category, setCategory] = useState<string>("");
   const [source, setSource] = useState<"openTriviaDb" | "theTriviaApi">("openTriviaDb");
+
   const updateQuestions = (category: string, questions: Question[]) => {
     setCategory(category);
     setQuestions(questions);
@@ -22,9 +23,9 @@ export default function GenerateCategory({ onAdd }: Props) {
   return (
     <div>
       <div className="flex flex-col mb-2">
-        <Label value="Generation Source" />
+        <Label value="Question Source" />
 
-        <ButtonGroup className="grow">
+        <ButtonGroup>
           <Button className="grow" color={source == "openTriviaDb" ? "blue" : "gray"} onClick={() => setSource("openTriviaDb")}>Open Trivia DB</Button>
           <Button className="grow" color={source == "theTriviaApi" ? "blue" : "light"} onClick={() => setSource("theTriviaApi")}>The Trivia API</Button>
         </ButtonGroup>

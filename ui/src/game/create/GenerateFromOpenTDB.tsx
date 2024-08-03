@@ -25,7 +25,7 @@ export default function GenerateFromOpenTDB({ updateQuestions }: Props) {
   useEffect(() => {
     fetch("https://opentdb.com/api_category.php")
       .then(res => res.json())
-      .then(res => setCategories(res.trivia_categories))
+      .then(res => { setCategories(res.trivia_categories); setSelectedCategory(res.trivia_categories[0].id) })
   }, []);
 
   const generateQuestions = () => {
@@ -49,7 +49,7 @@ export default function GenerateFromOpenTDB({ updateQuestions }: Props) {
   return (
     <div className="flex flex-col">
       <div className="flex flex-col sm:flex-row gap-2">
-        <div className="grow">
+        <div className="flex-1 grow">
           <Label className="mt-2" htmlFor="difficulty" value="Select Difficulty" />
           <Select id="difficulty" required value={difficulty} onChange={e => setDifficulty(e.target.value)}>
             <option value="easy">Easy</option>
@@ -58,7 +58,7 @@ export default function GenerateFromOpenTDB({ updateQuestions }: Props) {
           </Select>
         </div>
 
-        <div className="grow">
+        <div className="flex-1 grow">
           <Label className="mt-1" htmlFor="categories" value="Select Category" />
           {categories
             ? <Select id="categories" required value={selectedCategory} onChange={e => setSelectedCategory(parseInt(e.target.value))}>
