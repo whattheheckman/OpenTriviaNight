@@ -55,9 +55,16 @@ export default function CreateCategory({ category, questions, roundNumber, setRe
 
   const handleCategoryNameChange = (e: React.ChangeEvent<HTMLInputElement>, round: number, category: string) => {
     setRequest(r => {
-      // Move the value from the old key to the new key
-      r.rounds[round] = { ...r.rounds[round], [e.target.value]: r.rounds[round][category] }
-      delete r.rounds[round][category];
+      // To maintain the order of the categories, we must recreate the object as reinserting a key with the new name places it at the end
+      // Probably not a great idea for performance, but saves us needing a order property for now
+      let newRounds: { [category: string]: Question[] } = {};
+      for (let [k, v] of Object.entries(r.rounds[round]))
+        if (k === category)
+          newRounds[e.target.value] = v
+        else
+          newRounds[k] = v
+
+      r.rounds[round] = { ...newRounds };
       return { ...r };
     })
   }

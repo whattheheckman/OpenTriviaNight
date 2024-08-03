@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import LabeledTextInput from "../../LabeledTextInput";
 import { GameContext } from "../../GameContext";
-import { Button } from "flowbite-react";
+import { Button, HR } from "flowbite-react";
 import CreateGame from "./CreateGame";
 import { Game } from "../../Models";
 
@@ -29,7 +29,9 @@ export default function CreateJoinGame() {
         <Button color="gray" onClick={() => joinGame("Spectator")}>Join as Spectator</Button>
         <Button color="gray" onClick={() => joinGame("Host")}>Join as Host</Button>
 
-        <Button color="success" outline className="mt-4" onClick={() => setType("create")}>Create Game</Button>
+        <HR.Text text="or" />
+
+        <Button color="success" outline onClick={() => setType("create")}>Create a Game</Button>
       </div>
     )
   } else {

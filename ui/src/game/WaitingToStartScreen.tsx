@@ -25,7 +25,7 @@ export function WaitingToStartScreen() {
             </Table.Head>
             <Table.Body>
                 {game.players.map(player => {
-                    return <Table.Row>
+                    return <Table.Row key={player.username}>
                         <Table.Cell className="flex justify-between items-center">
                             <div className="flex flex-col">
                                 <div className="text-lg">{player.username}</div>

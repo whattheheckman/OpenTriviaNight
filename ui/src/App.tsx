@@ -20,8 +20,10 @@ function App() {
         dependencies={[]}
       >
         <GameContext.Provider value={{ game: game, setGame: setGame, username: username, setUsername: setUsername, signalR: SignalRContext }}>
-          <Header />
-          <GameScreen></GameScreen>
+          <div className="min-h-screen flex flex-col">
+            <Header />
+            <GameScreen></GameScreen>
+          </div>
         </GameContext.Provider>
       </SignalRContext.Provider >
     </>
