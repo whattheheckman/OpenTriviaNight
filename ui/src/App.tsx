@@ -3,6 +3,7 @@ import GameScreen from './game/GameScreen'
 import { useState } from "react";
 import { GameContext } from "./GameContext";
 import { Game } from "./Models";
+import Header from "./layout/Header";
 
 const SignalRContext = createSignalRContext();
 
@@ -18,6 +19,7 @@ function App() {
         dependencies={[]}
       >
         <GameContext.Provider value={{ game: game, setGame: setGame, signalR: SignalRContext }}>
+          <Header />
           <GameScreen></GameScreen>
         </GameContext.Provider>
       </SignalRContext.Provider >
