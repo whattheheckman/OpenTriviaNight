@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { GameContext } from "../GameContext";
-import CreateJoinGame from "./create/CreateGame";
-import HostPickAQuestion from "./host/HostPickAQuestion";
+import CreateJoinGame from "./create/CreateJoinGame";
 import { WaitingToStartScreen } from "./WaitingToStartScreen";
 
 export default function GameScreen() {

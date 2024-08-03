@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { GameContext } from "../GameContext";
-import { Button, Table } from "flowbite-react";
+import { Button, Spinner, Table } from "flowbite-react";
 
 export function WaitingToStartScreen() {
     const { game, username, signalR } = useContext(GameContext);
@@ -13,25 +13,34 @@ export function WaitingToStartScreen() {
         signalR.invoke("StartGame");
     }
 
-    return <div className="flex flex-col max-w-screen-md mx-auto items-center">
-        <h1 className="text-lg font-semibold">Waiting For Game To Start</h1>
+    return <div className="flex flex-col max-w-screen-md mx-auto items-stretch">
+        <div className="text-center mt-5">
+            <Spinner />
+        </div>
+        <h1 className="text-lg font-semibold self-center mb-5">Waiting for Host to Start Game</h1>
 
-        <Table className="w-100 self-stretch grow ">
+        <Table className="">
             <Table.Head>
                 <Table.HeadCell>Players</Table.HeadCell>
             </Table.Head>
             <Table.Body>
                 {game.players.map(player => {
                     return <Table.Row>
-                        <Table.Cell className="flex justify-between w-100">
-                            <div>{player.username}</div>
-                            <div className="text-gray-400">{player.role}</div>
+                        <Table.Cell className="flex justify-between items-center">
+                            <div className="flex flex-col">
+                                <div className="text-lg">{player.username}</div>
+                                <div className="text-sm text-gray-400">{player.role}</div>
+                            </div>
                             {isHost && player.username !== username
                                 ? <Button color="red">Remove</Button>
                                 : <></>}
                         </Table.Cell>
                     </Table.Row>
                 })}
+
+                <Table.Row>
+                    <Table.Cell>Use Game ID <span className="text-semibold italic">{game.id}</span> to join</Table.Cell>
+                </Table.Row>
             </Table.Body>
         </Table>
 

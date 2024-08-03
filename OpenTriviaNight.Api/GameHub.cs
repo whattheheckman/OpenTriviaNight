@@ -34,8 +34,7 @@ public sealed class GameHub(GameManager manager, IMapper mapper, ILogger<GameHub
         manager.CreateGame(gameData);
         await Groups.AddToGroupAsync(Context.ConnectionId, gameData.Id);
 
-        Context.Items.Add(GameId, gameData.Id);
-        Context.Items.Add(Username, createRequest.Username);
+        SetContext(gameData.Id, createRequest.Username);
 
         return gameData;
     }
@@ -47,8 +46,7 @@ public sealed class GameHub(GameManager manager, IMapper mapper, ILogger<GameHub
 
         await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
 
-        Context.Items.Add(GameId, gameData.Id);
-        Context.Items.Add(Username, username);
+        SetContext(gameData.Id, username);
 
         return gameData;
     }
@@ -101,5 +99,26 @@ public sealed class GameHub(GameManager manager, IMapper mapper, ILogger<GameHub
     {
         var dto = mapper.Map<GameUpdateDto>(gameData);
         await Clients.Group(gameData.Id).SendAsync("game-update", dto);
+    }
+
+    private void SetContext(string gameId, string username)
+    {
+        if (Context.Items.ContainsKey(GameId))
+        {
+            Context.Items[GameId] = gameId;
+        }
+        else
+        {
+            Context.Items.TryAdd(GameId, gameId);
+        }
+
+        if (Context.Items.ContainsKey(Username))
+        {
+            Context.Items[Username] = username;
+        }
+        else
+        {
+            Context.Items.TryAdd(Username, username);
+        }
     }
 }

@@ -6,7 +6,7 @@ import LabeledTextInput from "../../LabeledTextInput";
 import CreateRound from "./CreateRound";
 import { HiPlus } from "react-icons/hi";
 
-export default function CreateJoinGame() {
+export default function CreateGame() {
   const { setGame, setUsername, signalR } = useContext(GameContext);
   const [request, setRequest] = useState<CreateGameRequest>({
     username: "",
@@ -29,7 +29,7 @@ export default function CreateJoinGame() {
     setRequest({ ...request, rounds: [...request.rounds, { "New Category": [newQuestion] }] })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleCreateGame = (e: React.FormEvent) => {
     e.preventDefault();
     signalR
       .invoke("CreateGame", request)
@@ -39,9 +39,8 @@ export default function CreateJoinGame() {
   }
 
   return (
-    <div className="p-5">
-      <form onSubmit={handleSubmit} className="gap-4 flex flex-col">
-        <h1 className="font-bold text-4xl">Create a new Game</h1>
+    <div>
+      <form onSubmit={handleCreateGame} className="gap-4 flex flex-col">
         <LabeledTextInput className="max-w-2xl" type="text" label="Your Name" name="username" value={request.username} onChange={handleUsernameChange} />
 
         {request.rounds.map((round, roundIdx) => {
