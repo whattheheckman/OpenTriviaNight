@@ -1,10 +1,10 @@
-import { Button, Label, Select, Spinner, Table } from "flowbite-react";
+import { Button, Label, Select, Spinner } from "flowbite-react";
 import { Question } from "../../Models";
 import { useEffect, useState } from "react";
-import { HiCheck, HiOutlineRefresh } from "react-icons/hi";
+import { HiOutlineRefresh } from "react-icons/hi";
 
 type Props = {
-  onAdd: (category: string, questions: Question[]) => void;
+  updateQuestions: (category: string, questions: Question[]) => void;
 }
 
 type OpenTDBCategory = {
@@ -17,10 +17,9 @@ type OpenTDBQuestionResponse = {
   results: { question: string, correct_answer: string }[]
 }
 
-export default function GenerateFromOpenTDB({ onAdd }: Props) {
+export default function GenerateFromOpenTDB({ updateQuestions }: Props) {
   const [categories, setCategories] = useState<OpenTDBCategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number>(0);
-  const [questions, setQuestions] = useState<Question[]>([]);
   const [difficulty, setDifficulty] = useState<string>("easy");
 
   useEffect(() => {
@@ -42,13 +41,9 @@ export default function GenerateFromOpenTDB({ onAdd }: Props) {
             answered: false
           }
         });
-        setQuestions(questions);
+        let category = categories.find(x => x.id == selectedCategory);
+        updateQuestions(category?.name ?? "Unknown", questions);
       })
-  }
-
-  const finalize = () => {
-    let category = categories.find(x => x.id == selectedCategory);
-    onAdd(category?.name ?? "Unknown", questions);
   }
 
   return (
@@ -77,27 +72,6 @@ export default function GenerateFromOpenTDB({ onAdd }: Props) {
       </div>
 
       <Button className="mt-4" gradientDuoTone="pinkToOrange" onClick={generateQuestions}><HiOutlineRefresh className="h-5 mr-2" />Generate Questions</Button>
-
-      {questions.length > 0
-        ? <Table className="my-4" striped>
-          <Table.Head>
-            <Table.HeadCell>Question</Table.HeadCell>
-            <Table.HeadCell>Correct Answer</Table.HeadCell>
-          </Table.Head>
-          <Table.Body>
-            {questions.map(q => {
-              return <Table.Row>
-                <Table.Cell className="py-2">{q.detail}</Table.Cell>
-                <Table.Cell className="py-2">{q.correctAnswer}</Table.Cell>
-              </Table.Row>
-            })}
-          </Table.Body>
-        </Table>
-        : <></>}
-
-      {questions.length > 0
-        ? <Button className="mt-4" type="button" color="success" onClick={finalize}><HiCheck className="h-5 mr-2" />Use these Questions</Button>
-        : <></>}
 
     </div>
   )

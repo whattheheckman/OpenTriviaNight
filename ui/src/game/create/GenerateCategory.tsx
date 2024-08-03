@@ -1,15 +1,57 @@
+import { Button, ButtonGroup, Label, Table } from "flowbite-react";
 import { Question } from "../../Models";
 import GenerateFromOpenTDB from "./GenerateFromOpenTDB";
+import { useState } from "react";
+import { HiCheck } from "react-icons/hi";
 
 type Props = {
   onAdd: (category: string, questions: Question[]) => void;
 }
 
 export default function GenerateCategory({ onAdd }: Props) {
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [category, setCategory] = useState<string>("");
+  const [source, setSource] = useState<"openTriviaDb" | "theTriviaApi">("openTriviaDb");
+  const updateQuestions = (category: string, questions: Question[]) => {
+    setCategory(category);
+    setQuestions(questions);
+  }
+
+  const finalize = () => onAdd(category, questions);
+
   return (
     <div>
-      <h2 className="font-semibold">Generation Source</h2>
-      <GenerateFromOpenTDB onAdd={onAdd} />
+      <div className="flex flex-col mb-2">
+        <Label value="Generation Source" />
+
+        <ButtonGroup className="grow">
+          <Button className="grow" color={source == "openTriviaDb" ? "blue" : "gray"} onClick={() => setSource("openTriviaDb")}>Open Trivia DB</Button>
+          <Button className="grow" color={source == "theTriviaApi" ? "blue" : "light"} onClick={() => setSource("theTriviaApi")}>The Trivia API</Button>
+        </ButtonGroup>
+      </div>
+
+      <GenerateFromOpenTDB updateQuestions={updateQuestions} />
+
+      {questions.length > 0
+        ? <Table className="my-4" striped>
+          <Table.Head>
+            <Table.HeadCell>Question</Table.HeadCell>
+            <Table.HeadCell>Correct Answer</Table.HeadCell>
+          </Table.Head>
+          <Table.Body>
+            {questions.map(q => {
+              return <Table.Row>
+                <Table.Cell className="py-2">{q.detail}</Table.Cell>
+                <Table.Cell className="py-2">{q.correctAnswer}</Table.Cell>
+              </Table.Row>
+            })}
+          </Table.Body>
+        </Table>
+        : <></>}
+
+      {questions.length > 0
+        ? <Button className="mt-4" type="button" color="success" onClick={finalize}><HiCheck className="h-5 mr-2" />Use these Questions</Button>
+        : <></>}
 
       <div className="text-xs mt-4 text-base leading-relaxed text-gray-400">
         <span>
