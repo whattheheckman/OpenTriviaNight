@@ -6,8 +6,8 @@ import LabeledTextInput from "../../LabeledTextInput";
 import CreateRound from "./CreateRound";
 import { HiPlus } from "react-icons/hi";
 
-export default function CreateGame() {
-  const { setGame, signalR } = useContext(GameContext);
+export default function CreateJoinGame() {
+  const { setGame, setUsername, signalR } = useContext(GameContext);
   const [request, setRequest] = useState<CreateGameRequest>({
     username: "",
     rounds: []
@@ -15,6 +15,7 @@ export default function CreateGame() {
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRequest({ ...request, [e.target.name]: e.target.value })
+    setUsername(e.target.value);
   }
 
   const addRound = () => {

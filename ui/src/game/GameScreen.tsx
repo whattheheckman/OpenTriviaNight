@@ -1,6 +1,8 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { GameContext } from "../GameContext";
-import CreateGame from "./create/CreateGame";
+import CreateJoinGame from "./create/CreateGame";
+import HostPickAQuestion from "./host/HostPickAQuestion";
+import { WaitingToStartScreen } from "./WaitingToStartScreen";
 
 export default function GameScreen() {
   const {game, setGame, signalR} = useContext(GameContext);
@@ -15,17 +17,7 @@ export default function GameScreen() {
     []
   );
 
-  return (
-    
-      <div>
-        {game 
-        ? <div>game exists</div>
-        : <CreateGame />
-        }
-        <code>
-          {JSON.stringify(game)}
-        </code>
-      </div>
-    
-  )
+  if (game === undefined) { return <CreateJoinGame /> }
+
+  if (game.state.state === "WaitingToStart") return <WaitingToStartScreen />
 }

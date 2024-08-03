@@ -9,6 +9,7 @@ const SignalRContext = createSignalRContext();
 
 function App() {
   const [game, setGame] = useState<Game | undefined>(undefined);
+  const [username, setUsername] = useState<string>("");
 
   return (
     <>
@@ -18,7 +19,7 @@ function App() {
         onOpen={() => console.log("Signal R connection opened")}
         dependencies={[]}
       >
-        <GameContext.Provider value={{ game: game, setGame: setGame, signalR: SignalRContext }}>
+        <GameContext.Provider value={{ game: game, setGame: setGame, username: username, setUsername: setUsername, signalR: SignalRContext }}>
           <Header />
           <GameScreen></GameScreen>
         </GameContext.Provider>
