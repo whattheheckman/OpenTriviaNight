@@ -65,8 +65,8 @@ export default function CreateCategory({ category, questions, roundNumber, setRe
   return (
     <div className="mb-auto flex flex-col grow md:grow-0 gap-2 bg-sky-200 p-2 rounded-lg border-2 border-sky-500">
       <div className="flex gap-2">
-        <TextInput className="flex-grow font-semibold" id="category-name" type="text" required name="category" sizing="sm" value={category} onChange={(e) => handleCategoryNameChange(e, roundNumber, category)} />
-        <Button size="sm" color="red" onClick={() => removeCategory(roundNumber, category)}><HiTrash /></Button>
+        <TextInput className="flex-grow font-semibold" id="category-name" type="text" required name="category" placeholder="Category Name" value={category} onChange={(e) => handleCategoryNameChange(e, roundNumber, category)} />
+        <Button color="red" onClick={() => removeCategory(roundNumber, category)}>Remove</Button>
       </div>
 
       <div className="flex flex-col gap-2">
@@ -74,9 +74,9 @@ export default function CreateCategory({ category, questions, roundNumber, setRe
           return <div key={questionIdx} className="p-2 bg-white rounded-md">
             <div className="flex justify-between">
               <h2>Question {questionIdx + 1}</h2>
-              <Button size="sm" color="red" onClick={() => removeQuestion(roundNumber, category, questionIdx)}><HiTrash /></Button>
+              <Button size="xs" color="red" onClick={() => removeQuestion(roundNumber, category, questionIdx)}>Remove</Button>
             </div>
-            <div className="flex flex-col gap-2 mt-1">
+            <div className="flex flex-col gap-2 mt-2">
               <Textarea className="p-1 px-2" placeholder="Question" name="detail" required value={question.detail} onChange={(e) => handleQuestionDataChange(e, roundNumber, category, questionIdx)} />
 
               <div className="flex flex-row gap-2">

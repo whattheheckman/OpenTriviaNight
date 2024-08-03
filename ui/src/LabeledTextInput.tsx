@@ -4,7 +4,7 @@ export default function LabeledTextInput({ className, label, name, type, value, 
     return (
         <div className={`flex flex-col ${className}`}>
             <Label value={label} />
-            <TextInput id={name} name={name} type={type} required value={value} onChange={onChange} sizing="sm" />
+            <TextInput id={name} name={name} type={type} required value={value} onChange={onChange} sizing="sm" step="100" />
         </div>
     )
 }

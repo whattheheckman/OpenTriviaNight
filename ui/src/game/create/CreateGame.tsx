@@ -3,8 +3,6 @@ import { useContext, useState } from "react";
 import { CreateGameRequest, Game, Question } from "../../Models";
 import { GameContext } from "../../GameContext";
 import LabeledTextInput from "../../LabeledTextInput";
-import { FaPlus } from "react-icons/fa";
-import CreateCategory from "./CreateCategory";
 import CreateRound from "./CreateRound";
 import { HiPlus } from "react-icons/hi";
 

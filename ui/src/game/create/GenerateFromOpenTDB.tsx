@@ -50,15 +50,6 @@ export default function GenerateFromOpenTDB({ updateQuestions }: Props) {
     <div className="flex flex-col">
       <div className="flex flex-col sm:flex-row gap-2">
         <div className="flex-1 grow">
-          <Label className="mt-2" htmlFor="difficulty" value="Select Difficulty" />
-          <Select id="difficulty" required value={difficulty} onChange={e => setDifficulty(e.target.value)}>
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
-          </Select>
-        </div>
-
-        <div className="flex-1 grow">
           <Label className="mt-1" htmlFor="categories" value="Select Category" />
           {categories
             ? <Select id="categories" required value={selectedCategory} onChange={e => setSelectedCategory(parseInt(e.target.value))}>
@@ -68,6 +59,15 @@ export default function GenerateFromOpenTDB({ updateQuestions }: Props) {
             </Select>
             : <Spinner />
           }
+        </div>
+        
+        <div className="flex-1 grow">
+          <Label className="mt-2" htmlFor="difficulty" value="Select Difficulty" />
+          <Select id="difficulty" required value={difficulty} onChange={e => setDifficulty(e.target.value)}>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </Select>
         </div>
       </div>
 

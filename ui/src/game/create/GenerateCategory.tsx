@@ -3,6 +3,7 @@ import { Question } from "../../Models";
 import GenerateFromOpenTDB from "./GenerateFromOpenTDB";
 import { useState } from "react";
 import { HiCheck } from "react-icons/hi";
+import GenerateFromTriviaApi from "./GenerateFromTriviaApi";
 
 type Props = {
   onAdd: (category: string, questions: Question[]) => void;
@@ -30,8 +31,12 @@ export default function GenerateCategory({ onAdd }: Props) {
           <Button className="grow" color={source == "theTriviaApi" ? "blue" : "light"} onClick={() => setSource("theTriviaApi")}>The Trivia API</Button>
         </ButtonGroup>
       </div>
-
-      <GenerateFromOpenTDB updateQuestions={updateQuestions} />
+      {source === "openTriviaDb"
+        ? <GenerateFromOpenTDB updateQuestions={updateQuestions} />
+        : source === "theTriviaApi"
+          ? <GenerateFromTriviaApi updateQuestions={updateQuestions} />
+          : <></>
+      }
 
       {questions.length > 0
         ? <Table className="my-4" striped>

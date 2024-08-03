@@ -21,8 +21,10 @@ builder
         options.EnableDetailedErrors = true;
     })
     .AddJsonProtocol(opt =>
-        opt.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter())
-    );
+    {
+        opt.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        opt.PayloadSerializerOptions.NumberHandling = JsonNumberHandling.AllowReadingFromString;
+    });
 
 var app = builder.Build();
 
