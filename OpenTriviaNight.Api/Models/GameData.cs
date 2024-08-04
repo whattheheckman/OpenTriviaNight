@@ -31,6 +31,11 @@ public sealed record GameData
     public required GameState State { get; set; } = new GameState.WaitingToStart();
 
     /// <summary>
+    /// When the game was last modified.
+    /// </summary>
+    public DateTimeOffset LastModified { get; set; }
+
+    /// <summary>
     /// Used for locking operations on this game. 
     /// ALL operations which will modify the game state should lock with the semaphore to ensure the game does not enter a invalid state.
     /// </summary>

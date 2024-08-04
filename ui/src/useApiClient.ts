@@ -41,6 +41,12 @@ export default function useApiClient() {
       },
       [execute]
     ),
+    leaveGame: useCallback(
+      () => {
+        return execute(() => signalR.invoke("LeaveGame"))
+      },
+      [execute]
+    ),
     startGame: useCallback(
       () => {
         return execute(() => signalR.invoke("StartGame"))

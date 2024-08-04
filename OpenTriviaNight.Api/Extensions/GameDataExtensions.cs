@@ -8,6 +8,7 @@ public static class GameDataExtensions
         try
         {
             await action(game);
+            game.LastModified = DateTimeOffset.UtcNow;
         }
         finally
         {

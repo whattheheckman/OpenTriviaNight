@@ -10,9 +10,16 @@ public sealed class GameHub(GameManager manager, IMapper mapper, ILogger<GameHub
 
     public override Task OnDisconnectedAsync(Exception? exception)
     {
-        if (Context.Items.TryGetValue(GameId, out var gameId) && Context.Items.TryGetValue(Username, out var username))
+        if (
+            Context.Items.TryGetValue(GameId, out var gameId)
+            && Context.Items.TryGetValue(Username, out var username)
+        )
         {
-            logger.LogWarning("Client {Username} disconnected from game {GameId}", username, gameId);
+            logger.LogWarning(
+                "Client {Username} disconnected from game {GameId}",
+                username,
+                gameId
+            );
         }
 
         return base.OnDisconnectedAsync(exception);
@@ -24,7 +31,15 @@ public sealed class GameHub(GameManager manager, IMapper mapper, ILogger<GameHub
         {
             Id = IdGenerator.GenerateGameId(),
             Rounds = createRequest.Rounds,
-            Players = [new Player { Role = PlayerRole.Host, Score = 0, Username = createRequest.Username }],
+            Players =
+            [
+                new Player
+                {
+                    Role = PlayerRole.Host,
+                    Score = 0,
+                    Username = createRequest.Username
+                }
+            ],
             State = new GameState.WaitingToStart(),
             CurrentRound = 0,
         };
@@ -49,6 +64,21 @@ public sealed class GameHub(GameManager manager, IMapper mapper, ILogger<GameHub
         SetContext(gameData.Id, username);
 
         return gameData;
+    }
+
+    public async Task LeaveGame()
+    {
+        var gameId = Context.Items[GameId]?.ToString();
+        var username = Context.Items[Username]?.ToString();
+        if (gameId is not null && username is not null)
+        {
+            var gameData = await manager.LeaveGame(gameId, username);
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, gameId);
+            await UpdateAllPlayers(gameData);
+        }
+
+        Context.Items.Remove(GameId);
+        Context.Items.Remove(Username);
     }
 
     public async Task StartGame()
@@ -122,6 +152,7 @@ public sealed class GameHub(GameManager manager, IMapper mapper, ILogger<GameHub
         }
     }
 
-    private string GetGameId() => 
-        Context.Items[GameId]?.ToString() ?? throw new InvalidOperationException("Game not found in the connections context.");
+    private string GetGameId() =>
+        Context.Items[GameId]?.ToString()
+        ?? throw new InvalidOperationException("Game not found in the connections context.");
 }

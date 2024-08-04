@@ -22,19 +22,16 @@ export function WaitingToStartScreen() {
                 <Table.HeadCell>Players</Table.HeadCell>
             </Table.Head>
             <Table.Body>
-                {game.players.map(player => {
-                    return <Table.Row key={player.username}>
+                {game.players.map(player => (
+                    <Table.Row key={player.username}>
                         <Table.Cell className="flex justify-between items-center">
                             <div className="flex flex-col">
                                 <div className="text-lg">{player.username}</div>
                                 <div className="text-sm text-gray-400">{player.role}</div>
                             </div>
-                            {isHost && player.username !== username
-                                ? <Button color="red">Remove</Button>
-                                : <></>}
                         </Table.Cell>
                     </Table.Row>
-                })}
+                ))}
 
                 <Table.Row>
                     <Table.Cell>Use Game ID <span className="text-semibold italic">{game.id}</span> to join</Table.Cell>
