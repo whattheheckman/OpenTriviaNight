@@ -1,15 +1,20 @@
 import { useContext } from "react";
 import { GameContext } from "../GameContext";
-import { Button, Spinner, Table } from "flowbite-react";
+import { Button, Clipboard, ClipboardWithIcon, Spinner, Table } from "flowbite-react";
 import useApiClient from "../useApiClient";
+import { HiClipboard } from "react-icons/hi";
 
 export function WaitingToStartScreen() {
-    const { game, username } = useContext(GameContext);
+    const { game, username, addError } = useContext(GameContext);
     const apiClient = useApiClient();
 
     if (!game) { return <></> }
 
     const isHost = game.players.find(x => x.username === username)?.role === "Host";
+
+    const copyGameIdToClipboard = () => {
+        navigator.clipboard.writeText(game.id).catch(_ => addError("Failed to copy Game ID to clipboard"))
+    }
 
     return <div className="flex flex-col max-w-screen-md mx-auto items-stretch">
         <div className="text-center mt-5">
@@ -34,12 +39,21 @@ export function WaitingToStartScreen() {
                 ))}
 
                 <Table.Row>
-                    <Table.Cell>Use Game ID <span className="text-semibold italic">{game.id}</span> to join</Table.Cell>
+                    <Table.Cell >
+                        <div className="inline-flex items-stretch">
+                            <span className="p-2">Use Game ID </span>
+                            <button onClick={copyGameIdToClipboard} className="inline-flex gap-1 p-2 font-semibold italic rounded-lg text-gray-500 hover:bg-gray-100">
+                                <span>{game.id}</span>
+                                <span className="text-lg h-5"><HiClipboard /></span>
+                            </button>
+                            <span className="p-2">to join</span>
+                        </div>
+                    </Table.Cell>
                 </Table.Row>
             </Table.Body>
         </Table>
 
         {isHost ? <Button className="mt-4" color="success" size="lg" onClick={apiClient.startGame}>Start Game</Button> : <></>}
 
-    </div>
+    </div >
 }
