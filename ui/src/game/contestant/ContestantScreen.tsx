@@ -63,12 +63,5 @@ export default function ContestantScreen() {
                 {footer}
             </Wrapper>
         )
-        case "Finished": return (
-            <Wrapper>
-                {header}
-                <span>Game has finished</span>
-                {/* TODO: show a table of all the players scores */}
-            </Wrapper>
-        )
     }
 }

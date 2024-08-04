@@ -161,10 +161,28 @@ public sealed class GameManager(IHubContext<GameHub> gameHub, ILogger<GameManage
             var currentState = game.AssertValidState<GameState.WaitingForAnswer>();
             currentState.Question.Answered = true;
             x.State = new GameState.PickAQuestion();
+            UpdateRoundIFApplicable(x);
             await UpdateQuestionToAllPlayers(gameId, currentState.Question);
         });
 
         return game;
+    }
+
+    private static void UpdateRoundIFApplicable(GameData game)
+    {
+        if (game.Rounds[game.CurrentRound].Values.SelectMany(x => x).All(x => x.Answered))
+        {
+            // All questions inside the round have been answered.
+            // Move to the next round if applicable, or end
+            if (game.Rounds.Count > game.CurrentRound + 1)
+            {
+                game.CurrentRound++;
+            }
+            else
+            {
+                game.State = new GameState.Finished();
+            }
+        }
     }
 
     private GameData GetGame(string gameId)

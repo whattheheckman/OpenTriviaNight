@@ -10,6 +10,8 @@ public record GameUpdateDto
     /// </summary>
     public required string Id { get; init; }
 
+    public required int CurrentRound { get; set; } = 0;
+
     /// <summary>
     /// The <see cref="Player.Username"/> of the last player to win. 
     /// This is usually used to highlight who should be choosing the next question.
@@ -24,5 +26,5 @@ public record GameUpdateDto
     /// <summary>
     /// The current state of the game.
     /// </summary>
-    public GameState State { get; set; } = new GameState.WaitingToStart();
+    public required GameState State { get; set; } = new GameState.WaitingToStart();
 }
