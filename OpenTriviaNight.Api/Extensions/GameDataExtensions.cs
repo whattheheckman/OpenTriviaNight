@@ -24,7 +24,7 @@ public static class GameDataExtensions
             ?? throw new InvalidOperationException("Question {questionId} not found");
     }
 
-    public static T AssertValidState<T>(this GameData game)
+    public static T AssertValidState<T>(this GameData game, string? errorMessage = null)
         where T : GameState
     {
         if (game.State is T casted)
@@ -32,7 +32,7 @@ public static class GameDataExtensions
             return casted;
         }
         throw new InvalidOperationException(
-            $"Game is in an invalid state for this operation {game.State.State}"
+            errorMessage ?? $"Game is in an invalid state for this operation {game.State.State}"
         );
     }
 

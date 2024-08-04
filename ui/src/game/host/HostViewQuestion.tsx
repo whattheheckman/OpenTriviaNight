@@ -62,7 +62,7 @@ export default function HostViewQuestion() {
             <div className="text-lg">
                 <span>{category} - {question.value}</span>
             </div>
-            <div className="text-4xl">
+            <div className="text-4xl text-center">
                 <span>{question.detail}</span>
             </div>
 

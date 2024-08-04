@@ -138,7 +138,7 @@ public sealed class GameManager
         var player = GetPlayer(game, username);
         await game.ExecuteAsync(x =>
         {
-            var currentState = x.AssertValidState<GameState.WaitingForAnswer>();
+            var currentState = x.AssertValidState<GameState.WaitingForAnswer>("Another player buzzed in before you!");
             x.State = new GameState.CheckAnswer
             {
                 Question = currentState.Question,
