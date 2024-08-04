@@ -31,7 +31,7 @@ export default function HostViewQuestion() {
     </div>
 
     const waitingForAnswer = <div className="flex flex-col items-center gap-4">
-        <Spinner />
+        <Spinner size="xl" />
         <span>Waiting for an Answer...</span>
         {reveal
             ? <span onClick={() => setReveal(false)}>The correct answer is: <span className="font-bold">{question.correctAnswer}</span></span>

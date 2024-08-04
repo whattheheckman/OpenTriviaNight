@@ -53,7 +53,7 @@ public sealed class GameHub(GameManager manager, IMapper mapper, ILogger<GameHub
 
     public async Task StartGame()
     {
-        var gameId = Context.Items[GameId]!.ToString()!;
+        var gameId = GetGameId();
         var username = Context.Items[Username]!.ToString()!;
         var gameData = await manager.StartGameAsync(gameId, username);
         await UpdateAllPlayers(gameData);
@@ -61,21 +61,21 @@ public sealed class GameHub(GameManager manager, IMapper mapper, ILogger<GameHub
 
     public async Task PickQuestion(Guid questionId)
     {
-        var gameId = Context.Items[GameId]!.ToString()!;
+        var gameId = GetGameId();
         var gameData = await manager.PickQuestion(gameId, questionId);
         await UpdateAllPlayers(gameData);
     }
 
     public async Task AllowAnswering()
     {
-        var gameId = Context.Items[GameId]!.ToString()!;
+        var gameId = GetGameId();
         var gameData = await manager.AllowAnswering(gameId);
         await UpdateAllPlayers(gameData);
     }
 
     public async Task AnswerQuestion()
     {
-        var gameId = Context.Items[GameId]!.ToString()!;
+        var gameId = GetGameId();
         var username = Context.Items[Username]!.ToString()!;
         var gameData = await manager.AnswerQuestion(gameId, username);
         await UpdateAllPlayers(gameData);
@@ -83,14 +83,14 @@ public sealed class GameHub(GameManager manager, IMapper mapper, ILogger<GameHub
 
     public async Task ConfirmAnswer(bool isCorrect)
     {
-        var gameId = Context.Items[GameId]!.ToString()!;
+        var gameId = GetGameId();
         var gameData = await manager.ConfirmAnswer(gameId, isCorrect);
         await UpdateAllPlayers(gameData);
     }
 
     public async Task EndQuestion()
     {
-        var gameId = Context.Items[GameId]!.ToString()!;
+        var gameId = GetGameId();
         var gameData = await manager.EndQuestion(gameId);
         await UpdateAllPlayers(gameData);
     }
@@ -121,4 +121,7 @@ public sealed class GameHub(GameManager manager, IMapper mapper, ILogger<GameHub
             Context.Items.TryAdd(Username, username);
         }
     }
+
+    private string GetGameId() => 
+        Context.Items[GameId]?.ToString() ?? throw new InvalidOperationException("Game not found in the connections context.");
 }

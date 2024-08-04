@@ -1,8 +1,9 @@
 using System.Collections.Concurrent;
+using Microsoft.AspNetCore.SignalR;
 
 namespace OpenTriviaNight.Api;
 
-public sealed class GameManager(ILogger<GameManager> logger)
+public sealed class GameManager(IHubContext<GameHub> gameHub, ILogger<GameManager> logger)
 {
     private readonly ConcurrentDictionary<string, GameData> _games = new();
 
@@ -56,6 +57,7 @@ public sealed class GameManager(ILogger<GameManager> logger)
             {
                 game.AssertValidState(GameStateEnum.WaitingToStart);
                 x.State = new GameState.PickAQuestion();
+                return Task.CompletedTask;
             });
         }
 
@@ -65,12 +67,14 @@ public sealed class GameManager(ILogger<GameManager> logger)
     public async Task<GameData> PickQuestion(string gameId, Guid questionId)
     {
         var game = GetGame(gameId);
-        await game.ExecuteAsync(x =>
+        await game.ExecuteAsync(async x =>
         {
             game.AssertValidState(GameStateEnum.PickAQuestion);
             var question = game.GetQuestion(questionId);
             if (question.Answered)
             {
+                // A client must have a stale state for this question, so ensure that they know it's been answered
+                await UpdateQuestionToAllPlayers(gameId, question);
                 throw new InvalidOperationException(
                     $"Question {questionId} has already been answered"
                 );
@@ -88,6 +92,7 @@ public sealed class GameManager(ILogger<GameManager> logger)
         {
             var currentState = game.AssertValidState<GameState.ReadQuestion>();
             x.State = new GameState.WaitingForAnswer { Question = currentState.Question };
+            return Task.CompletedTask;
         });
 
         return game;
@@ -105,6 +110,7 @@ public sealed class GameManager(ILogger<GameManager> logger)
                 Question = currentState.Question,
                 Player = player
             };
+            return Task.CompletedTask;
         });
 
         return game;
@@ -120,7 +126,7 @@ public sealed class GameManager(ILogger<GameManager> logger)
     public async Task<GameData> ConfirmAnswer(string gameId, bool isCorrect)
     {
         var game = GetGame(gameId);
-        await game.ExecuteAsync(x =>
+        await game.ExecuteAsync(async x =>
         {
             var currentState = game.AssertValidState<GameState.CheckAnswer>();
             if (isCorrect)
@@ -129,6 +135,8 @@ public sealed class GameManager(ILogger<GameManager> logger)
                 // TODO: Handle the round end where all questions in the current round have been answered.
                 currentState.Player.Score += currentState.Question.Value;
                 x.State = new GameState.PickAQuestion();
+
+                await UpdateQuestionToAllPlayers(gameId, currentState.Question);
             }
             else
             {
@@ -148,11 +156,12 @@ public sealed class GameManager(ILogger<GameManager> logger)
     public async Task<GameData> EndQuestion(string gameId)
     {
         var game = GetGame(gameId);
-        await game.ExecuteAsync(x =>
+        await game.ExecuteAsync(async x =>
         {
             var currentState = game.AssertValidState<GameState.WaitingForAnswer>();
             currentState.Question.Answered = true;
             x.State = new GameState.PickAQuestion();
+            await UpdateQuestionToAllPlayers(gameId, currentState.Question);
         });
 
         return game;
@@ -179,4 +188,7 @@ public sealed class GameManager(ILogger<GameManager> logger)
             );
         return player;
     }
+
+    private async Task UpdateQuestionToAllPlayers(string gameId, Question question) =>
+        await gameHub.Clients.Group(gameId).SendAsync("question-update", question);
 }

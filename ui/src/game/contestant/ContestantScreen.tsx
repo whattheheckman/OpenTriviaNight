@@ -35,7 +35,7 @@ export default function ContestantScreen() {
         case "PickAQuestion": return (
             <Wrapper>
                 {header}
-                <Spinner className="my-2" />
+                <Spinner size="xl" className="my-2" />
                 <span>Waiting for Host to pick a question</span>
             </Wrapper>
         )

@@ -2,12 +2,12 @@ namespace OpenTriviaNight.Api;
 
 public static class GameDataExtensions
 {
-    public static async Task ExecuteAsync(this GameData game, Action<GameData> action)
+    public static async Task ExecuteAsync(this GameData game, Func<GameData, Task> action)
     {
         await game.Semaphore.WaitAsync();
         try
         {
-            action(game);
+            await action(game);
         }
         finally
         {
