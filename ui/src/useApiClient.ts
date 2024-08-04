@@ -20,6 +20,7 @@ export default function useApiClient() {
   const execute = (action: () => Promise<any> | undefined) => {
     return action()
       ?.then(res => {
+        if (res instanceof Array) return res;
         if (res.response) return res.response;
         if (res.error) {
           throw Error(res.error.message);
