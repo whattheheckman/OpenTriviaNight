@@ -70,7 +70,7 @@ export default function CreateCategory({ category, questions, roundNumber, setRe
   }
 
   return (
-    <div className="mb-auto flex flex-col grow md:grow-0 gap-2 bg-sky-200 p-2 rounded-lg border-2 border-sky-500">
+    <div className="mb-auto flex flex-col grow md:grow-0 gap-2 p-2 rounded-lg border-2 border-orange-500">
       <div className="flex gap-2">
         <TextInput className="flex-grow font-semibold" id="category-name" type="text" required name="category" placeholder="Category Name" value={category} onChange={(e) => handleCategoryNameChange(e, roundNumber, category)} />
         <Button color="red" onClick={() => removeCategory(roundNumber, category)}>Remove</Button>
@@ -78,7 +78,7 @@ export default function CreateCategory({ category, questions, roundNumber, setRe
 
       <div className="flex flex-col gap-2">
         {questions.map((question, questionIdx) => {
-          return <div key={questionIdx} className="p-2 bg-white rounded-md">
+          return <div key={questionIdx} className="p-2 bg-white rounded-md bg-orange-300">
             <div className="flex justify-between">
               <h2>Question {questionIdx + 1}</h2>
               <Button size="xs" color="red" onClick={() => removeQuestion(roundNumber, category, questionIdx)}>Remove</Button>
