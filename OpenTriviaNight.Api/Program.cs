@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.SignalR;
 using OpenTriviaNight.Api;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,10 +15,10 @@ builder
 builder
     .Services.AddAutoMapper(typeof(AutoMapperProfiles))
     .AddSingleton<GameManager>()
-    // .AddSingleton<HubResponseFilter>()
+    .AddSingleton<HubResponseFilter>()
     .AddSignalR(options =>
     {
-        // options.AddFilter<HubResponseFilter>();
+        options.AddFilter<HubResponseFilter>();
         options.EnableDetailedErrors = true;
     })
     .AddJsonProtocol(opt =>

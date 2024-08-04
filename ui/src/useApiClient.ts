@@ -14,10 +14,18 @@ export default function useApiClient() {
     }
 
     addError(message);
+    console.error("Handled Error: ", e)
   }
 
   const execute = (action: () => Promise<any> | undefined) => {
-    return action()?.catch(handleError)
+    return action()
+      ?.then(res => {
+        if (res.response) return res.response;
+        if (res.error) {
+          throw Error(res.error.message);
+        }
+        return res;
+      }).catch(handleError)
   }
 
   return {

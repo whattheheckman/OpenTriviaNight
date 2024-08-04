@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import LabeledTextInput from "../../LabeledTextInput";
 import { GameContext } from "../../GameContext";
 import { Button, HR } from "flowbite-react";
@@ -7,14 +7,36 @@ import { Game } from "../../Models";
 import useApiClient from "../../useApiClient";
 
 export default function CreateJoinGame() {
-  const { username, setUsername, signalR, setGame } = useContext(GameContext);
+  const { username, setUsername, setGame } = useContext(GameContext);
   const apiClient = useApiClient();
   const [type, setType] = useState<"join" | "create">("join");
   const [gameId, setGameId] = useState<string>("");
+  // False to begin with show that we only show an error after first interaction
+  const [gameIdErrorMessage, setGameIdErrorMessage] = useState("")
+
+  useEffect(() => {
+    // Clear out the error message if the Game ID is cleared
+    if (!gameId) { setGameIdErrorMessage(""); }
+  }, [gameId, setGameIdErrorMessage])
 
   const joinGame = (role: "Host" | "Contestant" | "Spectator") => {
-    apiClient.joinGame(gameId, username, role)
-      .then((res: Game) => {
+    setGameIdErrorMessage("");
+    if (!gameId) {
+      setGameIdErrorMessage("Please provide a valid Game ID");
+      return;
+    }
+
+    if (!gameId.match(/[A-Z,a-z]{6}/)) {
+      setGameIdErrorMessage("Game IDs may only contain 6 characters A-Z");
+      return;
+    }
+
+    if (!username) {
+      return;
+    }
+
+    apiClient.joinGame(gameId.toUpperCase(), username, role)
+      ?.then((res: Game) => {
         setGame(res);
       })
   }
@@ -22,13 +44,15 @@ export default function CreateJoinGame() {
   if (type === "join") {
     return (
       <div className="flex flex-col gap-2 mt-4 max-w-screen-sm mx-auto">
-        <h1 className="font-bold text-2xl">Join Game</h1>
-        <LabeledTextInput label="Game ID" name="gameId" type="text" placeholder="ABCDEF" value={gameId} onChange={(e) => setGameId(e.target.value)} />
-        <LabeledTextInput label="Your Name" name="username" type="text" placeholder="John" value={username} onChange={(e) => setUsername(e.target.value)} />
+        <form className="flex flex-col gap-2" onSubmit={(e) => e.preventDefault()}>
+          <h1 className="font-bold text-2xl">Join Game</h1>
+          <LabeledTextInput label="Game ID" name="gameId" type="text" placeholder="ABCDEF" value={gameId} onChange={(e) => setGameId(e.target.value)} errorMessage={gameIdErrorMessage} />
+          <LabeledTextInput label="Your Name" name="username" type="text" placeholder="John" value={username} onChange={(e) => setUsername(e.target.value)} />
 
-        <Button color="success" onClick={() => joinGame("Contestant")}>Join as Contestant</Button>
-        <Button color="gray" onClick={() => joinGame("Spectator")}>Join as Spectator</Button>
-        <Button color="gray" onClick={() => joinGame("Host")}>Join as Host</Button>
+          <Button type="submit" color="success" onClick={() => joinGame("Contestant")}>Join as Contestant</Button>
+          <Button type="submit" color="gray" onClick={() => joinGame("Spectator")}>Join as Spectator</Button>
+          <Button type="submit" color="gray" onClick={() => joinGame("Host")}>Join as Host</Button>
+        </form>
 
         <HR.Text text="or" />
 

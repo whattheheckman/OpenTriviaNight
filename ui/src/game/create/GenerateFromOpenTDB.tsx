@@ -115,7 +115,7 @@ type OpenTDBQuestionResponse = {
 }
 
 export default function GenerateFromOpenTDB({ updateQuestions }: Props) {
-  const [selectedCategory, setSelectedCategory] = useState<number>(0);
+  const [selectedCategory, setSelectedCategory] = useState<number>(9);
   const [difficulty, setDifficulty] = useState<string>("easy");
 
   const apiClient = useApiClient();
