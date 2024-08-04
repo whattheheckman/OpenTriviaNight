@@ -27,6 +27,8 @@ public sealed class GameManager
         if (gameData.Rounds.Any(x => !x.Values.SelectMany(x => x).Any()))
             throw new InvalidOperationException("All categories must contain at least 1 question.");
 
+        gameData.LastModified = DateTimeOffset.UtcNow;
+
         if (!_games.TryAdd(gameData.Id, gameData))
         {
             throw new InvalidOperationException($"Game with ID {gameData.Id} already exists.");
