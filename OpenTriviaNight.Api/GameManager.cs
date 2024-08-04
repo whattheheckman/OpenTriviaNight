@@ -21,7 +21,26 @@ public sealed class GameManager(ILogger<GameManager> logger)
         var existingPlayer = game.Players.FirstOrDefault(x => x.Username == username);
         if (existingPlayer is null)
         {
-            game.Players.Add(new Player { Username = username, Role = role, Score = 0 });
+            if (game.State is not GameState.WaitingToStart)
+            {
+                throw new InvalidOperationException(
+                    "Players cannot join a game already in progress. If you are trying to rejoin a game, make sure you use the same username (case sensitive)."
+                );
+            }
+            game.Players.Add(
+                new Player
+                {
+                    Username = username,
+                    Role = role,
+                    Score = 0
+                }
+            );
+
+            logger.LogInformation("{Username} joined game {GameId}", username, gameId);
+        }
+        else
+        {
+            logger.LogInformation("{Username} is rejoining a game {GameId}", username, gameId);
         }
 
         return game;
@@ -52,7 +71,9 @@ public sealed class GameManager(ILogger<GameManager> logger)
             var question = game.GetQuestion(questionId);
             if (question.Answered)
             {
-                throw new InvalidOperationException($"Question {questionId} has already been answered");
+                throw new InvalidOperationException(
+                    $"Question {questionId} has already been answered"
+                );
             }
             x.State = new GameState.ReadQuestion { Question = question };
         });
@@ -79,7 +100,11 @@ public sealed class GameManager(ILogger<GameManager> logger)
         await game.ExecuteAsync(x =>
         {
             var currentState = game.AssertValidState<GameState.WaitingForAnswer>();
-            x.State = new GameState.CheckAnswer { Question = currentState.Question, Player = player };
+            x.State = new GameState.CheckAnswer
+            {
+                Question = currentState.Question,
+                Player = player
+            };
         });
 
         return game;
@@ -147,8 +172,11 @@ public sealed class GameManager(ILogger<GameManager> logger)
 
     private Player GetPlayer(GameData game, string username)
     {
-        var player = game.Players.FirstOrDefault(x => x.Username == username)
-            ?? throw new InvalidOperationException($"Player {username} could not be found in game {game.Id}.");
+        var player =
+            game.Players.FirstOrDefault(x => x.Username == username)
+            ?? throw new InvalidOperationException(
+                $"Player {username} could not be found in game {game.Id}."
+            );
         return player;
     }
 }

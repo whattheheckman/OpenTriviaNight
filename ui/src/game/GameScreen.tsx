@@ -3,6 +3,7 @@ import { GameContext } from "../GameContext";
 import CreateJoinGame from "./create/CreateJoinGame";
 import { WaitingToStartScreen } from "./WaitingToStartScreen";
 import HostScreen from "./host/HostScreen";
+import ContestantScreen from "./contestant/ContestantScreen";
 
 export default function GameScreen() {
   const {game, setGame, username, signalR} = useContext(GameContext);
@@ -23,7 +24,8 @@ export default function GameScreen() {
 
   const role = game.players.find(x => x.username === username)?.role ?? "Spectator"
 
-  if (role === "Host") {
-    return <HostScreen />
+  switch (role) {
+    case "Host": return <HostScreen />;
+    case "Contestant": return <ContestantScreen />;
   }
 }
