@@ -5,7 +5,7 @@ import useApiClient from "../../useApiClient";
 
 function Wrapper({ children }: React.PropsWithChildren) {
     return (
-        <div className="flex flex-col items-center justify-between grow m-8 md:m-16 text-center">
+        <div className="flex flex-col items-center justify-between grow m-8 mb-16 md:m-16 text-center">
             {children}
         </div>
     )
