@@ -3,7 +3,7 @@ import { GameContext } from "./GameContext";
 import { CreateGameRequest } from "./Models";
 
 export default function useApiClient() {
-  const { signalR, addError, errors } = useContext(GameContext);
+  const { signalR, addError } = useContext(GameContext);
 
   const handleError = (e: unknown) => {
     let message = "Unknown Error"
@@ -16,63 +16,80 @@ export default function useApiClient() {
     addError(message);
   }
 
-  const execute = async (action: () => Promise<any> | undefined) => {
-    try {
-      return await action();
-    } catch (e) {
-      handleError(e)
-      throw e;
-    }
+  const execute = (action: () => Promise<any> | undefined) => {
+    return action()?.catch(handleError)
   }
 
   return {
     createGame: useCallback(
-      async (request: CreateGameRequest) => {
+      (request: CreateGameRequest) => {
         return execute(() => signalR.invoke("CreateGame", request))
       },
-      [handleError, signalR]
+      [execute]
     ),
     joinGame: useCallback(
-      async (gameId: string, username: string, role: "Host" | "Contestant" | "Spectator") => {
+      (gameId: string, username: string, role: "Host" | "Contestant" | "Spectator") => {
         return execute(() => signalR.invoke("JoinGame", gameId, username, role))
       },
-      [handleError, signalR]
+      [execute]
     ),
     startGame: useCallback(
-      async () => {
+      () => {
         return execute(() => signalR.invoke("StartGame"))
       },
-      [handleError, signalR]
+      [execute]
     ),
     pickQuestion: useCallback(
-      async (questionId: string) => {
+      (questionId: string) => {
         return execute(() => signalR.invoke("PickQuestion", questionId))
       },
-      [handleError, signalR]
+      [execute]
     ),
     answerQuestion: useCallback(
-      async () => {
+      () => {
         return execute(() => signalR.invoke("AnswerQuestion"))
       },
-      [handleError, signalR]
+      [execute]
     ),
     allowAnswering: useCallback(
-      async () => {
+      () => {
         return execute(() => signalR.invoke("AllowAnswering"))
       },
-      [handleError, signalR]
+      [execute]
     ),
     confirmAnswer: useCallback(
-      async (isCorrect: boolean) => {
+      (isCorrect: boolean) => {
         return execute(() => signalR.invoke("ConfirmAnswer", isCorrect))
       },
-      [handleError, signalR]
+      [execute]
     ),
     endQuestion: useCallback(
-      async () => {
+      () => {
         return execute(() => signalR.invoke("EndQuestion"))
       },
-      [handleError, signalR]
+      [execute]
     ),
+
+    getQuestionsFromOpenTDB: useCallback(
+      ({ category, difficulty }: { category: number, difficulty: string }) => {
+        return execute(async () => {
+          const res = await fetch(`https://opentdb.com/api.php?amount=5&category=${category}&difficulty=${difficulty}&type=multiple&encode=url3986`);
+          if (res.status === 429) throw Error("Question generation requests are throttled. Please wait a few seconds and try again.")
+          if (res.status >= 400) throw Error(`Open TDB returned an error: ${res.status}`)
+          return await res.json();
+        })
+      },
+      [execute]
+    ),
+    getQuestionsFromTriviaApi: useCallback(
+      (category: string, difficulty: string) => {
+        return execute(async () => {
+          const res = await fetch(`https://the-trivia-api.com/v2/questions?limit=5&categories=${category}&difficulties=${difficulty}&types=text_choice`)
+          if (res.status === 429) throw Error("Question generation requests are throttled. Please wait a few seconds and try again.")
+          if (res.status >= 400) throw Error(`Trivia API returned an error: ${res.status}`)
+        })
+      },
+      [execute]
+    )
   }
 }

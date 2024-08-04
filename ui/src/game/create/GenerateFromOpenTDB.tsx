@@ -1,16 +1,113 @@
-import { Button, Label, Select, Spinner } from "flowbite-react";
+import { Button, Label, Select } from "flowbite-react";
 import { Question } from "../../Models";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { HiOutlineRefresh } from "react-icons/hi";
+import useApiClient from "../../useApiClient";
 
 type Props = {
   updateQuestions: (category: string, questions: Question[]) => void;
 }
 
-type OpenTDBCategory = {
-  id: number,
-  name: string
-}
+// These categories are available at the API https://opentdb.com/api_category.php
+// Hardcoding these because constantly pinging the API for these seems like overkill
+const CATEGORIES = [
+  {
+    id: 9,
+    name: "General Knowledge"
+  },
+  {
+    id: 10,
+    name: "Entertainment: Books"
+  },
+  {
+    id: 11,
+    name: "Entertainment: Film"
+  },
+  {
+    id: 12,
+    name: "Entertainment: Music"
+  },
+  {
+    id: 13,
+    name: "Entertainment: Musicals & Theatres"
+  },
+  {
+    id: 14,
+    name: "Entertainment: Television"
+  },
+  {
+    id: 15,
+    name: "Entertainment: Video Games"
+  },
+  {
+    id: 16,
+    name: "Entertainment: Board Games"
+  },
+  {
+    id: 17,
+    name: "Science & Nature"
+  },
+  {
+    id: 18,
+    name: "Science: Computers"
+  },
+  {
+    id: 19,
+    name: "Science: Mathematics"
+  },
+  {
+    id: 20,
+    name: "Mythology"
+  },
+  {
+    id: 21,
+    name: "Sports"
+  },
+  {
+    id: 22,
+    name: "Geography"
+  },
+  {
+    id: 23,
+    name: "History"
+  },
+  {
+    id: 24,
+    name: "Politics"
+  },
+  {
+    id: 25,
+    name: "Art"
+  },
+  {
+    id: 26,
+    name: "Celebrities"
+  },
+  {
+    id: 27,
+    name: "Animals"
+  },
+  {
+    id: 28,
+    name: "Vehicles"
+  },
+  {
+    id: 29,
+    name: "Entertainment: Comics"
+  },
+  {
+    id: 30,
+    name: "Science: Gadgets"
+  },
+  {
+    id: 31,
+    name: "Entertainment: Japanese Anime & Manga"
+  },
+  {
+    id: 32,
+    name: "Entertainment: Cartoon & Animations"
+  }
+]
 
 type OpenTDBQuestionResponse = {
   response_code: number,
@@ -18,20 +115,15 @@ type OpenTDBQuestionResponse = {
 }
 
 export default function GenerateFromOpenTDB({ updateQuestions }: Props) {
-  const [categories, setCategories] = useState<OpenTDBCategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number>(0);
   const [difficulty, setDifficulty] = useState<string>("easy");
 
-  useEffect(() => {
-    fetch("https://opentdb.com/api_category.php")
-      .then(res => res.json())
-      .then(res => { setCategories(res.trivia_categories); setSelectedCategory(res.trivia_categories[0].id) })
-  }, []);
+  const apiClient = useApiClient();
 
   const generateQuestions = () => {
-    fetch(`https://opentdb.com/api.php?amount=5&category=${selectedCategory}&difficulty=${difficulty}&type=multiple&encode=url3986`)
-      .then(res => res.json())
-      .then((res: OpenTDBQuestionResponse) => {
+    apiClient
+      .getQuestionsFromOpenTDB({ category: selectedCategory, difficulty: difficulty })
+      ?.then((res: OpenTDBQuestionResponse) => {
         let questions: Question[] = res.results.map((r, count) => {
           return {
             questionId: crypto.randomUUID(),
@@ -41,7 +133,7 @@ export default function GenerateFromOpenTDB({ updateQuestions }: Props) {
             answered: false
           }
         });
-        let category = categories.find(x => x.id == selectedCategory);
+        let category = CATEGORIES.find(x => x.id == selectedCategory);
         updateQuestions(category?.name ?? "Unknown", questions);
       })
   }
@@ -51,16 +143,13 @@ export default function GenerateFromOpenTDB({ updateQuestions }: Props) {
       <div className="flex flex-col sm:flex-row gap-2">
         <div className="flex-1 grow">
           <Label className="mt-1" htmlFor="categories" value="Select Category" />
-          {categories
-            ? <Select id="categories" required value={selectedCategory} onChange={e => setSelectedCategory(parseInt(e.target.value))}>
-              {categories.map(c => {
-                return <option value={c.id}>{c.name}</option>
-              })}
-            </Select>
-            : <Spinner />
-          }
+          <Select id="categories" required value={selectedCategory} onChange={e => setSelectedCategory(parseInt(e.target.value))}>
+            {CATEGORIES.map(c => {
+              return <option value={c.id}>{c.name}</option>
+            })}
+          </Select>
         </div>
-        
+
         <div className="flex-1 grow">
           <Label className="mt-2" htmlFor="difficulty" value="Select Difficulty" />
           <Select id="difficulty" required value={difficulty} onChange={e => setDifficulty(e.target.value)}>

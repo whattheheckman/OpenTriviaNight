@@ -1,7 +1,8 @@
-import { Button, Label, Select, Spinner } from "flowbite-react";
+import { Button, Label, Select } from "flowbite-react";
 import { Question } from "../../Models";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { HiOutlineRefresh } from "react-icons/hi";
+import useApiClient from "../../useApiClient";
 
 type Props = {
   updateQuestions: (category: string, questions: Question[]) => void;
@@ -58,12 +59,13 @@ const CATEGORIES: { id: string, name: string }[] = [
 export default function GenerateFromTriviaApi({ updateQuestions }: Props) {
   const [selectedCategory, setSelectedCategory] = useState<string>("general_knowledge");
   const [difficulty, setDifficulty] = useState<string>("easy");
+  const apiClient = useApiClient();
 
   const generateQuestions = () => {
     // TODO: Support tags for more fine grained categories
-    fetch(`https://the-trivia-api.com/v2/questions?limit=5&categories=${selectedCategory}&difficulties=${difficulty}&types=text_choice`)
-      .then(res => res.json())
-      .then((res: TriviaQuestionResponse[]) => {
+    apiClient
+      .getQuestionsFromTriviaApi(selectedCategory, difficulty)
+      ?.then((res: TriviaQuestionResponse[]) => {
         let questions: Question[] = res.map((r, count) => {
           return {
             questionId: crypto.randomUUID(),

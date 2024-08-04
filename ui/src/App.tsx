@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Errors, GameContext } from "./GameContext";
 import { Game } from "./Models";
 import Header from "./layout/Header";
-import { Button, Toast } from "flowbite-react";
+import { Toast } from "flowbite-react";
 
 const SignalRContext = createSignalRContext();
 
@@ -45,13 +45,12 @@ function App() {
             <GameScreen></GameScreen>
             <div className="absolute top-4 right-4 flex flex-col gap-4">
               {Object.entries(errors).map(([id, e]) => {
-                return <Toast className="bg-orange-200">
+                return <Toast className="bg-orange-200" style={{ zIndex: 60 }}>
                   <span>{e}</span>
                   <Toast.Toggle className="bg-orange-200" onDismiss={() => removeError(id)} />
                 </Toast>
               })}
             </div>
-            <Button onClick={() => addError("test error")}>Add Error</Button>
           </div>
         </GameContext.Provider>
       </SignalRContext.Provider >
