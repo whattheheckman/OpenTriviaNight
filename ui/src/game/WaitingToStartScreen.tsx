@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { GameContext } from "../GameContext";
-import { Button, Clipboard, ClipboardWithIcon, Spinner, Table } from "flowbite-react";
+import { Button, Spinner, Table } from "flowbite-react";
 import useApiClient from "../useApiClient";
 import { HiClipboard } from "react-icons/hi";
 

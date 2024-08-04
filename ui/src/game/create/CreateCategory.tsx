@@ -1,7 +1,7 @@
 import { Button, Textarea, TextInput } from "flowbite-react"
 import { CreateGameRequest, Question } from "../../Models"
 import LabeledTextInput from "../../LabeledTextInput"
-import { HiPlus, HiTrash } from "react-icons/hi"
+import { HiPlus } from "react-icons/hi"
 
 type Props = {
   category: string,

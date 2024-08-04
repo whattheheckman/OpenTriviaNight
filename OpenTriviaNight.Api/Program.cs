@@ -5,14 +5,17 @@ using OpenTriviaNight.Api;
 var builder = WebApplication.CreateBuilder(args);
 
 builder
-    .Services
-    .AddLogging(options => options.ClearProviders().AddSimpleConsole(c =>
-    {
-        c.IncludeScopes = true;
-        c.SingleLine = true;
-        c.UseUtcTimestamp = true;
-        c.TimestampFormat = "yyyy-MM-dd'T'HH:mm:ss.fff'Z' ";
-    }))
+    .Services.AddLogging(options =>
+        options
+            .ClearProviders()
+            .AddSimpleConsole(c =>
+            {
+                c.IncludeScopes = true;
+                c.SingleLine = true;
+                c.UseUtcTimestamp = true;
+                c.TimestampFormat = "yyyy-MM-dd'T'HH:mm:ss.fff'Z' ";
+            })
+    )
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
     .ConfigureHttpJsonOptions(options =>
@@ -43,6 +46,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app
+    .UseDefaultFiles()
+    .UseStaticFiles();
 
 app.MapHub<GameHub>("/api/stream").WithOpenApi();
 

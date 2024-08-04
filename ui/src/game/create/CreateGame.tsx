@@ -8,7 +8,7 @@ import { HiPlus } from "react-icons/hi";
 import useApiClient from "../../useApiClient";
 
 export default function CreateGame() {
-  const { setGame, setUsername, signalR } = useContext(GameContext);
+  const { setGame, setUsername } = useContext(GameContext);
   const apiClient = useApiClient();
   const [request, setRequest] = useState<CreateGameRequest>({
     username: "",
@@ -35,7 +35,7 @@ export default function CreateGame() {
     e.preventDefault();
     apiClient
       .createGame(request)
-      .then((res: Game) => {
+      ?.then((res: Game) => {
         setGame(res);
       })
   }

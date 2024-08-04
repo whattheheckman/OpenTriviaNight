@@ -1,0 +1,27 @@
+name: deploy-otn-prod
+
+on:
+  workflow_dispatch:
+
+concurrency: otn-prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: srv-otn-prod-1.opentrivianight.com
+          username: svc-otn-prod
+          key: ${{ secrets.SVC_OTN_PROD_SSH_KEY }}
+          script_stop: true
+          script: |
+            whoami
+            pwd
+            [ -d otn-prod ] || git clone 'git@github.com:BrownKnight/opentrivianight.git' 'otn-prod'
+            mkdir -p 'otn-prod'
+            cd 'otn-prod'
+            git pull
+            docker compose up -d --build
+
