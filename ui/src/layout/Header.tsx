@@ -11,6 +11,7 @@ export default function Header() {
   useEffect(() => {
     if (game?.state.state === "WaitingToStart") {
       setHintOpen(true)
+      setTimeout(() => setHintOpen(false), 5000)
     }
   }, [game?.state.state])
 
@@ -21,7 +22,7 @@ export default function Header() {
         open={hintOpen}
         onOpenChange={() => setHintOpen(false)}
         content={
-          <div className="w-72 p-4 bg-gray-100">Tap the top bar to see other players scores, and manage the game.</div>
+          <div className="w-64 p-4 animate-pulse text-sm text-gray-500 bg-orange-100" onClick={(() => setHintOpen(false))}>Tap the top bar to see other players scores, and manage the game.</div>
         }
       >
         <div className="flex justify-between md:justify-center px-4 md:px-6 h-14 w-100 items-center bg-orange-400 border-b-2 border-black">

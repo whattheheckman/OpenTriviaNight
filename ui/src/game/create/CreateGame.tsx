@@ -8,7 +8,7 @@ import { HiPlus } from "react-icons/hi";
 import useApiClient from "../../useApiClient";
 
 export default function CreateGame() {
-  const { setGame, setUsername } = useContext(GameContext);
+  const { setGame, username, setUsername } = useContext(GameContext);
   const apiClient = useApiClient();
   const [request, setRequest] = useState<CreateGameRequest>({
     username: "",
@@ -16,7 +16,6 @@ export default function CreateGame() {
   });
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRequest({ ...request, [e.target.name]: e.target.value })
     setUsername(e.target.value);
   }
 
@@ -33,6 +32,7 @@ export default function CreateGame() {
 
   const handleCreateGame = (e: React.FormEvent) => {
     e.preventDefault();
+    request.username = username
     apiClient
       .createGame(request)
       ?.then((res: Game) => {
@@ -43,7 +43,7 @@ export default function CreateGame() {
   return (
     <div>
       <form onSubmit={handleCreateGame} className="gap-4 flex flex-col">
-        <LabeledTextInput className="max-w-2xl" type="text" label="Your Name" name="username" value={request.username} onChange={handleUsernameChange} />
+        <LabeledTextInput className="max-w-2xl" type="text" label="Your Name" name="username" value={username} onChange={handleUsernameChange} />
 
         {request.rounds.map((round, roundIdx) => {
           return <CreateRound key={roundIdx} round={round} roundNumber={roundIdx} setRequest={setRequest} />

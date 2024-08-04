@@ -3,9 +3,9 @@ import { GameContext } from "../../GameContext";
 import { Button, Spinner } from "flowbite-react";
 import useApiClient from "../../useApiClient";
 
-function Wrapper({children}: React.PropsWithChildren) {
+function Wrapper({ children }: React.PropsWithChildren) {
     return (
-        <div className="flex flex-col items-center gap-16 justify-between grow m-16 text-center">
+        <div className="flex flex-col items-center justify-between grow m-8 md:m-16 text-center">
             {children}
         </div>
     )
@@ -40,23 +40,26 @@ export default function ContestantScreen() {
         case "ReadQuestion": return (
             <Wrapper>
                 {header}
-                <span>Host is reading the question</span>
+                <span className="text-lg font-semibold">{game.state.question.detail}</span>
+                <span className="text-sm text-gray-500">Waiting for Host to finish reading the question...</span>
                 {footer}
             </Wrapper>
         )
         case "WaitingForAnswer": return (
             <Wrapper>
                 {header}
-                <span>{game.state.question.detail}</span>
+                <span className="text-lg font-semibold">{game.state.question.detail}</span>
+                <span className="text-sm">&nbsp;</span>
                 {footer}
             </Wrapper>
         )
         case "CheckAnswer": return (
             <Wrapper>
                 {header}
+                <span className="text-lg font-semibold">{game.state.question.detail}</span>
                 {game.state.player.username === username
-                    ? <span>Host is checking your answer...</span>
-                    : <span>{game.state.player.username} has answered</span>
+                    ? <span className="text-sm font-bold text-green-800">You've buzzed in first</span>
+                    : <span className="text-sm text-gray-500">{game.state.player.username} buzzed in first</span>
                 }
                 {footer}
             </Wrapper>

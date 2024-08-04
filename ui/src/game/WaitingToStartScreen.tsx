@@ -17,7 +17,7 @@ export function WaitingToStartScreen() {
     }
 
     return <div className="flex flex-col max-w-screen-md mx-auto items-stretch">
-        <div className="text-center mt-5">
+        <div className="text-center my-4">
             <Spinner />
         </div>
         <h1 className="text-lg font-semibold self-center mb-5">Waiting for Host to Start Game</h1>
