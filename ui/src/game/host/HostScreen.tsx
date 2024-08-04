@@ -4,7 +4,7 @@ import HostPickAQuestion from "./HostPickAQuestion";
 import HostViewQuestion from "./HostViewQuestion";
 
 export default function HostScreen() {
-    const { game, signalR } = useContext(GameContext);
+    const { game } = useContext(GameContext);
 
     if (!game) { return <></> }
     console.log(game.state.state)

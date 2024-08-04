@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { GameContext } from "../../GameContext";
 import { Button, Spinner } from "flowbite-react";
+import useApiClient from "../../useApiClient";
 
 function Wrapper({children}: React.PropsWithChildren) {
     return (
@@ -11,16 +12,13 @@ function Wrapper({children}: React.PropsWithChildren) {
 }
 
 export default function ContestantScreen() {
-    const { game, username, signalR } = useContext(GameContext);
+    const { game, username } = useContext(GameContext);
+    const apiClient = useApiClient();
 
     if (!game) return <></>
 
     const player = game.players.find(x => x.username == username)
     if (!player) return <></>
-
-    const answerQuestion = () => {
-        signalR.invoke("AnswerQuestion")
-    }
 
     const header = <div className="flex flex-col items-center gap-2">
         <span className="text-4xl font-light">{player.username}</span>
@@ -28,7 +26,7 @@ export default function ContestantScreen() {
     </div>
 
     const footer = <div className="mb-8">
-        <Button size="xl" gradientMonochrome="failure" className="flex items-center text-lg p-4 rounded-full aspect-square" disabled={game.state.state !== "WaitingForAnswer"} onClick={answerQuestion}>Answer</Button>
+        <Button size="xl" gradientMonochrome="failure" className="flex items-center text-lg p-4 rounded-full aspect-square" disabled={game.state.state !== "WaitingForAnswer"} onClick={apiClient.answerQuestion}>Answer</Button>
     </div>
 
     switch (game.state.state) {

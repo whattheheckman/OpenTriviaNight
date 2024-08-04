@@ -2,9 +2,11 @@ import { useContext, useState } from "react";
 import { GameContext } from "../../GameContext";
 import { Button, Spinner } from "flowbite-react";
 import { Player } from "../../Models";
+import useApiClient from "../../useApiClient";
 
 export default function HostViewQuestion() {
-    const { game, signalR } = useContext(GameContext);
+    const { game } = useContext(GameContext);
+    const apiClient = useApiClient();
     const [reveal, setReveal] = useState(false);
 
     if (!game || !("question" in game.state)) { return <></> }
@@ -13,16 +15,16 @@ export default function HostViewQuestion() {
     let [category] = Object.entries(game.rounds[game.currentRound]).find(([_, q]) => q.find(x => x.questionId == question.questionId)) ?? ["Unknown Category"]
 
     const markFinishedReading = () => {
-        signalR.invoke("AllowAnswering")
+        apiClient.allowAnswering();
     }
 
     const confirmAnswer = (isCorrect: boolean) => {
-        signalR.invoke("ConfirmAnswer", isCorrect)
+        apiClient.confirmAnswer(isCorrect);
         setReveal(false)
     }
 
     const endQuestion = () => {
-        signalR.invoke("EndQuestion")
+        apiClient.endQuestion();
         setReveal(false)
     }
 

@@ -8,7 +8,7 @@ import { Question } from "../Models";
 import GameFinishedScreen from "./GameFinishedScreen";
 
 export default function GameScreen() {
-  const { game, setGame, username, signalR } = useContext(GameContext);
+  const { game, setGame, username, signalR, addError } = useContext(GameContext);
 
   signalR.useSignalREffect(
     "game-update",
@@ -42,6 +42,7 @@ export default function GameScreen() {
   signalR.connection?.onclose(error => {
     setGame(undefined);
     console.warn("Client has been disconnected for reason: ", error)
+    addError(`Client has been disconnected for reason: ${error?.name ?? "Unknown"} ${error?.message ?? ""}`)
   })
 
   if (game === undefined) { return <CreateJoinGame /> }

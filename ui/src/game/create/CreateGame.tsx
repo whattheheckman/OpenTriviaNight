@@ -5,9 +5,11 @@ import { GameContext } from "../../GameContext";
 import LabeledTextInput from "../../LabeledTextInput";
 import CreateRound from "./CreateRound";
 import { HiPlus } from "react-icons/hi";
+import useApiClient from "../../useApiClient";
 
 export default function CreateGame() {
   const { setGame, setUsername, signalR } = useContext(GameContext);
+  const apiClient = useApiClient();
   const [request, setRequest] = useState<CreateGameRequest>({
     username: "",
     rounds: []
@@ -31,9 +33,9 @@ export default function CreateGame() {
 
   const handleCreateGame = (e: React.FormEvent) => {
     e.preventDefault();
-    signalR
-      .invoke("CreateGame", request)
-      ?.then((res: Game) => {
+    apiClient
+      .createGame(request)
+      .then((res: Game) => {
         setGame(res);
       })
   }

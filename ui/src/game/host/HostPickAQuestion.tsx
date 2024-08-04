@@ -1,16 +1,18 @@
 import { useContext } from "react";
 import { GameContext } from "../../GameContext";
 import { Button } from "flowbite-react";
+import useApiClient from "../../useApiClient";
 
 export default function HostPickAQuestion() {
-  const { game, signalR } = useContext(GameContext);
+  const { game } = useContext(GameContext);
+  const apiClient = useApiClient();
 
   if (!game) { return <></> }
 
   const category = Object.entries(game.rounds[game.currentRound]);
 
   const pickQuestion = (questionId: string) => {
-    signalR.invoke("PickQuestion", questionId);
+    apiClient.pickQuestion(questionId);
   }
 
   return (

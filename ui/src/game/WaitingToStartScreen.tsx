@@ -1,17 +1,15 @@
 import { useContext } from "react";
 import { GameContext } from "../GameContext";
 import { Button, Spinner, Table } from "flowbite-react";
+import useApiClient from "../useApiClient";
 
 export function WaitingToStartScreen() {
-    const { game, username, signalR } = useContext(GameContext);
+    const { game, username } = useContext(GameContext);
+    const apiClient = useApiClient();
 
     if (!game) { return <></> }
 
     const isHost = game.players.find(x => x.username === username)?.role === "Host";
-
-    const startGame = () => {
-        signalR.invoke("StartGame");
-    }
 
     return <div className="flex flex-col max-w-screen-md mx-auto items-stretch">
         <div className="text-center mt-5">
@@ -44,7 +42,7 @@ export function WaitingToStartScreen() {
             </Table.Body>
         </Table>
 
-        {isHost ? <Button className="mt-4" color="success" size="lg" onClick={startGame}>Start Game</Button> : <></>}
+        {isHost ? <Button className="mt-4" color="success" size="lg" onClick={apiClient.startGame}>Start Game</Button> : <></>}
 
     </div>
 }
