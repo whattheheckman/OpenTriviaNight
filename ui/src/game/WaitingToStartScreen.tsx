@@ -42,7 +42,7 @@ export function WaitingToStartScreen() {
                     <Table.Cell >
                         <div className="inline-flex items-stretch">
                             <span className="p-2">Use Game ID </span>
-                            <button onClick={copyGameIdToClipboard} className="inline-flex gap-1 p-2 font-semibold italic rounded-lg text-gray-500 hover:bg-gray-100">
+                            <button onClick={copyGameIdToClipboard} className="inline-flex gap-1 p-2 font-semibold italic rounded-lg text-gray-500 hover:bg-gray-100 active:bg-gray-200">
                                 <span>{game.id}</span>
                                 <span className="text-lg h-5"><HiClipboard /></span>
                             </button>

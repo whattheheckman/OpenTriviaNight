@@ -20,7 +20,7 @@ export default function useApiClient() {
   const execute = (action: () => Promise<any> | undefined) => {
     return action()
       ?.then(res => {
-        if (res instanceof Array) return res;
+        if (Array.isArray(res)) return res;
         if (res.response) return res.response;
         if (res.error) {
           throw Error(res.error.message);
@@ -102,6 +102,7 @@ export default function useApiClient() {
           const res = await fetch(`https://the-trivia-api.com/v2/questions?limit=5&categories=${category}&difficulties=${difficulty}&types=text_choice`)
           if (res.status === 429) throw Error("Question generation requests are throttled. Please wait a few seconds and try again.")
           if (res.status >= 400) throw Error(`Trivia API returned an error: ${res.status}`)
+          return await res.json()
         })
       },
       [execute]

@@ -46,7 +46,7 @@ export default function GenerateCategory({ onAdd }: Props) {
           </Table.Head>
           <Table.Body>
             {questions.map(q => {
-              return <Table.Row>
+              return <Table.Row key={q.questionId}>
                 <Table.Cell className="py-2">{q.detail}</Table.Cell>
                 <Table.Cell className="py-2">{q.correctAnswer}</Table.Cell>
               </Table.Row>

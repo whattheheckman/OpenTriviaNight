@@ -87,7 +87,7 @@ export default function GenerateFromTriviaApi({ updateQuestions }: Props) {
           <Label className="mt-1" htmlFor="categories" value="Select Category" />
           <Select id="categories" required value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)}>
             {CATEGORIES.map(c => {
-              return <option value={c.id}>{c.name}</option>
+              return <option key={c.id} value={c.id}>{c.name}</option>
             })}
           </Select>
         </div>
