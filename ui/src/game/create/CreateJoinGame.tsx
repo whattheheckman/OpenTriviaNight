@@ -5,6 +5,7 @@ import { Button, HR } from "flowbite-react";
 import CreateGame from "./CreateGame";
 import { Game } from "../../Models";
 import useApiClient from "../../useApiClient";
+import About from "../../About";
 
 export default function CreateJoinGame() {
   const { username, setUsername, setGame } = useContext(GameContext);
@@ -57,6 +58,7 @@ export default function CreateJoinGame() {
         <HR.Text text="or" />
 
         <Button color="success" outline onClick={() => setType("create")}>Create a Game</Button>
+        <About />
       </div>
     )
   } else {
