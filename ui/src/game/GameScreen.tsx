@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { GameContext } from "../GameContext";
 import CreateJoinGame from "./create/CreateJoinGame";
-import { WaitingToStartScreen } from "./WaitingToStartScreen";
+import WaitingToStartScreen from "./WaitingToStartScreen";
 import HostScreen from "./host/HostScreen";
 import ContestantScreen from "./contestant/ContestantScreen";
 import { Question } from "../Models";

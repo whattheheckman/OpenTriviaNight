@@ -4,7 +4,7 @@ import { Button, Spinner, Table } from "flowbite-react";
 import useApiClient from "../useApiClient";
 import { HiClipboard } from "react-icons/hi";
 
-export function WaitingToStartScreen() {
+export default function WaitingToStartScreen() {
     const { game, username, addError } = useContext(GameContext);
     const apiClient = useApiClient();
 
