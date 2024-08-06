@@ -55,7 +55,7 @@ pub enum PlayerRole {
     Spectator,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, PartialEq)]
 pub enum GameState {
     WaitingToStart,
     PickAQuestion,
