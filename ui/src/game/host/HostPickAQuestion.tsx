@@ -9,7 +9,7 @@ export default function HostPickAQuestion() {
 
   if (!game) { return <></> }
 
-  const category = Object.entries(game.rounds[game.currentRound]);
+  const categories = game.rounds[game.currentRound];
 
   const pickQuestion = (questionId: string) => {
     apiClient.pickQuestion(questionId);
@@ -18,7 +18,7 @@ export default function HostPickAQuestion() {
   return (
     <div className="flex flex-col grow py-4">
       <div className="flex flex-row overflow-x-auto px-2 min-h-96 h-full grow">
-        {category.map(([name, questions], idx) => {
+        {categories.map(({ name, questions }, idx) => {
           return <div key={idx} className="flex flex-col min-w-48 grow flex-1 mx-2 gap-4">
             <h1 className="text-center text-2xl font-bold min-h-16">{name}</h1>
 

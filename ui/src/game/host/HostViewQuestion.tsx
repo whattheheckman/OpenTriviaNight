@@ -3,6 +3,7 @@ import { GameContext } from "../../GameContext";
 import { Button, Spinner } from "flowbite-react";
 import { Player } from "../../Models";
 import useApiClient from "../../useApiClient";
+import { GameHelper } from "../../GameHelper";
 
 export default function HostViewQuestion() {
     const { game } = useContext(GameContext);
@@ -12,7 +13,7 @@ export default function HostViewQuestion() {
     if (!game || !("question" in game.state)) { return <></> }
 
     let question = game.state.question
-    let [category] = Object.entries(game.rounds[game.currentRound]).find(([_, q]) => q.find(x => x.questionId == question.questionId)) ?? ["Unknown Category"]
+    let { category } = GameHelper.getQuestionById(game, question.questionId);
 
     const markFinishedReading = () => {
         apiClient.allowAnswering();
@@ -60,7 +61,7 @@ export default function HostViewQuestion() {
     return <div className="flex flex-col grow bg-orange-400 w-100 m-4 rounded-xl">
         <div className="flex flex-col items-center justify-between p-4 grow">
             <div className="text-lg">
-                <span>{category} - {question.value}</span>
+                <span>{category.name} - {question.value}</span>
             </div>
             <div className="text-4xl text-center">
                 <span>{question.detail}</span>

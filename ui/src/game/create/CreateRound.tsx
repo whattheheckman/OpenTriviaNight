@@ -1,12 +1,12 @@
 import { Button, Modal } from "flowbite-react"
-import { CreateGameRequest, Question } from "../../Models"
+import { CreateGameRequest, Category, Question } from "../../Models"
 import CreateCategory from "./CreateCategory"
 import { HiPlus } from "react-icons/hi"
 import { useState } from "react"
 import GenerateCategory from "./GenerateCategory"
 
 type Props = {
-  round: { [category: string]: Question[] }
+  round: Category[],
   roundNumber: number,
   setRequest: React.Dispatch<React.SetStateAction<CreateGameRequest>>
 }
@@ -27,11 +27,11 @@ export default function CreateRound({ round, roundNumber, setRequest }: Props) {
         }];
 
       let rounds = r.rounds;
-      let newCategoryName = category ? category : `Category ${Object.entries(rounds[round]).length + 1}`;
+      let newCategoryName = category ? category : `Category ${rounds[round].length + 1}`;
       if (newCategoryName in rounds[round]) {
         newCategoryName += Math.round(Math.random() * 100);
       }
-      rounds[round] = { ...rounds[round], [newCategoryName]: newQuestions }
+      rounds[round].push({ categoryId: crypto.randomUUID(), name: newCategoryName, questions: newQuestions });
       return { ...r, rounds: rounds }
     })
   }
@@ -40,8 +40,8 @@ export default function CreateRound({ round, roundNumber, setRequest }: Props) {
     <div key={roundNumber}>
       <h2 className="font-semibold">Round {roundNumber + 1} </h2>
       <div className="flex gap-2 flex-wrap">
-        {Object.entries(round).map(([category, questions], categoryIdx) => {
-          return <CreateCategory key={categoryIdx} category={category} questions={questions} setRequest={setRequest} roundNumber={roundNumber} />
+        {round.map((category, categoryIdx) => {
+          return <CreateCategory key={categoryIdx} category={category} categoryIndex={categoryIdx} setRequest={setRequest} roundNumber={roundNumber} />
         })}
 
         <div className="flex flex-col gap-2">

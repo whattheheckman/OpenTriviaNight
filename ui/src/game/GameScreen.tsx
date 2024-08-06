@@ -29,10 +29,9 @@ export default function GameScreen() {
         if (!g) {
           return g;
         }
-        let [category, questions] = Object.entries(g.rounds[g.currentRound]).find(([_, questions]) => questions.find(q => q.questionId === update.questionId))!;
-        let questionIndex = questions.findIndex(x => x.questionId == update.questionId);
-
-        g.rounds[g.currentRound][category][questionIndex] = update;
+        let categoryIndex = g.rounds[g.currentRound].findIndex(category => category.questions.find(q => q.questionId === update.questionId));
+        let questionIndex = g.rounds[g.currentRound][categoryIndex].questions.findIndex(x => x.questionId == update.questionId);
+        g.rounds[g.currentRound][categoryIndex].questions[questionIndex] = update;
         return { ...g }
       })
     },

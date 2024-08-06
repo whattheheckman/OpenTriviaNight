@@ -14,5 +14,5 @@ public record GameCreateDto
     /// <summary>
     /// All the questions involved in this game, grouped by Round number (0-indexed), and by category.
     /// </summary>
-    public List<Dictionary<string, List<Question>>> Rounds { get; init; } = [];
+    public List<List<Category>> Rounds { get; init; } = [];
 }

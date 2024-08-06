@@ -1,6 +1,6 @@
 import { Button } from "flowbite-react";
 import { useContext, useState } from "react";
-import { CreateGameRequest, Game, Question } from "../../Models";
+import { CreateGameRequest, Game } from "../../Models";
 import { GameContext } from "../../GameContext";
 import LabeledTextInput from "../../LabeledTextInput";
 import CreateRound from "./CreateRound";
@@ -20,14 +20,11 @@ export default function CreateGame() {
   }
 
   const addRound = () => {
-    let newQuestion: Question = {
-      questionId: crypto.randomUUID(),
-      answered: false,
-      correctAnswer: "",
-      detail: "",
-      value: 100
-    }
-    setRequest({ ...request, rounds: [...request.rounds, { "New Category": [newQuestion] }] })
+    setRequest(r => {
+      r.rounds.push([])
+      console.log("round ", r)
+      return { ...r }
+    })
   }
 
   const handleCreateGame = (e: React.FormEvent) => {

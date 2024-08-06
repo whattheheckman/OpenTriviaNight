@@ -24,7 +24,7 @@ public sealed class GameManager
             throw new InvalidOperationException("Game must contain at least 1 round.");
         if (gameData.Rounds.Any(x => x.Count == 0))
             throw new InvalidOperationException("All rounds must contain at least 1 category.");
-        if (gameData.Rounds.Any(x => !x.Values.SelectMany(x => x).Any()))
+        if (gameData.Rounds.Any(x => !x.SelectMany(x => x.Questions).Any()))
             throw new InvalidOperationException("All categories must contain at least 1 question.");
 
         gameData.LastModified = DateTimeOffset.UtcNow;
@@ -204,7 +204,7 @@ public sealed class GameManager
 
     private static void UpdateRoundIFApplicable(GameData game)
     {
-        if (game.Rounds[game.CurrentRound].Values.SelectMany(x => x).All(x => x.Answered))
+        if (game.Rounds[game.CurrentRound].SelectMany(x => x.Questions).All(x => x.Answered))
         {
             // All questions inside the round have been answered.
             // Move to the next round if applicable, or end

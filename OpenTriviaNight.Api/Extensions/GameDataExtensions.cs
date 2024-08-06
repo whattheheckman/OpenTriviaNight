@@ -19,7 +19,7 @@ public static class GameDataExtensions
     public static Question GetQuestion(this GameData game, Guid questionId)
     {
         return game.Rounds[game.CurrentRound]
-                .Values.SelectMany(x => x)
+                .SelectMany(x => x.Questions)
                 .FirstOrDefault(x => x.QuestionId == questionId)
             ?? throw new InvalidOperationException("Question {questionId} not found");
     }

@@ -13,7 +13,7 @@ public sealed record GameData
     public required List<Player> Players { get; init; } = [];
 
     /// <summary>
-    /// The <see cref="Player.Username"/> of the last player to win. 
+    /// The <see cref="Player.Username"/> of the last player to win.
     /// This is usually used to highlight who should be choosing the next question.
     /// </summary>
     public string? LastWinner { get; init; }
@@ -21,7 +21,7 @@ public sealed record GameData
     /// <summary>
     /// All the questions involved in this game, grouped by Round number (0-indexed) and by category.
     /// </summary>
-    public List<Dictionary<string, List<Question>>> Rounds { get; init; } = [];
+    public List<List<Category>> Rounds { get; init; } = [];
 
     public required int CurrentRound { get; set; } = 0;
 
@@ -36,7 +36,7 @@ public sealed record GameData
     public DateTimeOffset LastModified { get; set; }
 
     /// <summary>
-    /// Used for locking operations on this game. 
+    /// Used for locking operations on this game.
     /// ALL operations which will modify the game state should lock with the semaphore to ensure the game does not enter a invalid state.
     /// </summary>
     internal SemaphoreSlim Semaphore { get; } = new(1);
@@ -54,6 +54,13 @@ public enum PlayerRole
     Host,
     Contestant,
     Spectator
+}
+
+public sealed record Category
+{
+    public required Guid CategoryId { get; init; } = Guid.NewGuid();
+    public required string Name { get; init; }
+    public required List<Question> Questions { get; init; } = [];
 }
 
 public sealed record Question

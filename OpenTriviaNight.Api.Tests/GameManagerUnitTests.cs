@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 
@@ -12,7 +13,7 @@ public sealed class GameManagerUnitTests
     public void TestCreateGame()
     {
         var game = CreateGame();
-        var manager = new GameManager(Substitute.For<ILogger<GameManager>>());
+        var manager = new GameManager(Substitute.For<IHubContext<GameHub>>(), Substitute.For<ILogger<GameManager>>());
 
         manager.CreateGame(game);
 
@@ -24,7 +25,7 @@ public sealed class GameManagerUnitTests
     public void TestJoinGame()
     {
         var game = CreateGame();
-        var manager = new GameManager(Substitute.For<ILogger<GameManager>>());
+        var manager = new GameManager(Substitute.For<IHubContext<GameHub>>(), Substitute.For<ILogger<GameManager>>());
 
         manager.CreateGame(game);
 
@@ -51,19 +52,23 @@ public sealed class GameManagerUnitTests
             State = new GameState.WaitingToStart(),
             Rounds =
             [
-                new()
-                {
-                    ["1"] =
-                    [
-                        new()
-                        {
-                            QuestionId = Guid.NewGuid(),
-                            Detail = "Some Question",
-                            CorrectAnswer = "blas",
-                            Value = 100
-                        }
-                    ]
-                }
+                [
+                    new()
+                    {
+                        CategoryId = Guid.NewGuid(),
+                        Name = "Category 1",
+                        Questions =
+                        [
+                            new Question
+                            {
+                                QuestionId = Guid.NewGuid(),
+                                Detail = "Some Question",
+                                CorrectAnswer = "blas",
+                                Value = 100
+                            }
+                        ]
+                    }
+                ]
             ]
         };
 }
