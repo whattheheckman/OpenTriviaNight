@@ -9,7 +9,7 @@ use axum::{
     body::Body,
     extract::{
         ws::{Message, WebSocket},
-        Path, Query, State, WebSocketUpgrade,
+        Path, State, WebSocketUpgrade,
     },
     http::Response,
     routing::{get, post},
@@ -18,7 +18,7 @@ use axum::{
 use dashmap::DashMap;
 use dto::{CreateGameRequest, GameMessage, UpdateGameRequest};
 use futures::{SinkExt, StreamExt};
-use models::{AppState, Game, GameEntry, GameState, PlayerRole};
+use models::{AppState, Game, GameEntry, PlayerRole};
 use tower_http::trace::{DefaultMakeSpan, TraceLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -27,7 +27,7 @@ async fn main() {
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "example_websockets=debug,tower_http=debug".into()),
+                .unwrap_or_else(|_| "debug,tower_http=debug".into()),
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
@@ -37,8 +37,8 @@ async fn main() {
     };
 
     let app = Router::new()
+        .route("/games/:game_id/:role/:username", get(join_game))
         .route("/games", post(create_game))
-        .route("/games/:game_id", get(join_game))
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(DefaultMakeSpan::default().include_headers(true)),
@@ -66,11 +66,10 @@ async fn create_game(
 
 async fn join_game(
     ws: WebSocketUpgrade,
-    Path(game_id): Path<String>,
-    Query(username): Query<String>,
-    Query(role): Query<PlayerRole>,
+    Path((game_id, role, username)): Path<(String, PlayerRole, String)>,
     State(state): State<AppState>,
 ) -> Result<Response<Body>, GameError> {
+    tracing::debug!("{username} is attempting to join game {game_id} as a {role:?}");
     match state
         .clone()
         .join_game(game_id.clone(), username.clone(), role.clone())
@@ -107,10 +106,12 @@ async fn handle_socket(
     let send_game_id = game_id.clone();
     let send_username = username.clone();
     let mut send_task = tokio::spawn(async move {
+        tracing::debug!("Getting send game instance");
         let entry = match send_games.get_mut(&send_game_id) {
             Some(x) => x,
             None => return,
         };
+        tracing::debug!("Got send game instance");
 
         // init the game by sending the current state to the client
         if let Ok(serialized) = serde_json::to_string(&GameMessage::JoinGame {
@@ -124,9 +125,12 @@ async fn handle_socket(
             }
         }
 
-        // Whilst the game is in progress, listen for updates on the games channel and send them to the client
-        while entry.game.state != GameState::Finished {
-            let mut receiver = entry.sender.subscribe();
+        let mut receiver = entry.sender.subscribe();
+        drop(entry);
+        tracing::debug!("dropped send game instance");
+
+        // Listen for updates on the games channel and send them to the client
+        loop {
             let update = match receiver.recv().await {
                 Ok(x) => x,
                 Err(_) => return,
@@ -145,10 +149,6 @@ async fn handle_socket(
     let recv_game_id = game_id.clone();
     let recv_username = username.clone();
     let mut recv_task = tokio::spawn(async move {
-        let mut game_entry = match recv_games.get_mut(&recv_game_id) {
-            Some(x) => x,
-            None => return,
-        };
         while let Some(Ok(msg)) = receiver.next().await {
             if let Message::Text(text) = msg {
                 tracing::debug!(
@@ -156,13 +156,23 @@ async fn handle_socket(
                 );
                 let request = match serde_json::from_str::<UpdateGameRequest>(text.as_str()) {
                     Ok(x) => x,
-                    Err(_) => continue,
+                    Err(e) => {
+                        tracing::warn!("Failed to parse the message from {recv_username} for game {recv_game_id}: {text}: {e}");
+                        continue;
+                    }
                 };
 
                 if let UpdateGameRequest::LeaveGame = request {
                     // Special handling for leaving game, just end the websocket session
                     return;
                 }
+
+                tracing::debug!("Getting receive game instace");
+                let mut game_entry = match recv_games.get_mut(&recv_game_id) {
+                    Some(x) => x,
+                    None => return,
+                };
+                tracing::debug!("Got receive game instance");
 
                 handle_game_request(
                     &mut game_entry,

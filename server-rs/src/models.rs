@@ -68,12 +68,15 @@ pub enum PlayerRole {
 }
 
 #[derive(Clone, Serialize, Deserialize, PartialEq, Debug)]
-#[serde(tag = "type", rename_all = "camelCase")]
+#[serde(tag = "state")]
 pub enum GameState {
     WaitingToStart,
     PickAQuestion,
+    #[serde(rename_all = "camelCase")]
     ReadQuestion { question: Question },
+    #[serde(rename_all = "camelCase")]
     WaitingForAnswer { question: Question },
+    #[serde(rename_all = "camelCase")]
     CheckAnswer { question: Question, player: Player },
     Finished,
 }

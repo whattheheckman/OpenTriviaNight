@@ -11,6 +11,7 @@ pub enum GameMessage {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct UpdateGameResponse {
     pub players: Vec<Player>,
     pub last_winner: String,
@@ -30,13 +31,15 @@ impl Into<UpdateGameResponse> for Game {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
-#[serde(tag = "type", rename_all = "camelCase")]
+#[serde(tag = "type")]
 pub enum UpdateGameRequest {
     StartGame,
     LeaveGame,
+    #[serde(rename_all = "camelCase")]
     PickQuestion { question_id: String },
     AllowAnswering,
     AnswerQuestion,
+    #[serde(rename_all = "camelCase")]
     ConfirmAnswer { is_correct: bool },
     EndQuestion,
 }

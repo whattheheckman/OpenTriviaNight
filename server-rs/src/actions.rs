@@ -46,10 +46,9 @@ impl IntoResponse for GameError {
 
 impl AppState {
     pub fn create_game(self, request: CreateGameRequest) -> Result<Game, GameError> {
-        let id_chars: Vec<char> = vec!['A', 'B'];
+        let id_chars: Vec<char> = (65..90u32).map(|x| char::from_u32(x).unwrap()).collect();
         let mut rng = rand::thread_rng();
-        let id: String = vec![0..6]
-            .iter()
+        let id: String = (0..6)
             .map(|_x| id_chars.choose(&mut rng).unwrap_or(&'A'))
             .collect::<String>();
 
@@ -57,13 +56,13 @@ impl AppState {
         game.id = id.clone();
         let (sender, receiver) = broadcast::channel(8);
         let game_entry = GameEntry {
-            game,
+            game: game.clone(),
             sender,
             receiver,
         };
         match self.games.insert(id, game_entry) {
-            Some(entry) => return Ok(entry.game),
-            None => return Err(GameError::FailedToCreateGame),
+            Some(_) => return Err(GameError::FailedToCreateGame), // Game already exists, might be an ID clash. So fail.
+            None => return Ok(game),
         }
     }
 
