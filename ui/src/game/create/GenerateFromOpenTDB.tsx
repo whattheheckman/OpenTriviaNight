@@ -124,7 +124,7 @@ export default function GenerateFromOpenTDB({ updateQuestions }: Props) {
     apiClient
       .getQuestionsFromOpenTDB({ category: selectedCategory, difficulty: difficulty })
       ?.then((res: OpenTDBQuestionResponse) => {
-        let questions: Question[] = res.results.map((r, count) => {
+        const questions: Question[] = res.results.map((r, count) => {
           return {
             questionId: crypto.randomUUID(),
             detail: decodeURIComponent(r.question),
@@ -133,7 +133,7 @@ export default function GenerateFromOpenTDB({ updateQuestions }: Props) {
             answered: false
           }
         });
-        let category = CATEGORIES.find(x => x.id == selectedCategory);
+        const category = CATEGORIES.find(x => x.id == selectedCategory);
         updateQuestions(category?.name ?? "Unknown", questions);
       })
   }
@@ -145,7 +145,7 @@ export default function GenerateFromOpenTDB({ updateQuestions }: Props) {
           <Label className="mt-1" htmlFor="categories" value="Select Category" />
           <Select id="categories" required value={selectedCategory} onChange={e => setSelectedCategory(parseInt(e.target.value))}>
             {CATEGORIES.map(c => {
-              return <option value={c.id}>{c.name}</option>
+              return <option key={c.id} value={c.id}>{c.name}</option>
             })}
           </Select>
         </div>

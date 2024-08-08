@@ -37,15 +37,16 @@ async fn main() {
     };
 
     let app = Router::new()
-        .route("/games/:game_id/:role/:username", get(join_game))
-        .route("/games", post(create_game))
+        .route("/api/games", post(create_game))
+        .route("/api/stream/games/:game_id/:role/:username", get(join_game))
+        .route("/api/games/:game_id", get(get_game))
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(DefaultMakeSpan::default().include_headers(true)),
         )
         .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
+    let listener = tokio::net::TcpListener::bind("localhost:3000")
         .await
         .unwrap();
     tracing::debug!("listening on {}", listener.local_addr().unwrap());
@@ -64,9 +65,19 @@ async fn create_game(
     return state.create_game(new_game);
 }
 
+async fn get_game(
+    Path(game_id): Path<String>,
+    State(state): State<AppState>,
+) -> Result<Game, GameError> {
+    match state.games.get(&game_id) {
+        Some(x) => return Ok(x.value().game.clone()),
+        None => return Err(GameError::GameNotFound),
+    }
+}
+
 async fn join_game(
-    ws: WebSocketUpgrade,
     Path((game_id, role, username)): Path<(String, PlayerRole, String)>,
+    ws: WebSocketUpgrade,
     State(state): State<AppState>,
 ) -> Result<Response<Body>, GameError> {
     tracing::debug!("{username} is attempting to join game {game_id} as a {role:?}");
@@ -85,33 +96,23 @@ async fn join_game(
 }
 
 async fn handle_socket(
-    mut socket: WebSocket,
+    socket: WebSocket,
     game_id: String,
     username: String,
     role: PlayerRole,
     games: Arc<DashMap<String, GameEntry>>,
 ) {
-    let _ = games;
-    if socket.send(Message::Ping(vec![1, 2, 3])).await.is_ok() {
-        tracing::debug!("Pinged new joiner {username} in game {game_id}...");
-    } else {
-        tracing::error!("Could not send ping to {username} in game {game_id}");
-        // no Error here since the only thing we can do is to close the connection.
-        return;
-    }
-
     let (mut sender, mut receiver) = socket.split();
+    let _ = sender.send(Message::Ping(vec![1, 2, 3])).await;
 
     let send_games = games.clone();
     let send_game_id = game_id.clone();
     let send_username = username.clone();
     let mut send_task = tokio::spawn(async move {
-        tracing::debug!("Getting send game instance");
         let entry = match send_games.get_mut(&send_game_id) {
             Some(x) => x,
             None => return,
         };
-        tracing::debug!("Got send game instance");
 
         // init the game by sending the current state to the client
         if let Ok(serialized) = serde_json::to_string(&GameMessage::JoinGame {
@@ -126,8 +127,9 @@ async fn handle_socket(
         }
 
         let mut receiver = entry.sender.subscribe();
+
+        // Ensure we release the lock on the game now that we have the channel set up
         drop(entry);
-        tracing::debug!("dropped send game instance");
 
         // Listen for updates on the games channel and send them to the client
         loop {
@@ -167,12 +169,10 @@ async fn handle_socket(
                     return;
                 }
 
-                tracing::debug!("Getting receive game instace");
                 let mut game_entry = match recv_games.get_mut(&recv_game_id) {
                     Some(x) => x,
                     None => return,
                 };
-                tracing::debug!("Got receive game instance");
 
                 handle_game_request(
                     &mut game_entry,

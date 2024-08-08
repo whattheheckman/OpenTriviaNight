@@ -77,6 +77,13 @@ impl AppState {
             None => return Err(GameError::GameNotFound),
         };
 
+        let existing = get_player(&mut entry.game, username.clone());
+        if let Some(player) = existing {
+            // If the player already exists, then don't add them again
+            player.role = role;
+            return Ok(());
+        }
+
         let game_entry = entry.value_mut();
         let new_player = Player {
             username,
@@ -84,6 +91,10 @@ impl AppState {
             score: 0,
         };
         game_entry.game.players.push(new_player);
+
+        let _ = game_entry.sender.send(GameMessage::GameUpdate {
+            game: game_entry.game.clone().into(),
+        });
 
         return Ok(());
     }
