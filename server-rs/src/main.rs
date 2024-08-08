@@ -204,7 +204,7 @@ fn start_cleanup_old_games(state: AppState) {
         let mut interval = tokio::time::interval(Duration::from_secs(60));
         loop {
             interval.tick().await;
-            tracing::info!("Searching for stale games to remove");
+            tracing::debug!("Searching for stale games to remove");
             let now = Instant::now();
             // Find games that haven't been updated in more than 30 mins
             let stale_games: Vec<String> = state

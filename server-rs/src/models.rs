@@ -1,4 +1,4 @@
-use std::{sync::Arc, time::SystemTime};
+use std::sync::Arc;
 
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use dashmap::DashMap;
@@ -75,10 +75,17 @@ pub enum GameState {
     WaitingToStart,
     PickAQuestion,
     #[serde(rename_all = "camelCase")]
-    ReadQuestion { question: Question },
+    ReadQuestion {
+        question: Question,
+    },
     #[serde(rename_all = "camelCase")]
-    WaitingForAnswer { question: Question },
+    WaitingForAnswer {
+        question: Question,
+    },
     #[serde(rename_all = "camelCase")]
-    CheckAnswer { question: Question, player: Player },
+    CheckAnswer {
+        question: Question,
+        player: Player,
+    },
     Finished,
 }
