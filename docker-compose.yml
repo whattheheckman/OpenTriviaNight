@@ -16,4 +16,4 @@ services:
       dockerfile: ./Dockerfile
     environment:
       NODE_ENV: production
-      ASPNETCORE_ENVIRONMENT: Production
+      RUST_LOG: info

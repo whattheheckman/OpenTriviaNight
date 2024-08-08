@@ -1,12 +1,9 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-server
+FROM rust:latest AS build-server
 
 WORKDIR /source
 
-COPY ./OpenTriviaNight.Api/OpenTriviaNight.Api.csproj OpenTriviaNight.Api/OpenTriviaNight.Api.csproj
-RUN dotnet restore OpenTriviaNight.Api/OpenTriviaNight.Api.csproj
-
-COPY ./OpenTriviaNight.Api OpenTriviaNight.Api
-RUN dotnet publish OpenTriviaNight.Api/OpenTriviaNight.Api.csproj -c Release -o publish
+COPY ./server-rs .
+RUN cargo build --release
 
 FROM node:20 AS build-ui
 
@@ -18,10 +15,10 @@ RUN npm install
 COPY ui .
 RUN npm run build
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM rust:latest
 
 WORKDIR /app
-COPY --from=build-server /source/publish .
+COPY --from=build-server /source/target/release .
 COPY --from=build-ui /source/dist wwwroot
 
-ENTRYPOINT ["dotnet", "OpenTriviaNight.Api.dll"]
+ENTRYPOINT ["./server-rs"]
