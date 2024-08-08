@@ -20,7 +20,10 @@ use dto::{CreateGameRequest, GameMessage, UpdateGameRequest};
 use futures::{SinkExt, StreamExt};
 use models::{AppState, Game, GameEntry, PlayerRole};
 use tokio::time::Instant;
-use tower_http::trace::{DefaultMakeSpan, TraceLayer};
+use tower_http::{
+    services::{ServeDir, ServeFile},
+    trace::{DefaultMakeSpan, TraceLayer},
+};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
@@ -39,17 +42,22 @@ async fn main() {
 
     start_cleanup_old_games(state.clone());
 
+    let serve_dir =
+        ServeDir::new("wwwroot").not_found_service(ServeFile::new("wwwroot/index.html"));
+
     let app = Router::new()
+        .nest_service("/", serve_dir.clone())
         .route("/api/games", post(create_game))
         .route("/api/stream/games/:game_id/:role/:username", get(join_game))
         .route("/api/games/:game_id", get(get_game))
+        .fallback_service(serve_dir)
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(DefaultMakeSpan::default().include_headers(true)),
         )
         .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("localhost:3000")
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000")
         .await
         .unwrap();
     tracing::debug!("listening on {}", listener.local_addr().unwrap());
