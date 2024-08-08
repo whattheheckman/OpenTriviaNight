@@ -3,10 +3,10 @@ use crate::{
     models::{AppState, Game, GameEntry, GameState, Player, PlayerRole, Question},
 };
 use axum::{http::StatusCode, response::IntoResponse, Json};
-use dashmap::mapref::one::RefMut;
+use dashmap::{mapref::one::RefMut, DashMap};
 use rand::seq::SliceRandom;
 use serde::Serialize;
-use tokio::sync::broadcast;
+use tokio::{sync::broadcast, time::Instant};
 
 #[derive(Debug, Serialize)]
 pub enum GameError {
@@ -59,6 +59,7 @@ impl AppState {
             game: game.clone(),
             sender,
             receiver,
+            last_updated: Instant::now(),
         };
         match self.games.insert(id, game_entry) {
             Some(_) => return Err(GameError::FailedToCreateGame), // Game already exists, might be an ID clash. So fail.
@@ -106,6 +107,8 @@ pub fn handle_game_request(
     role: PlayerRole,
     request: UpdateGameRequest,
 ) -> () {
+    game_entry.last_updated = Instant::now();
+
     let result = match request {
         UpdateGameRequest::StartGame => start_game(game_entry, role),
         UpdateGameRequest::LeaveGame => Ok(()), /* Do nothing here, leaving game just means disconnecting the websocket */

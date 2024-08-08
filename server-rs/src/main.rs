@@ -2,7 +2,7 @@ mod actions;
 mod dto;
 mod models;
 
-use std::{net::SocketAddr, sync::Arc};
+use std::{net::SocketAddr, sync::Arc, time::Duration};
 
 use actions::{handle_game_request, GameError};
 use axum::{
@@ -19,6 +19,7 @@ use dashmap::DashMap;
 use dto::{CreateGameRequest, GameMessage, UpdateGameRequest};
 use futures::{SinkExt, StreamExt};
 use models::{AppState, Game, GameEntry, PlayerRole};
+use tokio::time::Instant;
 use tower_http::trace::{DefaultMakeSpan, TraceLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -35,6 +36,8 @@ async fn main() {
     let state = AppState {
         games: Arc::new(DashMap::new()),
     };
+
+    start_cleanup_old_games(state.clone());
 
     let app = Router::new()
         .route("/api/games", post(create_game))
@@ -88,8 +91,6 @@ async fn join_game(
         Ok(_) => {}
         Err(e) => return Err(e),
     }
-    // finalize the upgrade process by returning upgrade callback.
-    // we can customize the callback by sending additional info such as address.
     return Ok(
         ws.on_upgrade(move |socket| handle_socket(socket, game_id, username, role, state.games))
     );
@@ -186,21 +187,37 @@ async fn handle_socket(
     });
 
     tokio::select! {
-        rv_a = (&mut send_task) => {
-            match rv_a {
-                Ok(_) => tracing::debug!("Send Websocket ended for {username} in game {game_id}"),
-                Err(a) => tracing::debug!("Error sending messages for {username} in game {game_id} {a:?}")
-            }
+        _ = (&mut send_task) => {
             recv_task.abort();
         },
-        rv_b = (&mut recv_task) => {
-            match rv_b {
-                Ok(_) => tracing::debug!("Send Websocket ended for {username} in game {game_id}"),
-                Err(b) => tracing::debug!("Error receiving messages for {username} in game {game_id} {b:?}")
-            }
+        _ = (&mut recv_task) => {
             send_task.abort();
         }
     }
 
     tracing::info!("Websocket context destroyed for {username} in game {game_id}");
+}
+
+fn start_cleanup_old_games(state: AppState) {
+    tokio::spawn(async move {
+        // Cleanup old games on a schedule
+        let mut interval = tokio::time::interval(Duration::from_secs(60));
+        loop {
+            interval.tick().await;
+            tracing::info!("Searching for stale games to remove");
+            let now = Instant::now();
+            // Find games that haven't been updated in more than 30 mins
+            let stale_games: Vec<String> = state
+                .games
+                .iter()
+                .filter(|x| now.duration_since(x.last_updated) > Duration::from_secs(1800))
+                .map(|x| x.key().clone())
+                .collect();
+
+            for game_id in stale_games {
+                tracing::info!("Removing game {game_id} as it is stale");
+                state.games.remove(&game_id);
+            }
+        }
+    });
 }

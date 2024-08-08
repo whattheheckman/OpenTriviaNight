@@ -1,8 +1,9 @@
-use std::sync::Arc;
+use std::{sync::Arc, time::SystemTime};
 
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
+use tokio::time::Instant;
 
 use crate::dto::GameMessage;
 
@@ -13,6 +14,7 @@ pub struct AppState {
 
 pub struct GameEntry {
     pub game: Game,
+    pub last_updated: Instant,
     pub sender: tokio::sync::broadcast::Sender<GameMessage>,
     pub receiver: tokio::sync::broadcast::Receiver<GameMessage>,
 }
