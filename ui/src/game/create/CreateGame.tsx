@@ -17,7 +17,6 @@ export default function CreateGame() {
   const addRound = () => {
     setRequest((r) => {
       r.rounds.push([]);
-      console.log("round ", r);
       return { ...r };
     });
   };

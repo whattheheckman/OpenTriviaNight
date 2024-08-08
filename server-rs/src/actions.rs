@@ -2,7 +2,6 @@ use crate::{
     dto::{CreateGameRequest, GameMessage, UpdateGameRequest, UpdateGameResponse},
     models::{AppState, Game, GameEntry, GameState, Player, PlayerRole, Question},
 };
-use axum::{http::StatusCode, response::IntoResponse, Json};
 use dashmap::mapref::one::RefMut;
 use rand::seq::SliceRandom;
 use serde::Serialize;
@@ -16,36 +15,27 @@ pub enum GameError {
     GameNotFound,
     QuestionNotFound,
     PlayerNotFound,
-}
-
-#[derive(Debug, Serialize)]
-pub struct GameErrorResponse {
-    code: GameError,
-    message: &'static str,
-}
-
-impl IntoResponse for GameError {
-    fn into_response(self) -> axum::response::Response {
-        let message = match self {
-            GameError::GameNotFound => "",
-            GameError::InsufficientPermissions => todo!(),
-            GameError::InvalidGameState => todo!(),
-            GameError::FailedToCreateGame => "Failed to create the game.",
-            GameError::QuestionNotFound => "Could not find the question to pick.",
-            GameError::PlayerNotFound => {
-                "Player performing the action could not be found in the Game."
-            }
-        };
-        let res = GameErrorResponse {
-            code: self,
-            message,
-        };
-        return (StatusCode::BAD_REQUEST, Json(res)).into_response();
-    }
+    MissingQuestions,
 }
 
 impl AppState {
     pub fn create_game(self, request: CreateGameRequest) -> Result<Game, GameError> {
+        if request.rounds.is_empty()
+            || request.rounds.iter().any(|x| x.is_empty())
+            || request
+                .rounds
+                .iter()
+                .flat_map(|x| x)
+                .any(|x| x.questions.is_empty())
+            || request
+                .rounds
+                .iter()
+                .flat_map(|x| x)
+                .flat_map(|x| x.questions.iter())
+                .any(|x| x.correct_answer.is_empty() || x.detail.is_empty())
+        {
+            return Err(GameError::MissingQuestions);
+        }
         let id_chars: Vec<char> = (65..90u32).map(|x| char::from_u32(x).unwrap()).collect();
         let mut rng = rand::thread_rng();
         let id: String = (0..6)
@@ -73,7 +63,7 @@ impl AppState {
         username: String,
         role: PlayerRole,
     ) -> Result<(), GameError> {
-        let mut entry = match self.games.get_mut(&game_id) {
+        let mut entry = match self.games.get_mut(&game_id.to_ascii_uppercase()) {
             Some(x) => x,
             None => return Err(GameError::GameNotFound),
         };

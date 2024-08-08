@@ -1,6 +1,10 @@
+use axum::{http::StatusCode, response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
 
-use crate::models::{Category, Game, GameState, Player, Question};
+use crate::{
+    actions::GameError,
+    models::{Category, Game, GameState, Player, Question},
+};
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 #[serde(tag = "type")]
@@ -36,11 +40,15 @@ pub enum UpdateGameRequest {
     StartGame,
     LeaveGame,
     #[serde(rename_all = "camelCase")]
-    PickQuestion { question_id: String },
+    PickQuestion {
+        question_id: String,
+    },
     AllowAnswering,
     AnswerQuestion,
     #[serde(rename_all = "camelCase")]
-    ConfirmAnswer { is_correct: bool },
+    ConfirmAnswer {
+        is_correct: bool,
+    },
     EndQuestion,
 }
 
@@ -59,5 +67,36 @@ impl Into<Game> for CreateGameRequest {
             rounds: self.rounds,
             state: GameState::WaitingToStart,
         }
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct GameErrorResponse {
+    error: GameError,
+    message: &'static str,
+}
+
+impl IntoResponse for GameError {
+    fn into_response(self) -> axum::response::Response {
+        let message = match self {
+            GameError::GameNotFound => "Game could not be found",
+            GameError::InsufficientPermissions => {
+                "User has insufficient permissions to perform this action."
+            }
+            GameError::InvalidGameState => "Game is not in a valid state.",
+            GameError::FailedToCreateGame => "Failed to create the game.",
+            GameError::QuestionNotFound => "Could not find the question to pick.",
+            GameError::PlayerNotFound => {
+                "Player performing the action could not be found in the Game."
+            }
+            GameError::MissingQuestions => {
+                "Game must contain at least 1 round, 1 category, and 1 question"
+            }
+        };
+        let res = GameErrorResponse {
+            error: self,
+            message,
+        };
+        return (StatusCode::BAD_REQUEST, Json(res)).into_response();
     }
 }

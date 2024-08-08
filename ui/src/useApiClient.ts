@@ -53,7 +53,7 @@ export default function useApiClient() {
           if (Array.isArray(res)) return res;
           if (res.response) return res.response;
           if (res.error) {
-            throw Error(res.error.message);
+            throw Error(res.message);
           }
           return res;
         })
@@ -79,7 +79,7 @@ export default function useApiClient() {
             body: JSON.stringify(request),
             headers: [["Content-Type", "application/json"]],
           });
-          if (res.status >= 400) throw Error(`Error creating game: ${res.status}`);
+          if (res.status >= 500) throw Error(`Error creating game: ${res.status}`);
           return await res.json();
         });
       },
@@ -89,7 +89,7 @@ export default function useApiClient() {
       (gameId: string) => {
         return execute(async () => {
           const res = await fetch(`/api/games/${gameId}`);
-          if (res.status >= 400) throw Error(`Game could not be found`);
+          if (res.status >= 500) throw Error(`Game could not be found`);
           return await res.json();
         });
       },

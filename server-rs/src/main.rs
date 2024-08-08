@@ -80,7 +80,7 @@ async fn get_game(
     Path(game_id): Path<String>,
     State(state): State<AppState>,
 ) -> Result<Game, GameError> {
-    match state.games.get(&game_id) {
+    match state.games.get(&game_id.to_ascii_uppercase()) {
         Some(x) => return Ok(x.value().game.clone()),
         None => return Err(GameError::GameNotFound),
     }
@@ -118,7 +118,7 @@ async fn handle_socket(
     let send_game_id = game_id.clone();
     let send_username = username.clone();
     let mut send_task = tokio::spawn(async move {
-        let entry = match send_games.get_mut(&send_game_id) {
+        let entry = match send_games.get_mut(&send_game_id.to_ascii_uppercase()) {
             Some(x) => x,
             None => return,
         };
@@ -178,7 +178,7 @@ async fn handle_socket(
                     return;
                 }
 
-                let mut game_entry = match recv_games.get_mut(&recv_game_id) {
+                let mut game_entry = match recv_games.get_mut(&recv_game_id.to_ascii_uppercase()) {
                     Some(x) => x,
                     None => return,
                 };
