@@ -31,17 +31,17 @@ export default function HostPickAQuestion() {
 
               {questions.map((q) => {
                 return q.answered ? (
-                  <div key={q.questionId} className="bg-gray-200 min-h-16 grow rounded-lg">
-                    {" "}
+                  <div key={q.questionId} className="bg-gray-200 min-h-16 flex-1 rounded-lg">
+                    <span className="text-6xl"></span>
                   </div>
                 ) : (
                   <Button
                     key={q.questionId}
-                    className="flex items-center justify-center bg-orange-400 hover:bg-orange-500 text-white rounded-lg min-h-16 grow"
+                    className="flex items-center justify-center bg-orange-400 hover:bg-orange-500 text-white rounded-lg min-h-16 flex-1 p-0"
                     color="none"
                     onClick={() => pickQuestion(q.questionId)}
                   >
-                    <span className="text-xl">{q.value}</span>
+                    <span className="font-bold text-6xl">{q.value}</span>
                   </Button>
                 );
               })}
