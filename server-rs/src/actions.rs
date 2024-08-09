@@ -36,6 +36,7 @@ impl AppState {
         {
             return Err(GameError::MissingQuestions);
         }
+        // Chars A-Z in ASCII
         let id_chars: Vec<char> = (65..90u32).map(|x| char::from_u32(x).unwrap()).collect();
         let mut rng = rand::thread_rng();
         let id: String = (0..6)
