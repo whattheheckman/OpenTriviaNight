@@ -32,7 +32,6 @@ export default function HostPickAQuestion() {
               {questions.map((q) => {
                 return q.answered ? (
                   <div key={q.questionId} className="bg-gray-200 min-h-16 flex-1 rounded-lg">
-                    <span className="text-6xl"></span>
                   </div>
                 ) : (
                   <Button
@@ -41,7 +40,7 @@ export default function HostPickAQuestion() {
                     color="none"
                     onClick={() => pickQuestion(q.questionId)}
                   >
-                    <span className="font-bold text-6xl">{q.value}</span>
+                    <span className="font-bold text-2xl md:text-6xl">{q.value}</span>
                   </Button>
                 );
               })}

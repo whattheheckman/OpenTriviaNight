@@ -2,7 +2,7 @@ mod actions;
 mod dto;
 mod models;
 
-use std::{net::SocketAddr, sync::Arc, time::Duration};
+use std::{borrow::Borrow, net::SocketAddr, sync::Arc, time::Duration};
 
 use actions::{handle_game_request, GameError};
 use axum::{
@@ -16,7 +16,7 @@ use axum::{
     Json, Router,
 };
 use dashmap::DashMap;
-use dto::{CreateGameRequest, UpdateGameRequest};
+use dto::{CreateGameRequest, GameMessage, UpdateGameRequest};
 use futures::{SinkExt, StreamExt};
 use models::{AppState, Game, GameEntry, PlayerRole};
 use tokio::time::Instant;
@@ -121,6 +121,18 @@ async fn handle_socket(
             None => return,
         };
 
+        // Send the current game start to initialise the client
+        if let Ok(serialized) = serde_json::to_string(&GameMessage::JoinGame {
+            game: entry.game.borrow().into(),
+        }) {
+            if let Err(e) = sender.send(Message::Text(serialized)).await {
+                tracing::warn!(
+                    "Error sending game init payload for {send_game_id} to {send_username}: {e}"
+                );
+                return;
+            }
+        }
+
         let mut receiver = entry.sender.subscribe();
 
         // Ensure we release the lock on the game now that we have the channel set up
@@ -136,7 +148,7 @@ async fn handle_socket(
                 if let Err(e) = sender.send(Message::Text(serialized)).await {
                     tracing::warn!(
                         "Error sending game update for {send_game_id} to {send_username}: {e}"
-                    )
+                    );
                 }
             }
         }

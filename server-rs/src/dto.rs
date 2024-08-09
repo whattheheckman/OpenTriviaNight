@@ -9,6 +9,7 @@ use crate::{
 #[derive(Clone, Serialize, Deserialize, Debug)]
 #[serde(tag = "type")]
 pub enum GameMessage {
+    JoinGame { game: GameOverview },
     GameUpdate { game: GameOverview },
     QuestionUpdate { question: Question },
 }
