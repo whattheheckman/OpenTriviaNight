@@ -44,7 +44,7 @@ export default function CreateJoinGame() {
 
   if (type === "join") {
     return (
-      <div className="flex flex-col gap-2 mt-4 max-w-screen-sm mx-auto">
+      <div className="flex flex-col gap-2 p-4 max-w-screen-sm mx-auto">
         <form className="flex flex-col gap-2" onSubmit={(e) => e.preventDefault()}>
           <h1 className="font-bold text-2xl">Join Game</h1>
           <LabeledTextInput

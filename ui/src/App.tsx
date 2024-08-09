@@ -95,7 +95,7 @@ function App() {
           sendWsMessage: sendMessage,
         }}
       >
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-svh flex flex-col">
           <Header />
           {game ? <GameScreen /> : <CreateJoinGame />}
 

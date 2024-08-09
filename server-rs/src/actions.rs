@@ -220,16 +220,10 @@ fn confirm_answer(
 
         if is_correct {
             player_to_update.score += question.value;
+            game_entry.game.last_winner = player_to_update.username.clone();
 
             if let Err(e) = mark_question_answered(game_entry, question.question_id) {
                 return Err(e);
-            }
-
-            game_entry.game.state = GameState::PickAQuestion;
-
-            // If all questions are answered, then end the game
-            if is_all_questions_answered(&game_entry.game) {
-                game_entry.game.state = GameState::Finished;
             }
         } else {
             player_to_update.score -= question.value;
@@ -256,13 +250,6 @@ fn end_question(
         if let Err(e) = mark_question_answered(game_entry, question.question_id) {
             return Err(e);
         }
-
-        game_entry.game.state = GameState::PickAQuestion;
-
-        // If all questions are answered, then end the game
-        if is_all_questions_answered(&game_entry.game) {
-            game_entry.game.state = GameState::Finished;
-        }
     } else {
         return Err(GameError::InvalidGameState);
     }
@@ -283,15 +270,6 @@ fn get_question(game: &mut Game, question_id: String) -> Option<&mut Question> {
         .find(|x| x.question_id == question_id);
 }
 
-fn is_all_questions_answered(game: &Game) -> bool {
-    return game
-        .rounds
-        .iter()
-        .flat_map(|x| x)
-        .flat_map(|x| x.questions.iter())
-        .all(|x| x.answered);
-}
-
 fn mark_question_answered(
     game_entry: &mut GameEntry,
     question_id: String,
@@ -306,6 +284,29 @@ fn mark_question_answered(
     let _ = game_entry.sender.send(GameMessage::QuestionUpdate {
         question: question.clone(),
     });
+
+    let game = &mut game_entry.game;
+    game.state = GameState::PickAQuestion;
+
+    // If all questions are answered, then end the game
+    if game
+        .rounds
+        .iter()
+        .flat_map(|x| x)
+        .flat_map(|x| x.questions.iter())
+        .all(|x| x.answered)
+    {
+        game.state = GameState::Finished;
+    }
+
+    // If all questions inside this round are answered, then go to the next round
+    if game.rounds[game.current_round]
+        .iter()
+        .flat_map(|x| x.questions.iter())
+        .all(|x| x.answered)
+    {
+        game.current_round += 1;
+    }
 
     return Ok(());
 }

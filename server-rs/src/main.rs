@@ -57,9 +57,7 @@ async fn main() {
         )
         .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000")
-        .await
-        .unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     tracing::debug!("listening on {}", listener.local_addr().unwrap());
     axum::serve(
         listener,
@@ -195,15 +193,11 @@ async fn handle_socket(
     });
 
     tokio::select! {
-        _ = (&mut send_task) => {
-            recv_task.abort();
-        },
-        _ = (&mut recv_task) => {
-            send_task.abort();
-        }
+        _ = (&mut send_task) => recv_task.abort(),
+        _ = (&mut recv_task) => send_task.abort(),
     }
 
-    tracing::info!("Websocket context destroyed for {username} in game {game_id}");
+    tracing::info!("Websocket closed for {username} in game {game_id}");
 }
 
 fn start_cleanup_old_games(state: AppState) {
