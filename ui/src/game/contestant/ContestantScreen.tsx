@@ -18,7 +18,7 @@ export default function ContestantScreen() {
   if (!player) return <></>;
 
   const header = (
-    <div>
+    <div className="md:self-center">
       <PlayerScoreBox player={player} />
     </div>
   );
