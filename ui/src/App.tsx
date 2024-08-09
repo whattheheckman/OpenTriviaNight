@@ -99,7 +99,7 @@ function App() {
           <Header />
           {game ? <GameScreen /> : <CreateJoinGame />}
 
-          <div className="absolute top-4 right-4 flex flex-col gap-4">
+          <div className="fixed top-4 right-4 flex flex-col gap-4">
             {Object.entries(errors).map(([id, e]) => {
               return (
                 <Toast key={id} className="bg-orange-200" style={{ zIndex: 60 }}>

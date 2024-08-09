@@ -9,23 +9,22 @@ use crate::{
 #[derive(Clone, Serialize, Deserialize, Debug)]
 #[serde(tag = "type")]
 pub enum GameMessage {
-    JoinGame { game: Game },
-    GameUpdate { game: UpdateGameResponse },
+    GameUpdate { game: GameOverview },
     QuestionUpdate { question: Question },
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct UpdateGameResponse {
+pub struct GameOverview {
     pub players: Vec<Player>,
     pub last_winner: String,
     pub current_round: usize,
     pub state: GameState,
 }
 
-impl Into<UpdateGameResponse> for Game {
-    fn into(self) -> UpdateGameResponse {
-        UpdateGameResponse {
+impl Into<GameOverview> for &Game {
+    fn into(self) -> GameOverview {
+        GameOverview {
             players: self.players.clone(),
             last_winner: self.last_winner.clone(),
             current_round: self.current_round.clone(),
@@ -90,7 +89,7 @@ impl IntoResponse for GameError {
                 "Player performing the action could not be found in the Game."
             }
             GameError::MissingQuestions => {
-                "Game must contain at least 1 round, 1 category, and 1 question"
+                "Game must contain at least 1 round, where all rounds contain at least 1 category, with at least 1 question"
             }
         };
         let res = GameErrorResponse {

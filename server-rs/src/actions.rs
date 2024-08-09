@@ -1,5 +1,7 @@
+use std::borrow::Borrow;
+
 use crate::{
-    dto::{CreateGameRequest, GameMessage, UpdateGameRequest, UpdateGameResponse},
+    dto::{CreateGameRequest, GameMessage, UpdateGameRequest, GameOverview},
     models::{AppState, Game, GameEntry, GameState, Player, PlayerRole, Question},
 };
 use dashmap::mapref::one::RefMut;
@@ -69,13 +71,14 @@ impl AppState {
             None => return Err(GameError::GameNotFound),
         };
 
+        
         let existing = get_player(&mut entry.game, username.clone());
         if let Some(player) = existing {
             // If the player already exists, then don't add them again
             player.role = role;
             return Ok(());
         }
-
+        
         let game_entry = entry.value_mut();
         let new_player = Player {
             username,
@@ -83,9 +86,10 @@ impl AppState {
             score: 0,
         };
         game_entry.game.players.push(new_player);
-
+        game_entry.last_updated = Instant::now();
+        
         let _ = game_entry.sender.send(GameMessage::GameUpdate {
-            game: game_entry.game.clone().into(),
+            game: game_entry.game.borrow().into(),
         });
 
         return Ok(());
@@ -112,7 +116,7 @@ pub fn handle_game_request(
 
     match result {
         Ok(_) => {
-            let update: UpdateGameResponse = game_entry.game.clone().into();
+            let update: GameOverview = game_entry.game.borrow().into();
             let _ = game_entry
                 .sender
                 .send(GameMessage::GameUpdate { game: update });

@@ -16,7 +16,7 @@ use axum::{
     Json, Router,
 };
 use dashmap::DashMap;
-use dto::{CreateGameRequest, GameMessage, UpdateGameRequest};
+use dto::{CreateGameRequest, UpdateGameRequest};
 use futures::{SinkExt, StreamExt};
 use models::{AppState, Game, GameEntry, PlayerRole};
 use tokio::time::Instant;
@@ -120,18 +120,6 @@ async fn handle_socket(
             Some(x) => x,
             None => return,
         };
-
-        // init the game by sending the current state to the client
-        if let Ok(serialized) = serde_json::to_string(&GameMessage::JoinGame {
-            game: entry.game.clone(),
-        }) {
-            if let Err(e) = sender.send(Message::Text(serialized)).await {
-                tracing::error!(
-                    "Error sending game init info for {send_game_id} to {send_username}: {e}"
-                );
-                return;
-            }
-        }
 
         let mut receiver = entry.sender.subscribe();
 

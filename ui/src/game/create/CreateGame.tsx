@@ -46,7 +46,7 @@ export default function CreateGame() {
         })}
 
         <Button color="info" onClick={addRound}>
-          <HiPlus className="h-5" />
+          <HiPlus className="h-5 mr-2" />
           Add Round
         </Button>
 
