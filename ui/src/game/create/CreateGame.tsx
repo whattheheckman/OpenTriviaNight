@@ -11,7 +11,7 @@ export default function CreateGame() {
   const { setGame, setRole, username, setUsername } = useContext(GameContext);
   const apiClient = useApiClient();
   const [request, setRequest] = useState<CreateGameRequest>({
-    rounds: [],
+    rounds: [[]],
   });
 
   const addRound = () => {
