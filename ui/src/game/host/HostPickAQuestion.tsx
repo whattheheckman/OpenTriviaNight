@@ -48,13 +48,12 @@ export default function HostPickAQuestion() {
           );
         })}
       </div>
-      {game.lastWinner ? <span>{game.lastWinner} to pick</span> : <></>}
 
       <div className="flex flex-row overflow-x-auto px-2 mt-4">
         {game.players
           .filter((x) => x.role === "Contestant")
           .map((player) => (
-            <PlayerScoreBox key={player.username} player={player} />
+            <PlayerScoreBox key={player.username} player={player} highlight={player.username === game.lastWinner} />
           ))}
       </div>
     </div>

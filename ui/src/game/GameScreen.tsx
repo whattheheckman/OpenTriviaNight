@@ -4,6 +4,7 @@ import WaitingToStartScreen from "./WaitingToStartScreen";
 import HostScreen from "./host/HostScreen";
 import ContestantScreen from "./contestant/ContestantScreen";
 import GameFinishedScreen from "./GameFinishedScreen";
+import SpectatorScreen from "./spectator/SpectatorScreen";
 
 export default function GameScreen() {
   const { game, username } = useContext(GameContext);
@@ -22,5 +23,7 @@ export default function GameScreen() {
       return <HostScreen />;
     case "Contestant":
       return <ContestantScreen />;
+    case "Spectator":
+      return <SpectatorScreen />;
   }
 }
