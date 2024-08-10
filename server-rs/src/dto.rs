@@ -12,6 +12,7 @@ pub enum GameMessage {
     JoinGame { game: GameOverview },
     GameUpdate { game: GameOverview },
     QuestionUpdate { question: Question },
+    EndSession { username: String },
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -76,9 +77,9 @@ pub struct GameErrorResponse {
     message: &'static str,
 }
 
-impl IntoResponse for GameError {
-    fn into_response(self) -> axum::response::Response {
-        let message = match self {
+impl GameError {
+    pub fn get_message(&self) -> &'static str {
+        return match self {
             GameError::GameNotFound => "Game could not be found",
             GameError::InsufficientPermissions => {
                 "User has insufficient permissions to perform this action."
@@ -91,11 +92,17 @@ impl IntoResponse for GameError {
             }
             GameError::MissingQuestions => {
                 "Game must contain at least 1 round, where all rounds contain at least 1 category, with at least 1 question"
-            }
+            },
+            GameError::NewPlayerCannotJoinAfterStart => "New Contestants cannot join a game after it has started."
         };
+    }
+}
+
+impl IntoResponse for GameError {
+    fn into_response(self) -> axum::response::Response {
         let res = GameErrorResponse {
+            message: self.get_message(),
             error: self,
-            message,
         };
         return (StatusCode::BAD_REQUEST, Json(res)).into_response();
     }

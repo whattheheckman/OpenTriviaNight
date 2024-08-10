@@ -8,7 +8,7 @@ use actions::{handle_game_request, GameError};
 use axum::{
     body::Body,
     extract::{
-        ws::{Message, WebSocket},
+        ws::{CloseFrame, Message, WebSocket},
         Path, State, WebSocketUpgrade,
     },
     http::Response,
@@ -18,7 +18,7 @@ use axum::{
 use dashmap::DashMap;
 use dto::{CreateGameRequest, GameMessage, UpdateGameRequest};
 use futures::{SinkExt, StreamExt};
-use models::{AppState, Game, GameEntry, PlayerRole};
+use models::{AppState, Game, PlayerRole};
 use tokio::time::Instant;
 use tower_http::{
     services::{ServeDir, ServeFile},
@@ -88,18 +88,9 @@ async fn join_game(
     Path((game_id, role, username)): Path<(String, PlayerRole, String)>,
     ws: WebSocketUpgrade,
     State(state): State<AppState>,
-) -> Result<Response<Body>, GameError> {
+) -> Response<Body> {
     tracing::debug!("{username} is attempting to join game {game_id} as a {role:?}");
-    match state
-        .clone()
-        .join_game(game_id.clone(), username.clone(), role.clone())
-    {
-        Ok(_) => {}
-        Err(e) => return Err(e),
-    }
-    return Ok(
-        ws.on_upgrade(move |socket| handle_socket(socket, game_id, username, role, state.games))
-    );
+    return ws.on_upgrade(move |socket| handle_socket(socket, game_id, username, role, state));
 }
 
 async fn handle_socket(
@@ -107,9 +98,27 @@ async fn handle_socket(
     game_id: String,
     username: String,
     role: PlayerRole,
-    games: Arc<DashMap<String, GameEntry>>,
+    state: AppState,
 ) {
     let (mut sender, mut receiver) = socket.split();
+
+    match state
+        .clone()
+        .join_game(game_id.clone(), username.clone(), role.clone())
+    {
+        Ok(_) => {}
+        Err(e) => {
+            let _ = sender
+                .send(Message::Close(Some(CloseFrame {
+                    code: 3002,
+                    reason: std::borrow::Cow::Borrowed(&e.get_message()),
+                })))
+                .await;
+            return;
+        }
+    }
+    let games = state.clone().games;
+
     let _ = sender.send(Message::Ping(vec![1, 2, 3])).await;
 
     let send_games = games.clone();
@@ -144,6 +153,18 @@ async fn handle_socket(
                 Ok(x) => x,
                 Err(_) => return,
             };
+            if let GameMessage::EndSession { username } = update.clone() {
+                if username == send_username {
+                    let _ = sender
+                        .send(Message::Close(Some(CloseFrame {
+                            code: 3001,
+                            reason: std::borrow::Cow::Borrowed("User requested to leave the game"),
+                        })))
+                        .await;
+                    return;
+                }
+            }
+
             if let Ok(serialized) = serde_json::to_string(&update) {
                 if let Err(e) = sender.send(Message::Text(serialized)).await {
                     tracing::warn!(
@@ -170,11 +191,6 @@ async fn handle_socket(
                         continue;
                     }
                 };
-
-                if let UpdateGameRequest::LeaveGame = request {
-                    // Special handling for leaving game, just end the websocket session
-                    return;
-                }
 
                 let mut game_entry = match recv_games.get_mut(&recv_game_id.to_ascii_uppercase()) {
                     Some(x) => x,

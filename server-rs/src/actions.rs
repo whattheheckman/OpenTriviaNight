@@ -1,7 +1,7 @@
 use std::borrow::Borrow;
 
 use crate::{
-    dto::{CreateGameRequest, GameMessage, UpdateGameRequest, GameOverview},
+    dto::{CreateGameRequest, GameMessage, GameOverview, UpdateGameRequest},
     models::{AppState, Game, GameEntry, GameState, Player, PlayerRole, Question},
 };
 use dashmap::mapref::one::RefMut;
@@ -18,6 +18,7 @@ pub enum GameError {
     QuestionNotFound,
     PlayerNotFound,
     MissingQuestions,
+    NewPlayerCannotJoinAfterStart,
 }
 
 impl AppState {
@@ -71,14 +72,17 @@ impl AppState {
             None => return Err(GameError::GameNotFound),
         };
 
-        
         let existing = get_player(&mut entry.game, username.clone());
         if let Some(player) = existing {
             // If the player already exists, then don't add them again
             player.role = role;
             return Ok(());
         }
-        
+
+        if role != PlayerRole::Spectator && entry.game.state != GameState::WaitingToStart {
+            return Err(GameError::NewPlayerCannotJoinAfterStart);
+        }
+
         let game_entry = entry.value_mut();
         let new_player = Player {
             username,
@@ -87,7 +91,7 @@ impl AppState {
         };
         game_entry.game.players.push(new_player);
         game_entry.last_updated = Instant::now();
-        
+
         let _ = game_entry.sender.send(GameMessage::GameUpdate {
             game: game_entry.game.borrow().into(),
         });
@@ -106,7 +110,7 @@ pub fn handle_game_request(
 
     let result = match request {
         UpdateGameRequest::StartGame => start_game(game_entry, role),
-        UpdateGameRequest::LeaveGame => Ok(()), /* Do nothing here, leaving game just means disconnecting the websocket */
+        UpdateGameRequest::LeaveGame => leave_game(game_entry, username),
         UpdateGameRequest::PickQuestion { question_id } => pick_question(game_entry, question_id),
         UpdateGameRequest::AllowAnswering => allow_answering(game_entry, role),
         UpdateGameRequest::AnswerQuestion => answer_question(game_entry, username),
@@ -140,6 +144,15 @@ fn start_game(
     }
 
     game_entry.game.state = GameState::PickAQuestion;
+    return Ok(());
+}
+
+fn leave_game(
+    game_entry: &mut RefMut<String, GameEntry>,
+    username: String,
+) -> Result<(), GameError> {
+    // Send a message to the websocket to tell it to cleanly close the session for the specified user
+    let _ = game_entry.sender.send(GameMessage::EndSession { username });
     return Ok(());
 }
 

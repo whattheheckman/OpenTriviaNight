@@ -42,8 +42,16 @@ function App() {
     }
   }, [game, role, username, setWsUrl]);
 
-  const onWsClose = () => {
-    console.warn("WebSocket closed");
+  const onWsClose = (e: CloseEvent) => {
+    console.warn("WebSocket closed", e);
+    if (e.code === 3001) {
+      // Do nothing, this means the user has requested to leave the game
+    } else if (e.code > 3001) {
+      // Custom error message returned from the backend
+      addError(e.reason);
+    } else {
+      addError("Connection to server lost for an unknown reason. You can rejoin the game by using the same username.");
+    }
     setGame(undefined);
   };
 
@@ -75,7 +83,6 @@ function App() {
 
   const { sendMessage } = useWebSocket(wsUrl, {
     onOpen: () => console.log("ws opened", wsUrl),
-    onError: (e) => console.log("ws error", e),
     onClose: onWsClose,
     onMessage: onWsMessage,
   });
