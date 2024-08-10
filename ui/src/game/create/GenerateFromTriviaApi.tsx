@@ -24,7 +24,7 @@ const CATEGORIES: { id: string, name: string }[] = [
   },
   {
     id: "film_and_tv",
-    name: "Filn & TV"
+    name: "Film & TV"
   },
   {
     id: "arts_and_literature",
@@ -40,7 +40,7 @@ const CATEGORIES: { id: string, name: string }[] = [
   },
   {
     id: "science",
-    name: "Scient"
+    name: "Science"
   },
   {
     id: "geography",
