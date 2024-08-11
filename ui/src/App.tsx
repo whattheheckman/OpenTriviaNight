@@ -6,11 +6,12 @@ import Header from "./layout/Header";
 import { Toast } from "flowbite-react";
 import CreateJoinGame from "./game/create/CreateJoinGame";
 import useWebSocket from "react-use-websocket";
+import useSessionStorageState from "use-session-storage-state";
 
 function App() {
-  const [game, setGame] = useState<Game | undefined>(undefined);
-  const [username, setUsername] = useState("");
-  const [role, setRole] = useState<"Host" | "Contestant" | "Spectator">("Contestant");
+  const [game, setGame] = useSessionStorageState<Game | undefined>("game");
+  const [username, setUsername] = useSessionStorageState<string>("username", { defaultValue: "" });
+  const [role, setRole] = useSessionStorageState<"Host" | "Contestant" | "Spectator" | undefined>("role", { defaultValue: undefined });
   const [wsUrl, setWsUrl] = useState<string | null>(null);
   const [errors, setErrors] = useState<Errors>({});
 
@@ -53,6 +54,7 @@ function App() {
       addError("Connection to server lost for an unknown reason. You can rejoin the game by using the same username.");
     }
     setGame(undefined);
+    setRole(undefined);
   };
 
   const onWsMessage = (e: WebSocketEventMap["message"]) => {
