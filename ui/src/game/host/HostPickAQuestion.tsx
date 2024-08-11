@@ -24,8 +24,8 @@ export default function HostPickAQuestion() {
       <div className="flex flex-row overflow-x-auto px-2 min-h-96 h-full grow">
         {categories.map(({ name, questions }, idx) => {
           return (
-            <div key={idx} className="flex flex-col min-w-48 grow flex-1 mx-2 gap-4">
-              <h1 className="text-center text-2xl font-bold min-h-16">{name}</h1>
+            <div key={idx} className="flex flex-col min-w-40 grow flex-1 mx-2 gap-4">
+              <h1 className="text-center text-2xl font-bold min-h-12">{name}</h1>
 
               <hr className="my-2" />
 
@@ -36,7 +36,7 @@ export default function HostPickAQuestion() {
                 ) : (
                   <Button
                     key={q.questionId}
-                    className="flex items-center justify-center bg-orange-400 hover:bg-orange-500 text-white rounded-lg min-h-16 flex-1 p-0"
+                    className="flex items-center justify-center bg-orange-400 hover:bg-orange-500 text-white rounded-lg min-h-12 flex-1 p-0"
                     color="none"
                     onClick={() => pickQuestion(q.questionId)}
                   >
