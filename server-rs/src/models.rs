@@ -40,7 +40,7 @@ impl IntoResponse for Game {
 #[serde(rename_all = "camelCase")]
 pub struct Player {
     pub username: String,
-    pub score: usize,
+    pub score: isize,
     pub role: PlayerRole,
 }
 
@@ -58,7 +58,7 @@ pub struct Question {
     pub question_id: String,
     pub detail: String,
     pub correct_answer: String,
-    pub value: usize,
+    pub value: isize,
     pub answered: bool,
 }
 
