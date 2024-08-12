@@ -6,7 +6,7 @@ export default function PlayerScoreTable() {
   const { game } = useContext(GameContext);
 
   return (
-    <Table>
+    <Table striped>
       <Table.Head>
         <Table.HeadCell>Pos</Table.HeadCell>
         <Table.HeadCell>Player</Table.HeadCell>

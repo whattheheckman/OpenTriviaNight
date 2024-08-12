@@ -21,7 +21,7 @@ export default function WaitingToStartScreen() {
       </div>
       <h1 className="text-lg font-semibold self-center mb-5">Waiting for Host to Start Game</h1>
 
-      <Table>
+      <Table striped>
         <Table.Head>
           <Table.HeadCell>Players</Table.HeadCell>
         </Table.Head>

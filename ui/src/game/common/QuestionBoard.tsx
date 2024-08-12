@@ -12,7 +12,7 @@ export default function QuestionBoard({ onQuestionClick }: { onQuestionClick?: (
 
   const categories = game.rounds[game.currentRound];
   return (
-    <div className="flex flex-col grow py-4">
+    <div className="flex flex-col grow my-4">
       <h1 className="text-center text-xl mb-2">Round {game.currentRound + 1}</h1>
       <div className="flex flex-row overflow-x-auto px-2 min-h-96 h-full grow">
         {categories.map(({ name, questions }, idx) => {
