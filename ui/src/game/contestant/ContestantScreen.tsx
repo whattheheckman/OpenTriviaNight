@@ -1,16 +1,33 @@
-import { useContext } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { GameContext } from "../../GameContext";
 import { Button, Spinner } from "flowbite-react";
 import useApiClient from "../../useApiClient";
 import PlayerScoreBox from "../common/PlayerScoreBox";
 
 function Wrapper({ children }: React.PropsWithChildren) {
-  return <div className="flex flex-col items-stretch text-center justify-between grow m-8 md:m-16 text-center">{children}</div>;
+  return <div className="flex flex-col items-stretch text-center justify-between grow mb-8 md:mb-16 text-center">{children}</div>;
 }
 
 export default function ContestantScreen() {
   const { game, username } = useContext(GameContext);
   const apiClient = useApiClient();
+
+  const handleAnswerKeyPress = useCallback(
+    (e: KeyboardEvent) => {
+      console.log("key pressed", e);
+      if (e.key === "Enter") {
+        apiClient.answerQuestion();
+      }
+    },
+    [apiClient]
+  );
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleAnswerKeyPress);
+    return () => {
+      document.removeEventListener("keydown", handleAnswerKeyPress);
+    };
+  }, [handleAnswerKeyPress]);
 
   if (!game) return <></>;
 
@@ -18,8 +35,8 @@ export default function ContestantScreen() {
   if (!player) return <></>;
 
   const header = (
-    <div className="md:self-center">
-      <PlayerScoreBox player={player} />
+    <div>
+      <PlayerScoreBox player={player} highlight={true} />
     </div>
   );
 

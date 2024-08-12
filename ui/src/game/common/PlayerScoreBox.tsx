@@ -1,14 +1,23 @@
 import { Player } from "../../Models";
 
-export default function PlayerScoreBox({ player, highlight }: { player: Player; highlight?: boolean | undefined }) {
+export default function PlayerScoreBox({
+  player,
+  highlight,
+  rounded,
+}: {
+  player: Player;
+  highlight?: boolean | undefined;
+  rounded?: boolean | undefined;
+}) {
+  const roundedClasses = rounded ? "rounded-lg mx-2" : "";
+  const highlightClasses = highlight ? "bg-orange-300" : "bg-gray-300";
+
   return (
     <div
-      className={`flex flex-col min-w-40 grow flex-1 mx-2 gap-2 p-2 ${
-        highlight ? "bg-orange-100" : "bg-gray-300"
-      } text-black rounded-lg items-center text-center`}
+      className={`flex flex-col justify-between min-w-40 grow flex-1 gap-2 p-2 ${highlightClasses} text-black items-center text-center ${roundedClasses}`}
     >
-      <span className="text-xl">{player.username}</span>
-      <span className="text-2xl font-bold">{player.score}</span>
+      <span className="text-md md:text-xl">{player.username}</span>
+      <span className="text-lg md:text-2xl font-bold">{player.score}</span>
     </div>
   );
 }

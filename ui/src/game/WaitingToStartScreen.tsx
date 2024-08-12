@@ -15,7 +15,7 @@ export default function WaitingToStartScreen() {
   const isHost = game.players.find((x) => x.username === username)?.role === "Host";
 
   return (
-    <div className="flex flex-col max-w-screen-md mx-auto items-stretch">
+    <div className="flex flex-col max-w-screen-md mx-auto mb-8 items-stretch">
       <div className="text-center my-4">
         <Spinner />
       </div>
@@ -28,7 +28,7 @@ export default function WaitingToStartScreen() {
         <Table.Body>
           {game.players.map((player) => (
             <Table.Row key={player.username}>
-              <Table.Cell className="flex justify-between items-center">
+              <Table.Cell className="flex justify-between items-center py-2 px-6">
                 <div className="flex flex-col">
                   <div className="text-lg">{player.username}</div>
                   <div className="text-sm text-gray-400">{player.role}</div>
