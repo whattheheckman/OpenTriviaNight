@@ -16,7 +16,7 @@ use axum::{
     Json, Router,
 };
 use dashmap::DashMap;
-use dto::{CreateGameRequest, GameMessage, UpdateGameRequest};
+use dto::{CreateGameRequest, GameMessage, StatsResponse, UpdateGameRequest};
 use futures::{SinkExt, StreamExt};
 use models::{AppState, Game, PlayerRole};
 use tokio::time::Instant;
@@ -47,6 +47,7 @@ async fn main() {
 
     let app = Router::new()
         .nest_service("/", serve_dir.clone())
+        .route("/api/stats", get(get_stats))
         .route("/api/games", post(create_game))
         .route("/api/stream/games/:game_id/:role/:username", get(join_game))
         .route("/api/games/:game_id", get(get_game))
@@ -65,6 +66,12 @@ async fn main() {
     )
     .await
     .unwrap();
+}
+
+async fn get_stats(State(state): State<AppState>) -> StatsResponse {
+    return StatsResponse {
+        games_count: state.games.len(),
+    };
 }
 
 async fn create_game(

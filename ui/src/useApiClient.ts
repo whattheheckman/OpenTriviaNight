@@ -149,5 +149,12 @@ export default function useApiClient() {
       },
       [execute]
     ),
+    getStats: useCallback(() => {
+      return execute(async () => {
+        const res = await fetch(`/api/stats`);
+        if (res.status >= 500) throw Error(`Error fetching stats`);
+        return await res.json();
+      });
+    }, [execute]),
   };
 }

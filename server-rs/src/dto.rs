@@ -107,3 +107,15 @@ impl IntoResponse for GameError {
         return (StatusCode::BAD_REQUEST, Json(res)).into_response();
     }
 }
+
+#[derive(Clone, Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct StatsResponse {
+    pub games_count: usize,
+}
+
+impl IntoResponse for StatsResponse {
+    fn into_response(self) -> axum::response::Response {
+        return (StatusCode::OK, Json(self)).into_response();
+    }
+}

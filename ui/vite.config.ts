@@ -7,6 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api/games": "http://localhost:3000",
+      "/api/stats": "http://localhost:3000",
       "^/api/stream/.*": {
         target: "ws://localhost:3000",
         ws: true,

@@ -74,3 +74,7 @@ export type GameMessage =
       type: "QuestionUpdate";
       question: Question;
     };
+
+export type Stats = {
+  gamesCount: number;
+};
