@@ -1,25 +1,31 @@
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { GameContext } from "../../GameContext";
 import { Button, Spinner } from "flowbite-react";
 import useApiClient from "../../useApiClient";
 import PlayerScoreBox from "../common/PlayerScoreBox";
+import QuestionBoard from "../common/QuestionBoard";
+import { HiChevronLeft } from "react-icons/hi2";
 
 function Wrapper({ children }: React.PropsWithChildren) {
   return <div className="flex flex-col items-stretch text-center justify-between grow mb-8 md:mb-16 text-center">{children}</div>;
 }
 
 export default function ContestantScreen() {
+  const [boardShown, setBoardShown] = useState(false);
   const { game, username } = useContext(GameContext);
   const apiClient = useApiClient();
 
   const handleAnswerKeyPress = useCallback(
     (e: KeyboardEvent) => {
-      console.log("key pressed", e);
       if (e.key === "Enter") {
         apiClient.answerQuestion();
       }
+
+      if (e.key === "Escape") {
+        setBoardShown(false);
+      }
     },
-    [apiClient]
+    [apiClient, setBoardShown]
   );
 
   useEffect(() => {
@@ -28,6 +34,13 @@ export default function ContestantScreen() {
       document.removeEventListener("keydown", handleAnswerKeyPress);
     };
   }, [handleAnswerKeyPress]);
+
+  useEffect(() => {
+    // Hide the board when the game state is no longer PickAQuestion
+    if (boardShown && game?.state.state !== "PickAQuestion") {
+      setBoardShown(false);
+    }
+  }, [boardShown, setBoardShown, game?.state.state]);
 
   if (!game) return <></>;
 
@@ -56,11 +69,23 @@ export default function ContestantScreen() {
 
   switch (game.state.state) {
     case "PickAQuestion":
-      return (
+      return boardShown ? (
+        <div className="flex flex-col grow">
+          <QuestionBoard />
+          <Button className="mx-4 mb-2" outline onClick={() => setBoardShown(false)}>
+            <HiChevronLeft className="h-5 mr-1" /> Return
+          </Button>
+        </div>
+      ) : (
         <Wrapper>
           {header}
-          <Spinner size="xl" className="my-2" />
-          <span>Waiting for Host to pick a question</span>
+          <div className="flex flex-col">
+            <Spinner size="xl" className="my-2" />
+            <span>Waiting for Host to pick a question</span>
+          </div>
+          <Button className="self-center" onClick={() => setBoardShown(true)}>
+            Show Question Board
+          </Button>
         </Wrapper>
       );
     case "ReadQuestion":
