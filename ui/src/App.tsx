@@ -45,7 +45,10 @@ function App() {
 
   const onWsClose = (e: CloseEvent) => {
     console.warn("WebSocket closed", e);
-    if (e.code === 3001) {
+    if (e.code === 1001) {
+      // Return immediately, this close will be reconnected
+      return;
+    } else if (e.code === 3001) {
       // Do nothing, this means the user has requested to leave the game
     } else if (e.code > 3001) {
       // Custom error message returned from the backend
@@ -55,6 +58,10 @@ function App() {
     }
     setGame(undefined);
     setRole(undefined);
+  };
+
+  const shouldWsReconnect = (e: CloseEvent) => {
+    return e.code === 1001;
   };
 
   const onWsMessage = (e: WebSocketEventMap["message"]) => {
@@ -87,6 +94,10 @@ function App() {
     onOpen: () => console.log("ws opened", wsUrl),
     onClose: onWsClose,
     onMessage: onWsMessage,
+    retryOnError: true,
+    shouldReconnect: shouldWsReconnect,
+    reconnectAttempts: 5,
+    reconnectInterval: 100,
     heartbeat: { interval: 20000, message: JSON.stringify({ type: "Ping" }) },
   });
 
