@@ -7,7 +7,11 @@ export default function About() {
   const apiClient = useApiClient();
 
   useEffect(() => {
-    apiClient.getStats()?.then((res) => setStats(res));
+    apiClient.getStats()?.then((res) => {
+      if (res) {
+        setStats(res);
+      }
+    });
   }, [setStats]);
 
   return (
@@ -103,7 +107,9 @@ export default function About() {
 
       <hr />
 
-      <p>There are currently <em>{stats.gamesCount}</em> games in progress.</p>
+      <p>
+        There are currently <em>{stats.gamesCount}</em> games in progress.
+      </p>
     </div>
   );
 }

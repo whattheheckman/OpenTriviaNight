@@ -19,7 +19,7 @@ use dashmap::DashMap;
 use dto::{CreateGameRequest, GameMessage, StatsResponse, UpdateGameRequest};
 use futures::{SinkExt, StreamExt};
 use models::{AppState, Game, PlayerRole};
-use tokio::time::Instant;
+use tokio::{sync::broadcast::error::RecvError, time::Instant};
 use tower_http::{
     services::{ServeDir, ServeFile},
     trace::{DefaultMakeSpan, TraceLayer},
@@ -107,7 +107,7 @@ async fn handle_socket(
     role: PlayerRole,
     state: AppState,
 ) {
-    let (mut sender, mut receiver) = socket.split();
+    let (mut ws_tx, mut ws_rx) = socket.split();
 
     match state
         .clone()
@@ -115,7 +115,7 @@ async fn handle_socket(
     {
         Ok(_) => {}
         Err(e) => {
-            let _ = sender
+            let _ = ws_tx
                 .send(Message::Close(Some(CloseFrame {
                     code: 3002,
                     reason: std::borrow::Cow::Borrowed(&e.get_message()),
@@ -126,87 +126,112 @@ async fn handle_socket(
     }
     let games = state.clone().games;
 
-    let _ = sender.send(Message::Ping(vec![1, 2, 3])).await;
-
-    let send_games = games.clone();
-    let send_game_id = game_id.clone();
-    let send_username = username.clone();
-    let mut send_task = tokio::spawn(async move {
-        let entry = match send_games.get_mut(&send_game_id.to_ascii_uppercase()) {
+    let ws_tx_games = games.clone();
+    let ws_tx_game_id = game_id.clone();
+    let ws_tx_username = username.clone();
+    let mut ws_tx_task = tokio::spawn(async move {
+        let game_entry = match ws_tx_games.get_mut(&ws_tx_game_id.to_ascii_uppercase()) {
             Some(x) => x,
             None => return,
         };
 
         // Send the current game start to initialise the client
         if let Ok(serialized) = serde_json::to_string(&GameMessage::JoinGame {
-            game: entry.game.borrow().into(),
+            game: game_entry.game.borrow().into(),
         }) {
-            if let Err(e) = sender.send(Message::Text(serialized)).await {
+            if let Err(e) = ws_tx.send(Message::Text(serialized)).await {
                 tracing::warn!(
-                    "Error sending game init payload for {send_game_id} to {send_username}: {e}"
+                    "Error sending game init payload for {ws_tx_game_id} to {ws_tx_username}: {e}"
                 );
                 return;
             }
         }
 
-        let mut receiver = entry.sender.subscribe();
+        let mut game_events_rx = game_entry.sender.subscribe();
 
         // Ensure we release the lock on the game now that we have the channel set up
-        drop(entry);
+        drop(game_entry);
 
         // Listen for updates on the games channel and send them to the client
         loop {
-            let update = match receiver.recv().await {
+            let update = match game_events_rx.recv().await {
                 Ok(x) => x,
-                Err(_) => return,
-            };
-            if let GameMessage::EndSession { username } = update.clone() {
-                if username == send_username {
-                    let _ = sender
-                        .send(Message::Close(Some(CloseFrame {
-                            code: 3001,
-                            reason: std::borrow::Cow::Borrowed("User requested to leave the game"),
-                        })))
-                        .await;
-                    return;
+                Err(err) => {
+                    if let RecvError::Lagged(_) = err {
+                        tracing::info!(
+                            "Channel for game {ws_tx_game_id} to {ws_tx_username} lagged"
+                        );
+                        continue;
+                    } else {
+                        tracing::debug!(
+                            "Channel for game {ws_tx_game_id} to {ws_tx_username} closed"
+                        );
+                        return;
+                    }
                 }
-            }
+            };
 
-            if let Ok(serialized) = serde_json::to_string(&update) {
-                if let Err(e) = sender.send(Message::Text(serialized)).await {
-                    tracing::warn!(
-                        "Error sending game update for {send_game_id} to {send_username}: {e}"
-                    );
+            match update {
+                GameMessage::EndSession { username } => {
+                    if username == ws_tx_username {
+                        let _ = ws_tx
+                            .send(Message::Close(Some(CloseFrame {
+                                code: 3001,
+                                reason: std::borrow::Cow::Borrowed(
+                                    "User requested to leave the game",
+                                ),
+                            })))
+                            .await;
+                        return;
+                    }
+                }
+                GameMessage::Pong { username } => {
+                    // Implementing our own ping/pong until I figure out a better way
+                    if username == ws_tx_username {
+                        let _ = ws_tx.send(Message::Pong("pong".into())).await;
+                    }
+                }
+                _ => {
+                    if let Ok(serialized) = serde_json::to_string(&update) {
+                        if let Err(e) = ws_tx.send(Message::Text(serialized)).await {
+                            tracing::warn!(
+                                "Error sending game update for {ws_tx_game_id} to {ws_tx_username}: {e}"
+                            );
+                        }
+                    }
                 }
             }
         }
     });
 
-    let recv_games = games.clone();
-    let recv_game_id = game_id.clone();
-    let recv_username = username.clone();
-    let mut recv_task = tokio::spawn(async move {
-        while let Some(Ok(msg)) = receiver.next().await {
-            if let Message::Text(text) = msg {
+    let ws_rx_games = games.clone();
+    let ws_rx_game_id = game_id.clone();
+    let ws_rx_username = username.clone();
+    let mut ws_rx_task = tokio::spawn(async move {
+        while let Some(Ok(msg)) = ws_rx.next().await {
+            if let Message::Ping(_payload) = msg {
+                // do nothing
+            } else if let Message::Text(text) = msg {
                 tracing::debug!(
-                    "Received message from {recv_username} for game {recv_game_id}: {text}"
+                    "Received message from {ws_rx_username} for game {ws_rx_game_id}: {text}"
                 );
                 let request = match serde_json::from_str::<UpdateGameRequest>(text.as_str()) {
                     Ok(x) => x,
                     Err(e) => {
-                        tracing::warn!("Failed to parse the message from {recv_username} for game {recv_game_id}: {text}: {e}");
+                        tracing::warn!("Failed to parse the message from {ws_rx_username} for game {ws_rx_game_id}: {text}: {e}");
                         continue;
                     }
                 };
 
-                let mut game_entry = match recv_games.get_mut(&recv_game_id.to_ascii_uppercase()) {
+                let mut game_entry = match ws_rx_games.get_mut(&ws_rx_game_id.to_ascii_uppercase())
+                {
                     Some(x) => x,
                     None => return,
                 };
 
                 handle_game_request(
                     &mut game_entry,
-                    recv_username.clone(),
+                    ws_rx_username.clone(),
                     role.clone(),
                     request,
                 );
@@ -216,8 +241,8 @@ async fn handle_socket(
     });
 
     tokio::select! {
-        _ = (&mut send_task) => recv_task.abort(),
-        _ = (&mut recv_task) => send_task.abort(),
+        _ = (&mut ws_tx_task) => ws_rx_task.abort(),
+        _ = (&mut ws_rx_task) => ws_tx_task.abort(),
     }
 
     tracing::info!("Websocket closed for {username} in game {game_id}");

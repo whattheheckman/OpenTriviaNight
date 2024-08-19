@@ -108,7 +108,15 @@ pub fn handle_game_request(
 ) -> () {
     game_entry.last_updated = Instant::now();
 
+    if let UpdateGameRequest::Ping = request {
+        let _ = game_entry.sender.send(GameMessage::Pong {
+            username: username.clone(),
+        });
+        return;
+    }
+
     let result = match request {
+        UpdateGameRequest::Ping => Ok(()),
         UpdateGameRequest::StartGame => start_game(game_entry, role),
         UpdateGameRequest::LeaveGame => leave_game(game_entry, username),
         UpdateGameRequest::PickQuestion { question_id } => pick_question(game_entry, question_id),

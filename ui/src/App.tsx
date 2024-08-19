@@ -87,6 +87,7 @@ function App() {
     onOpen: () => console.log("ws opened", wsUrl),
     onClose: onWsClose,
     onMessage: onWsMessage,
+    heartbeat: { interval: 20000, message: JSON.stringify({ type: "Ping" }) },
   });
 
   return (
