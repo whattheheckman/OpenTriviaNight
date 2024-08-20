@@ -1,0 +1,14 @@
+# {
+#     servers {
+# 		timeouts {
+# 			read_body   1h
+# 			read_header 5s
+# 			write       1h
+# 			idle        1h
+# 		}
+#     }
+# }
+
+localhost {
+    reverse_proxy http://app:3000
+}

@@ -11,6 +11,7 @@ services:
 
   app:
     image: app
+    container_name: app
     build:
       context: .
       dockerfile: ./Dockerfile
