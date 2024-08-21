@@ -21,3 +21,8 @@ services:
     environment:
       NODE_ENV: production
       RUST_LOG: info
+
+# TODO: persist these in a proper shared volume
+volumes:
+  caddy_data:
+  caddy_config:
