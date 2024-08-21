@@ -1,10 +1,24 @@
-use std::borrow::{Borrow, Cow};
+use std::{
+    borrow::{Borrow, Cow},
+    time::Duration,
+};
 
-use axum::{body::Body, extract::{ws::{CloseFrame, Message, WebSocket}, Path, State, WebSocketUpgrade}, response::Response};
+use axum::{
+    body::Body,
+    extract::{
+        ws::{CloseFrame, Message, WebSocket},
+        Path, State, WebSocketUpgrade,
+    },
+    response::Response,
+};
 use futures::{SinkExt, StreamExt};
-use tokio::sync::broadcast::error::RecvError;
+use tokio::{sync::broadcast::error::TryRecvError, time::Instant};
 
-use crate::{actions, dto::{GameMessage, UpdateGameRequest}, models::{AppState, PlayerRole}};
+use crate::{
+    actions,
+    dto::{GameMessage, UpdateGameRequest},
+    models::{AppState, PlayerRole},
+};
 
 pub async fn join_game(
     Path((game_id, role, username)): Path<(String, PlayerRole, String)>,
@@ -68,21 +82,37 @@ async fn handle_socket(
         drop(game_entry);
 
         // Listen for updates on the games channel and send them to the client
+        let mut last_heartbeat = Instant::now();
         loop {
-            // TODO: use try_recv to not block, and allow sending a heartbeat/ping on a schedule
-            let update = match game_events_rx.recv().await {
+            tokio::time::sleep(Duration::from_millis(10)).await;
+
+            // Uses try_recv to not block, and allow sending a heartbeat/ping on a schedule.
+            let update = match game_events_rx.try_recv() {
                 Ok(x) => x,
                 Err(err) => {
-                    if let RecvError::Lagged(_) = err {
-                        tracing::info!(
-                            "Channel for game {ws_tx_game_id} to {ws_tx_username} lagged"
-                        );
-                        continue;
-                    } else {
-                        tracing::debug!(
-                            "Channel for game {ws_tx_game_id} to {ws_tx_username} closed"
-                        );
-                        return;
+                    match err {
+                        TryRecvError::Lagged(_) => {
+                            tracing::warn!(
+                                "Channel for game {ws_tx_game_id} to {ws_tx_username} lagged"
+                            );
+                            continue;
+                        }
+                        TryRecvError::Empty => {
+                            // No messages waiting to be sent. Check if heartbeat needs to be sent.
+                            if Instant::now().duration_since(last_heartbeat)
+                                > Duration::from_secs(20)
+                            {
+                                let _ = ws_tx.send(Message::Ping("SERVER_HEARTBEAT".into())).await;
+                                last_heartbeat = Instant::now();
+                            }
+                            continue;
+                        }
+                        TryRecvError::Closed => {
+                            tracing::debug!(
+                                "Channel for game {ws_tx_game_id} to {ws_tx_username} closed"
+                            );
+                            return;
+                        }
                     }
                 }
             };
