@@ -62,13 +62,14 @@ async fn handle_socket(
             }
         }
 
-        let mut game_events_rx = game_entry.sender.subscribe();
+        let mut game_events_rx = game_entry.receiver.resubscribe();
 
         // Ensure we release the lock on the game now that we have the channel set up
         drop(game_entry);
 
         // Listen for updates on the games channel and send them to the client
         loop {
+            // TODO: use try_recv to not block, and allow sending a heartbeat/ping on a schedule
             let update = match game_events_rx.recv().await {
                 Ok(x) => x,
                 Err(err) => {
