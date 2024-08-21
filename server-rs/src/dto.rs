@@ -13,7 +13,6 @@ pub enum GameMessage {
     GameUpdate { game: GameOverview },
     QuestionUpdate { question: Question },
     EndSession { username: String },
-    Pong { username: String },
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -39,7 +38,6 @@ impl Into<GameOverview> for &Game {
 #[derive(Clone, Serialize, Deserialize, Debug)]
 #[serde(tag = "type")]
 pub enum UpdateGameRequest {
-    Ping,
     StartGame,
     LeaveGame,
     #[serde(rename_all = "camelCase")]

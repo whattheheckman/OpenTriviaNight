@@ -45,7 +45,7 @@ function App() {
 
   const onWsClose = (e: CloseEvent) => {
     console.warn("WebSocket closed", e);
-    if (e.code === 1001) {
+    if ([1001, 1005].includes(e.code)) {
       // Return immediately, this close will be reconnected
       return;
     } else if (e.code === 3001) {
@@ -61,7 +61,7 @@ function App() {
   };
 
   const shouldWsReconnect = (e: CloseEvent) => {
-    return e.code === 1001;
+    return [1001, 1005].includes(e.code);
   };
 
   const onWsMessage = (e: WebSocketEventMap["message"]) => {
@@ -98,7 +98,6 @@ function App() {
     shouldReconnect: shouldWsReconnect,
     reconnectAttempts: 5,
     reconnectInterval: 100,
-    heartbeat: { interval: 20000, message: JSON.stringify({ type: "Ping" }) },
   });
 
   return (
