@@ -22,7 +22,10 @@ use tower_http::{
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-const VERSION: Option<&'static str> = option_env!("VERSION");
+const VERSION: &'static str = match option_env!("VERSION") {
+    Some(v) => v,
+    None => "UNKNOWN",
+};
 
 #[tokio::main]
 async fn main() {
@@ -60,7 +63,8 @@ async fn main() {
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
-    tracing::debug!("listening on {}", listener.local_addr().unwrap());
+    tracing::info!("listening on {}", listener.local_addr().unwrap());
+    tracing::info!("version: {}", VERSION);
     axum::serve(
         listener,
         app.into_make_service_with_connect_info::<SocketAddr>(),
@@ -72,7 +76,7 @@ async fn main() {
 async fn get_stats(State(state): State<AppState>) -> StatsResponse {
     return StatsResponse {
         games_count: state.games.len(),
-        version: VERSION.unwrap_or("0.1.0"),
+        version: VERSION,
     };
 }
 

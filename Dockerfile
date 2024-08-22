@@ -11,7 +11,7 @@ COPY --from=build-server-prepare /source/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 
 COPY ./server-rs .
-RUN cargo build --release
+RUN cargo build --config 'env.VERSION = "${VERSION}"' --release
 
 
 FROM node:20 AS build-ui
