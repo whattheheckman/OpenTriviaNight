@@ -1,17 +1,4 @@
 services:
-  caddy:
-    image: caddy:2
-    container_name: caddy
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data
-      - caddy_config:/config
-
   app:
     image: app
     container_name: app
@@ -21,8 +8,3 @@ services:
     environment:
       NODE_ENV: production
       RUST_LOG: info
-
-# TODO: persist these in a proper shared volume
-volumes:
-  caddy_data:
-  caddy_config:
