@@ -22,6 +22,8 @@ use tower_http::{
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
+const VERSION: Option<&'static str> = option_env!("VERSION");
+
 #[tokio::main]
 async fn main() {
     tracing_subscriber::registry()
@@ -70,6 +72,7 @@ async fn main() {
 async fn get_stats(State(state): State<AppState>) -> StatsResponse {
     return StatsResponse {
         games_count: state.games.len(),
+        version: VERSION.unwrap_or("0.1.0"),
     };
 }
 

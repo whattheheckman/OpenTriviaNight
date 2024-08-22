@@ -112,6 +112,7 @@ impl IntoResponse for GameError {
 #[serde(rename_all = "camelCase")]
 pub struct StatsResponse {
     pub games_count: usize,
+    pub version: &'static str,
 }
 
 impl IntoResponse for StatsResponse {
