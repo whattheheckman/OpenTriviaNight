@@ -1,9 +1,18 @@
-FROM rust:latest AS build-server
-
+FROM lukemathwalker/cargo-chef:latest-rust-1 AS chef 
 WORKDIR /source
+
+# Using a separate prepare stage here to cache our dependencies
+FROM chef AS build-server-prepare
+COPY ./server-rs .
+RUN cargo chef prepare --recipe-path recipe.json
+
+FROM chef AS build-server
+COPY --from=build-server-prepare /source/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json
 
 COPY ./server-rs .
 RUN cargo build --release
+
 
 FROM node:20 AS build-ui
 
@@ -15,7 +24,8 @@ RUN npm install
 COPY ui .
 RUN npm run build
 
-FROM rust:latest
+
+FROM debian:bookworm-slim AS runtime
 
 WORKDIR /app
 COPY --from=build-server /source/target/release .
