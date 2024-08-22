@@ -1,19 +1,4 @@
-import { useEffect, useState } from "react";
-import useApiClient from "./useApiClient";
-import { Stats } from "./Models";
-
 export default function About() {
-  const [stats, setStats] = useState<Stats>({ gamesCount: 0 });
-  const apiClient = useApiClient();
-
-  useEffect(() => {
-    apiClient.getStats()?.then((res) => {
-      if (res) {
-        setStats(res);
-      }
-    });
-  }, [setStats]);
-
   return (
     <div className="flex flex-col gap-4 mt-4 mb-16">
       <h1 className="text-2xl font-semibold">How to Play</h1>
@@ -106,10 +91,6 @@ export default function About() {
       </ol>
 
       <hr />
-
-      <p>
-        There are currently <em>{stats.gamesCount}</em> games in progress.
-      </p>
     </div>
   );
 }

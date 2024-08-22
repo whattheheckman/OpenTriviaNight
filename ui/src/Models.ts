@@ -77,4 +77,5 @@ export type GameMessage =
 
 export type Stats = {
   gamesCount: number;
+  version: string;
 };

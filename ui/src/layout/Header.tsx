@@ -3,11 +3,23 @@ import { GameContext } from "../GameContext";
 import { Modal, Popover } from "flowbite-react";
 import HeaderModal from "./HeaderModal";
 import GameIdCopyButton from "../game/common/GameIdCopyButton";
+import useApiClient from "../useApiClient";
+import { Stats } from "../Models";
 
 export default function Header() {
   const { game } = useContext(GameContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [hintOpen, setHintOpen] = useState(false);
+  const [stats, setStats] = useState<Stats>({ gamesCount: 0, version: "" });
+  const apiClient = useApiClient();
+
+  useEffect(() => {
+    apiClient.getStats()?.then((res) => {
+      if (res) {
+        setStats(res);
+      }
+    });
+  }, [setStats]);
 
   useEffect(() => {
     if (game?.state.state === "WaitingToStart") {
@@ -43,11 +55,17 @@ export default function Header() {
         </div>
       </Popover>
 
-      <Modal show={modalOpen} dismissible onClose={() => setModalOpen(false)} popup>
-        <Modal.Header />
+      <Modal show={modalOpen} dismissible onClose={() => setModalOpen(false)}>
+        <Modal.Header>About</Modal.Header>
         <Modal.Body>
           <HeaderModal onLeaveGame={() => setModalOpen(false)} />
         </Modal.Body>
+        <Modal.Footer className="justify-between text-xs text-gray-400">
+          <span>
+            In Progress Games: <em>{stats.gamesCount}</em>
+          </span>
+          <span>v{stats.version}</span>
+        </Modal.Footer>
       </Modal>
     </>
   );
