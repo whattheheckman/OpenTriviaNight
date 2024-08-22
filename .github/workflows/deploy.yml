@@ -8,7 +8,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-and-push-image:
@@ -46,7 +45,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: '${{ env.IMAGE_NAME }}:${{ env.VERSION }},${{ env.IMAGE_NAME }}:latest'
+          tags: 'brownknight/opentrivianight:${{ env.VERSION }},brownknight/opentrivianight:latest'
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/arm64
