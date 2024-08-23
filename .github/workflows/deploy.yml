@@ -44,6 +44,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          build-args: 
+            VERSION=${{ env.VERSION }}
           push: true
           tags: 'ghcr.io/brownknight/opentrivianight:${{ env.VERSION }},ghcr.io/brownknight/opentrivianight:latest'
           cache-from: type=gha
