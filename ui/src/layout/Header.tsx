@@ -57,14 +57,26 @@ export default function Header() {
       </Popover>
 
       <Drawer className="p-0 max-h-svh" edge open={modalOpen} onClose={() => setModalOpen(false)} position="top">
-        <Drawer.Header className="cursor-pointer fixed top-0 left-0 right-0 p-4 bg-white z-10 h-12" titleIcon={HiInformationCircle} title="INFO" onClick={() => setModalOpen(!modalOpen)} />
+        <Drawer.Header
+          className="cursor-pointer fixed top-0 left-0 right-0 p-4 bg-white z-10 h-12"
+          titleIcon={HiInformationCircle}
+          title="INFO"
+          onClick={() => setModalOpen(!modalOpen)}
+        />
         <Drawer.Items className="overflow-y-auto mt-16 p-0">
           <HeaderModal onLeaveGame={() => setModalOpen(false)} />
           <div className="flex justify-between p-4 mt-4 text-xs bg-gray-100 text-gray-400">
             <span>
               Games: <em>{stats.gamesCount}</em>
             </span>
-            <span>v{stats.version}</span>
+            <a
+              className="hover:underline hover:text-sky-400"
+              href="https://github.com/BrownKnight/OpenTriviaNight"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              v{stats.version}
+            </a>
           </div>
         </Drawer.Items>
       </Drawer>

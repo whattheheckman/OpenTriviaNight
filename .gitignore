@@ -25,3 +25,4 @@ obj/
 
 node_modules/
 ssl/
+output/

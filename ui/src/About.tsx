@@ -91,6 +91,20 @@ export default function About() {
       </ol>
 
       <hr />
+
+      <h1 className="text-2xl font-semibold">Learn More</h1>
+      <p>
+        Open Trivia Night is open source, and it's even easy to self-host. To learn more about how it works visit the{" "}
+        <a
+          className="hover:underline text-sky-400"
+          href="https://github.com/BrownKnight/OpenTriviaNight"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GitHub repo
+        </a>
+        .
+      </p>
     </div>
   );
 }
