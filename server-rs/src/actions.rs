@@ -2,14 +2,15 @@ use std::borrow::Borrow;
 
 use crate::{
     dto::{CreateGameRequest, GameMessage, GameOverview, UpdateGameRequest},
-    models::{AppState, Game, GameEntry, GameState, Player, PlayerRole, Question},
+    models::{AppState, Game, GameEntry, GameLog, GameState, Player, PlayerRole, Question},
+    util::get_time,
 };
 use dashmap::mapref::one::RefMut;
 use rand::seq::SliceRandom;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use tokio::{sync::broadcast, time::Instant};
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum GameError {
     InsufficientPermissions,
     InvalidGameState,
@@ -81,15 +82,14 @@ impl AppState {
             None => return Err(GameError::GameNotFound),
         };
 
-        if role != PlayerRole::Spectator && entry.game.state != GameState::WaitingToStart {
-            return Err(GameError::NewPlayerCannotJoinAfterStart);
+        let existing = get_player(&mut entry.game, username.clone());
+        if let Some(_player) = existing {
+            // If the player already exists, then don't add them again.
+            return Ok(());
         }
 
-        let existing = get_player(&mut entry.game, username.clone());
-        if let Some(player) = existing {
-            // If the player already exists, then don't add them again. Change their role to what they want though.
-            player.role = role;
-            return Ok(());
+        if role != PlayerRole::Spectator && entry.game.state != GameState::WaitingToStart {
+            return Err(GameError::NewPlayerCannotJoinAfterStart);
         }
 
         let game_entry = entry.value_mut();
@@ -119,10 +119,10 @@ pub fn handle_game_request(
 
     let result = match request {
         UpdateGameRequest::StartGame => start_game(game_entry, role),
-        UpdateGameRequest::LeaveGame => leave_game(game_entry, username),
+        UpdateGameRequest::LeaveGame => leave_game(game_entry, username.clone()),
         UpdateGameRequest::PickQuestion { question_id } => pick_question(game_entry, question_id),
         UpdateGameRequest::AllowAnswering => allow_answering(game_entry, role),
-        UpdateGameRequest::AnswerQuestion => answer_question(game_entry, username),
+        UpdateGameRequest::AnswerQuestion => answer_question(game_entry, username.clone()),
         UpdateGameRequest::ConfirmAnswer { is_correct } => confirm_answer(game_entry, is_correct),
         UpdateGameRequest::EndQuestion => end_question(game_entry, role),
     };
@@ -135,7 +135,12 @@ pub fn handle_game_request(
                 .send(GameMessage::GameUpdate { game: update });
         }
         Err(e) => {
-            tracing::error!("Failed to execute the request: {e:?}");
+            tracing::error!("Failed to process the game request: {e:?}");
+            let _ = game_entry.sender.send(GameMessage::ReportError {
+                message: e.get_message(),
+                error: e,
+                username,
+            });
         }
     }
 }
@@ -153,6 +158,10 @@ fn start_game(
     }
 
     game_entry.game.state = GameState::PickAQuestion;
+    game_entry
+        .game
+        .log
+        .push(GameLog::GameStarted { time: get_time() });
     return Ok(());
 }
 
@@ -173,15 +182,21 @@ fn pick_question(
         return Err(GameError::InvalidGameState);
     }
 
-    let question = game_entry.game.rounds[game_entry.game.current_round]
+    let game = &mut game_entry.value_mut().game;
+
+    let question = game.rounds[game.current_round]
         .iter()
         .flat_map(|x| x.questions.iter())
         .find(|x| x.question_id == question_id && x.answered == false);
 
     if let Some(question) = question {
-        game_entry.game.state = GameState::ReadQuestion {
+        game.state = GameState::ReadQuestion {
             question: question.clone(),
         };
+        game.log.push(GameLog::QuestionPicked {
+            time: get_time(),
+            question_id: question.clone().question_id,
+        });
     } else {
         return Err(GameError::QuestionNotFound);
     }
@@ -212,21 +227,22 @@ fn answer_question(
     game_entry: &mut RefMut<String, GameEntry>,
     username: String,
 ) -> Result<(), GameError> {
-    if let GameState::WaitingForAnswer { question } = &game_entry.game.state {
-        let player = match game_entry
-            .game
-            .players
-            .iter()
-            .find(|x| x.username == username)
-        {
+    let game = &mut game_entry.value_mut().game;
+    if let GameState::WaitingForAnswer { question } = game.state.clone() {
+        let player = match game.players.iter().find(|x| x.username == username) {
             Some(x) => x,
             None => return Err(GameError::PlayerNotFound),
         };
 
-        game_entry.game.state = GameState::CheckAnswer {
+        game.state = GameState::CheckAnswer {
             question: question.clone(),
             player: player.clone(),
         };
+
+        game.log.push(GameLog::PlayerBuzzedIn {
+            time: get_time(),
+            username: username.clone(),
+        });
     } else {
         return Err(GameError::InvalidGameState);
     }
@@ -244,20 +260,25 @@ fn confirm_answer(
             Some(x) => x,
             None => return Err(GameError::PlayerNotFound),
         };
+        let username = player_to_update.username.clone();
 
         if is_correct {
             player_to_update.score += question.value;
-            game_entry.game.last_winner = player_to_update.username.clone();
-
-            if let Err(e) = mark_question_answered(game_entry, question.question_id) {
-                return Err(e);
-            }
+            game_entry.game.last_winner = username.clone();
+            mark_question_answered(game_entry, question.question_id)?;
         } else {
             player_to_update.score -= question.value;
             game_entry.game.state = GameState::WaitingForAnswer {
                 question: question.clone(),
             };
         }
+
+        game_entry.game.log.push(GameLog::AnswerConfirmed {
+            time: get_time(),
+            username,
+            is_correct,
+            points_change: question.value,
+        });
     } else {
         return Err(GameError::InvalidGameState);
     }
@@ -277,6 +298,10 @@ fn end_question(
         if let Err(e) = mark_question_answered(game_entry, question.question_id) {
             return Err(e);
         }
+        game_entry
+            .game
+            .log
+            .push(GameLog::QuestionPassed { time: get_time() });
     } else {
         return Err(GameError::InvalidGameState);
     }
@@ -324,6 +349,7 @@ fn mark_question_answered(
         .all(|x| x.answered)
     {
         game.state = GameState::Finished;
+        return Ok(());
     }
 
     // If all questions inside this round are answered, then go to the next round

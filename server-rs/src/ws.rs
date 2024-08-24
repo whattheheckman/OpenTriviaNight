@@ -116,10 +116,9 @@ async fn handle_socket(
                     }
                 }
             };
-
-            match update {
+            match &update {
                 GameMessage::EndSession { username } => {
-                    if username == ws_tx_username {
+                    if username == &ws_tx_username {
                         let _ = ws_tx
                             .send(Message::Close(Some(CloseFrame {
                                 code: 3001,
@@ -129,6 +128,21 @@ async fn handle_socket(
                             })))
                             .await;
                         return;
+                    }
+                }
+                GameMessage::ReportError {
+                    error: _,
+                    message: _,
+                    username,
+                } => {
+                    if username == &ws_tx_username {
+                        if let Ok(serialized) = serde_json::to_string(&update) {
+                            if let Err(e) = ws_tx.send(Message::Text(serialized)).await {
+                                tracing::warn!(
+                                    "Error sending game update for {ws_tx_game_id} to {ws_tx_username}: {e}"
+                                );
+                            }
+                        }
                     }
                 }
                 _ => {

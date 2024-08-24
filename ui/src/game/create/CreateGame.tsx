@@ -8,7 +8,7 @@ import { HiPlus } from "react-icons/hi";
 import useApiClient from "../../useApiClient";
 
 export default function CreateGame() {
-  const { setGame, setRole, username, setUsername } = useContext(GameContext);
+  const { setGame, setRole, setGameId, username, setUsername } = useContext(GameContext);
   const apiClient = useApiClient();
   const [request, setRequest] = useState<CreateGameRequest>({
     rounds: [[]],
@@ -26,6 +26,7 @@ export default function CreateGame() {
     apiClient.createGame(request)?.then((res: Game) => {
       setGame(res);
       setRole("Host");
+      setGameId(res.id);
     });
   };
 

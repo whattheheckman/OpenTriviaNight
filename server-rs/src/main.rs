@@ -3,6 +3,7 @@ mod background;
 mod dto;
 mod models;
 mod ws;
+mod util;
 
 use std::{net::SocketAddr, sync::Arc};
 

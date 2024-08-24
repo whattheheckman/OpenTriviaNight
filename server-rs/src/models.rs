@@ -28,6 +28,7 @@ pub struct Game {
     pub rounds: Vec<Vec<Category>>,
     pub current_round: usize,
     pub state: GameState,
+    pub log: Vec<GameLog>,
 }
 
 impl IntoResponse for Game {
@@ -88,4 +89,34 @@ pub enum GameState {
         player: Player,
     },
     Finished,
+}
+
+#[derive(Clone, Serialize, Deserialize, PartialEq, Debug)]
+#[serde(tag = "type")]
+pub enum GameLog {
+    GameCreated {
+        time: u64,
+    },
+    GameStarted {
+        time: u64,
+    },
+    #[serde(rename_all = "camelCase")]
+    QuestionPicked {
+        time: u64,
+        question_id: String,
+    },
+    PlayerBuzzedIn {
+        time: u64,
+        username: String,
+    },
+    #[serde(rename_all = "camelCase")]
+    AnswerConfirmed {
+        time: u64,
+        username: String,
+        is_correct: bool,
+        points_change: isize,
+    },
+    QuestionPassed {
+        time: u64,
+    },
 }

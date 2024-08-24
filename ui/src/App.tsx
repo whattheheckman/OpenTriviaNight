@@ -70,9 +70,25 @@ function App() {
     const message: GameMessage = JSON.parse(e.data);
     switch (message.type) {
       case "JoinGame":
-      case "GameUpdate":
         setGame((g) => {
           return { ...g, ...message.game };
+        });
+        break;
+      case "GameUpdate":
+        setGame((g) => {
+          // Reassert message type to make TS happy
+          if (g) {
+            const lastLogIndex = message.game.lastLogIndex;
+            const lastLog = message.game.lastLog;
+            if (lastLog) {
+              g.log[lastLogIndex] = lastLog;
+            }
+            g.currentRound = message.game.currentRound;
+            g.lastWinner = message.game.lastWinner;
+            g.players = message.game.players;
+            g.state = message.game.state;
+            return { ...g };
+          }
         });
         break;
       case "QuestionUpdate":
@@ -89,6 +105,10 @@ function App() {
           g.rounds[g.currentRound][categoryIndex].questions[questionIndex] = message.question;
           return { ...g };
         });
+        break;
+      case "ReportError":
+        addError(message.message);
+        break;
     }
   };
 

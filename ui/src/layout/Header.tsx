@@ -45,7 +45,7 @@ export default function Header() {
             Open Trivia Night
           </button>
           {game ? (
-            <div className="md:absolute right-0 md:pr-4 z-10 inline-flex items-center">
+            <div className="md:absolute right-0 md:pr-4 inline-flex items-center">
               <span className="py-2 text-sm">Game ID: </span>
               <GameIdCopyButton className="hover:bg-orange-200 active:bg-orange-100" />
             </div>

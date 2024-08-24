@@ -41,6 +41,9 @@ export default function HostViewQuestion() {
     <div className="flex flex-col items-center gap-4">
       <Spinner size="xl" />
       <span>Waiting for an Answer...</span>
+      <Button color="red" outline onClick={endQuestion}>
+        End Question Without Answer
+      </Button>
       {reveal ? (
         <span onClick={() => setReveal(false)}>
           The correct answer is: <span className="font-bold">{question.correctAnswer}</span>
@@ -48,9 +51,6 @@ export default function HostViewQuestion() {
       ) : (
         <Button onClick={() => setReveal(true)}>Reveal Answer</Button>
       )}
-      <Button color="red" outline onClick={endQuestion}>
-        End Question Without Answer
-      </Button>
     </div>
   );
 

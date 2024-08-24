@@ -5,6 +5,7 @@ export type Game = {
   rounds: Category[][];
   currentRound: number;
   state: GameState;
+  log: GameLog[];
 };
 
 export type Player = {
@@ -64,20 +65,29 @@ export type CreateGameRequest = {
 };
 
 export type GameMessage =
-  | {
-      type: "JoinGame";
-      game: Game;
-    }
-  | {
-      type: "GameUpdate";
-      game: Game;
-    }
-  | {
-      type: "QuestionUpdate";
-      question: Question;
-    };
+  | { type: "JoinGame"; game: Game }
+  | { type: "GameUpdate"; game: GameOverview }
+  | { type: "QuestionUpdate"; question: Question }
+  | { type: "ReportError"; error: string; message: string };
 
 export type Stats = {
   gamesCount: number;
   version: string;
+};
+
+export type GameLog =
+  | { type: "GameCreated"; time: number }
+  | { type: "GameStarted"; time: number }
+  | { type: "QuestionPicked"; time: number; questionId: string }
+  | { type: "PlayerBuzzedIn"; time: number; username: string }
+  | { type: "AnswerConfirmed"; time: number; username: string; isCorrect: boolean; pointsChange: number }
+  | { type: "QuestionPassed"; time: number };
+
+export type GameOverview = {
+  players: [Player];
+  lastWinner: string | undefined;
+  currentRound: number;
+  state: GameState;
+  lastLogIndex: number;
+  lastLog: GameLog | undefined;
 };

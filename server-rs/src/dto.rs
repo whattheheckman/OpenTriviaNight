@@ -3,16 +3,30 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     actions::GameError,
-    models::{Category, Game, GameState, Player, Question},
+    models::{Category, Game, GameLog, GameState, Player, Question},
+    util::get_time,
 };
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 #[serde(tag = "type")]
 pub enum GameMessage {
-    JoinGame { game: GameOverview },
-    GameUpdate { game: GameOverview },
-    QuestionUpdate { question: Question },
-    EndSession { username: String },
+    JoinGame {
+        game: GameOverview,
+    },
+    GameUpdate {
+        game: GameOverview,
+    },
+    QuestionUpdate {
+        question: Question,
+    },
+    ReportError {
+        error: GameError,
+        message: &'static str,
+        username: String,
+    },
+    EndSession {
+        username: String,
+    },
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -22,6 +36,8 @@ pub struct GameOverview {
     pub last_winner: String,
     pub current_round: usize,
     pub state: GameState,
+    pub last_log_index: usize,
+    pub last_log: Option<GameLog>,
 }
 
 impl Into<GameOverview> for &Game {
@@ -31,6 +47,8 @@ impl Into<GameOverview> for &Game {
             last_winner: self.last_winner.clone(),
             current_round: self.current_round.clone(),
             state: self.state.clone(),
+            last_log_index: self.log.len().saturating_sub(1),
+            last_log: self.log.last().cloned(),
         }
     }
 }
@@ -67,6 +85,7 @@ impl Into<Game> for CreateGameRequest {
             players: Vec::new(),
             rounds: self.rounds,
             state: GameState::WaitingToStart,
+            log: vec![GameLog::GameCreated { time: get_time() }],
         }
     }
 }
