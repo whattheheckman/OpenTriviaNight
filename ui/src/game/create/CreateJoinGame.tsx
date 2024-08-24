@@ -5,31 +5,31 @@ import { Button, HR } from "flowbite-react";
 import CreateGame from "./CreateGame";
 import About from "../../About";
 import useApiClient from "../../useApiClient";
+import { PlayerRole } from "../../Models";
 
 export default function CreateJoinGame() {
-  const { username, setUsername, setRole, setGame } = useContext(GameContext);
+  const { username, setUsername, setRole, setGame, gameId, setGameId } = useContext(GameContext);
   const [type, setType] = useState<"join" | "create">("join");
-  const [newGameId, setNewGameId] = useState<string>("");
   // False to begin with show that we only show an error after first interaction
   const [gameIdErrorMessage, setGameIdErrorMessage] = useState("");
   const apiClient = useApiClient();
 
   useEffect(() => {
     // Clear out the error message if the Game ID is cleared
-    if (!newGameId) {
+    if (!gameId) {
       setGameIdErrorMessage("");
     }
-  }, [newGameId, setGameIdErrorMessage]);
+  }, [gameId, setGameIdErrorMessage]);
 
-  const joinGame = (role: "Host" | "Contestant" | "Spectator") => {
+  const joinGame = (role: PlayerRole) => {
     setGameIdErrorMessage("");
-    if (!newGameId) {
+    if (!gameId) {
       setGameIdErrorMessage("Please provide a valid Game ID");
       return;
     }
 
-    if (!newGameId.match(/[A-Z,a-z]{6}/)) {
-      setGameIdErrorMessage("Game IDs may only contain 6 characters A-Z");
+    if (!gameId.match(/[A-Z,a-z]{4}/)) {
+      setGameIdErrorMessage("Game IDs may only contain 4 characters A-Z");
       return;
     }
 
@@ -39,7 +39,7 @@ export default function CreateJoinGame() {
 
     setRole(role);
 
-    apiClient.getGame(newGameId)?.then((res) => setGame(res));
+    apiClient.getGame(gameId)?.then((res) => setGame(res));
   };
 
   if (type === "join") {
@@ -51,9 +51,9 @@ export default function CreateJoinGame() {
             label="Game ID"
             name="gameId"
             type="text"
-            placeholder="ABCDEF"
-            value={newGameId}
-            onChange={(e) => setNewGameId(e.target.value)}
+            placeholder="ABCD"
+            value={gameId}
+            onChange={(e) => setGameId(e.target.value)}
             errorMessage={gameIdErrorMessage}
           />
           <LabeledTextInput

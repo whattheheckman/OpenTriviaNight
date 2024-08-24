@@ -1,7 +1,7 @@
 import GameScreen from "./game/GameScreen";
 import { useEffect, useState } from "react";
 import { Errors, GameContext } from "./GameContext";
-import { Game, GameMessage } from "./Models";
+import { Game, GameMessage, PlayerRole } from "./Models";
 import Header from "./layout/Header";
 import { Toast } from "flowbite-react";
 import CreateJoinGame from "./game/create/CreateJoinGame";
@@ -11,7 +11,8 @@ import useSessionStorageState from "use-session-storage-state";
 function App() {
   const [game, setGame] = useSessionStorageState<Game | undefined>("game");
   const [username, setUsername] = useSessionStorageState<string>("username", { defaultValue: "" });
-  const [role, setRole] = useSessionStorageState<"Host" | "Contestant" | "Spectator" | undefined>("role", { defaultValue: undefined });
+  const [role, setRole] = useSessionStorageState<PlayerRole | undefined>("role", { defaultValue: undefined });
+  const [gameId, setGameId] = useSessionStorageState<string>("gameId", { defaultValue: "" });
   const [wsUrl, setWsUrl] = useState<string | null>(null);
   const [errors, setErrors] = useState<Errors>({});
 
@@ -49,7 +50,8 @@ function App() {
       // Return immediately, this close will be reconnected
       return;
     } else if (e.code === 3001) {
-      // Do nothing, this means the user has requested to leave the game
+      // This means the user has requested to leave the game
+      setGameId("");
     } else if (e.code > 3001) {
       // Custom error message returned from the backend
       addError(e.reason);
@@ -110,6 +112,8 @@ function App() {
           setUsername: setUsername,
           role: role,
           setRole: setRole,
+          gameId: gameId,
+          setGameId: setGameId,
           errors: errors,
           addError: addError,
           sendWsMessage: sendMessage,

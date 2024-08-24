@@ -80,7 +80,8 @@ pub struct GameErrorResponse {
 impl GameError {
     pub fn get_message(&self) -> &'static str {
         return match self {
-            GameError::GameNotFound => "Game could not be found",
+            GameError::GameNotFound => "Game could not be found.",
+            GameError::UsernameTooLong => "Usernames must be less than 20 characters long.",
             GameError::InsufficientPermissions => {
                 "User has insufficient permissions to perform this action."
             }

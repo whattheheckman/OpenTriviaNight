@@ -1,5 +1,5 @@
 import { createContext, Dispatch, SetStateAction } from "react";
-import { Game } from "./Models";
+import { Game, PlayerRole } from "./Models";
 
 export type Errors = { [key: string]: string };
 
@@ -8,8 +8,10 @@ export const GameContext = createContext<{
   setGame: Dispatch<SetStateAction<Game | undefined>>;
   username: string;
   setUsername: Dispatch<SetStateAction<string>>;
-  role: "Host" | "Contestant" | "Spectator" | undefined;
-  setRole: Dispatch<SetStateAction<"Host" | "Contestant" | "Spectator" | undefined>>;
+  role: PlayerRole | undefined;
+  setRole: Dispatch<SetStateAction<PlayerRole | undefined>>;
+  gameId: string;
+  setGameId: Dispatch<SetStateAction<string>>;
   errors: Errors;
   addError: (error: string) => void;
   sendWsMessage: (msg: string) => void;
@@ -20,6 +22,8 @@ export const GameContext = createContext<{
   setUsername: () => {},
   role: undefined,
   setRole: () => {},
+  gameId: "",
+  setGameId: () => {},
   errors: {},
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   addError: (_) => {},

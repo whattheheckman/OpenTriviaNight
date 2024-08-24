@@ -62,7 +62,7 @@ export default function Header() {
         </Modal.Body>
         <Modal.Footer className="justify-between text-xs text-gray-400">
           <span>
-            In Progress Games: <em>{stats.gamesCount}</em>
+            Games: <em>{stats.gamesCount}</em>
           </span>
           <span>v{stats.version}</span>
         </Modal.Footer>

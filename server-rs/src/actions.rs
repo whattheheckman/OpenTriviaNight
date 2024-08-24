@@ -15,6 +15,7 @@ pub enum GameError {
     InvalidGameState,
     FailedToCreateGame,
     GameNotFound,
+    UsernameTooLong,
     QuestionNotFound,
     PlayerNotFound,
     MissingQuestions,
@@ -42,13 +43,13 @@ impl AppState {
         // Chars A-Z in ASCII
         let id_chars: Vec<char> = (65..90u32).map(|x| char::from_u32(x).unwrap()).collect();
         let mut rng = rand::thread_rng();
-        let id: String = (0..6)
+        let id: String = (0..4)
             .map(|_x| id_chars.choose(&mut rng).unwrap_or(&'A'))
             .collect::<String>();
 
         let mut game: Game = request.into();
         game.id = id.clone();
-        let (sender, receiver) = broadcast::channel(8);
+        let (sender, receiver) = broadcast::channel(16);
         let game_entry = GameEntry {
             game: game.clone(),
             sender,
@@ -67,6 +68,14 @@ impl AppState {
         username: String,
         role: PlayerRole,
     ) -> Result<(), GameError> {
+        if game_id.len() > 4 {
+            return Err(GameError::GameNotFound);
+        }
+
+        if username.len() > 20 {
+            return Err(GameError::UsernameTooLong);
+        }
+
         let mut entry = match self.games.get_mut(&game_id.to_ascii_uppercase()) {
             Some(x) => x,
             None => return Err(GameError::GameNotFound),

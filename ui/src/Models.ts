@@ -10,8 +10,10 @@ export type Game = {
 export type Player = {
   username: string;
   score: number;
-  role: "Host" | "Contestant" | "Spectator";
+  role: PlayerRole;
 };
+
+export type PlayerRole = "Host" | "Contestant" | "Spectator";
 
 export type Category = {
   categoryId: string;
