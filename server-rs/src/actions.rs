@@ -81,15 +81,15 @@ impl AppState {
             None => return Err(GameError::GameNotFound),
         };
 
-        let existing = get_player(&mut entry.game, username.clone());
-        if let Some(player) = existing {
-            // If the player already exists, then don't add them again
-            player.role = role;
-            return Ok(());
-        }
-
         if role != PlayerRole::Spectator && entry.game.state != GameState::WaitingToStart {
             return Err(GameError::NewPlayerCannotJoinAfterStart);
+        }
+
+        let existing = get_player(&mut entry.game, username.clone());
+        if let Some(player) = existing {
+            // If the player already exists, then don't add them again. Change their role to what they want though.
+            player.role = role;
+            return Ok(());
         }
 
         let game_entry = entry.value_mut();
