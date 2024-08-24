@@ -95,28 +95,28 @@ pub enum GameState {
 #[serde(tag = "type")]
 pub enum GameLog {
     GameCreated {
-        time: u64,
+        time: u128,
     },
     GameStarted {
-        time: u64,
+        time: u128,
     },
     #[serde(rename_all = "camelCase")]
     QuestionPicked {
-        time: u64,
+        time: u128,
         question_id: String,
     },
     PlayerBuzzedIn {
-        time: u64,
+        time: u128,
         username: String,
     },
     #[serde(rename_all = "camelCase")]
     AnswerConfirmed {
-        time: u64,
+        time: u128,
         username: String,
         is_correct: bool,
         points_change: isize,
     },
     QuestionPassed {
-        time: u64,
+        time: u128,
     },
 }

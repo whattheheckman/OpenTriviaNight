@@ -1,5 +1,5 @@
 import { createContext, Dispatch, SetStateAction } from "react";
-import { Game, PlayerRole } from "./Models";
+import { Game, PlayerRole, Preferences } from "./Models";
 
 export type Errors = { [key: string]: string };
 
@@ -13,6 +13,8 @@ export const GameContext = createContext<{
   gameId: string;
   setGameId: Dispatch<SetStateAction<string>>;
   errors: Errors;
+  prefs: Preferences;
+  setPrefs: Dispatch<SetStateAction<Preferences>>
   addError: (error: string) => void;
   sendWsMessage: (msg: string) => void;
 }>({
@@ -24,6 +26,8 @@ export const GameContext = createContext<{
   setRole: () => {},
   gameId: "",
   setGameId: () => {},
+  prefs: { hideGameId: false },
+  setPrefs: () => {},
   errors: {},
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   addError: (_) => {},

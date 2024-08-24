@@ -3,7 +3,7 @@ import { GameContext } from "../../GameContext";
 import { HiClipboard } from "react-icons/hi2";
 
 export default function GameIdCopyButton({ className }: { className?: string | undefined }) {
-  const { game, addError } = useContext(GameContext);
+  const { game, addError, prefs } = useContext(GameContext);
 
   if (!game) {
     return <></>;
@@ -14,12 +14,9 @@ export default function GameIdCopyButton({ className }: { className?: string | u
   };
 
   return (
-    <button
-      onClick={copyGameIdToClipboard}
-      className={`inline-flex text-sm gap-1 p-2 font-semibold italic rounded-lg ${className}`}
-    >
-      <span>{game.id}</span>
-        <HiClipboard className="h-5" />
+    <button onClick={copyGameIdToClipboard} className={`inline-flex text-sm gap-1 p-2 font-semibold rounded-lg ${className}`}>
+      <span className="font-mono">{prefs.hideGameId ? "****" : game.id}</span>
+      <HiClipboard className="h-5" />
     </button>
   );
 }

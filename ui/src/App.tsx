@@ -1,18 +1,20 @@
 import GameScreen from "./game/GameScreen";
 import { useEffect, useState } from "react";
 import { Errors, GameContext } from "./GameContext";
-import { Game, GameMessage, PlayerRole } from "./Models";
+import { Game, GameMessage, PlayerRole, Preferences } from "./Models";
 import Header from "./layout/Header";
 import { Toast } from "flowbite-react";
 import CreateJoinGame from "./game/create/CreateJoinGame";
 import useWebSocket from "react-use-websocket";
 import useSessionStorageState from "use-session-storage-state";
+import useLocalStorageState from "use-local-storage-state";
 
 function App() {
   const [game, setGame] = useSessionStorageState<Game | undefined>("game");
   const [username, setUsername] = useSessionStorageState<string>("username", { defaultValue: "" });
   const [role, setRole] = useSessionStorageState<PlayerRole | undefined>("role", { defaultValue: undefined });
   const [gameId, setGameId] = useSessionStorageState<string>("gameId", { defaultValue: "" });
+  const [prefs, setPrefs] = useLocalStorageState<Preferences>("prefs", { defaultValue: { hideGameId: false } });
   const [wsUrl, setWsUrl] = useState<string | null>(null);
   const [errors, setErrors] = useState<Errors>({});
 
@@ -134,6 +136,8 @@ function App() {
           setRole: setRole,
           gameId: gameId,
           setGameId: setGameId,
+          prefs: prefs,
+          setPrefs: setPrefs,
           errors: errors,
           addError: addError,
           sendWsMessage: sendMessage,

@@ -91,3 +91,7 @@ export type GameOverview = {
   lastLogIndex: number;
   lastLog: GameLog | undefined;
 };
+
+export type Preferences = {
+  hideGameId: boolean;
+};

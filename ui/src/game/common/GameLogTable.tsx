@@ -34,7 +34,7 @@ export default function GameLogTable() {
       </Table.Head>
       <Table.Body>
         {game?.log.map((log, i) => {
-          const time = new Date(log.time * 1000);
+          const time = new Date(log.time);
           return (
             <Table.Row key={i}>
               <Table.Cell className="py-1">{time.toLocaleTimeString(undefined, { timeStyle: "medium" })}</Table.Cell>

@@ -37,7 +37,7 @@ export default function Header() {
         onOpenChange={() => setHintOpen(false)}
         content={
           <div className="w-64 p-4 animate-pulse text-sm text-gray-500 bg-orange-100" onClick={() => setHintOpen(false)}>
-            Tap the top bar to see other players scores, and manage the game.
+            Tap the top bar to see other players scores, manage the game, and change preferences.
           </div>
         }
       >
@@ -58,7 +58,7 @@ export default function Header() {
 
       <Drawer className="p-0 max-h-svh" edge open={modalOpen} onClose={() => setModalOpen(false)} position="top">
         <Drawer.Header className="cursor-pointer fixed top-0 left-0 right-0 p-4 bg-white z-10 h-12" titleIcon={HiInformationCircle} title="INFO" onClick={() => setModalOpen(!modalOpen)} />
-        <Drawer.Items className="overflow-y-auto mt-16 px-4">
+        <Drawer.Items className="overflow-y-auto mt-16 p-0">
           <HeaderModal onLeaveGame={() => setModalOpen(false)} />
           <div className="flex justify-between p-4 mt-4 text-xs bg-gray-100 text-gray-400">
             <span>
