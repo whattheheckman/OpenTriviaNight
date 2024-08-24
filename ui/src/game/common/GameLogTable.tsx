@@ -27,7 +27,7 @@ export default function GameLogTable() {
   };
 
   return (
-    <Table striped>
+    <Table striped className="drop-shadow-none">
       <Table.Head>
         <Table.HeadCell>Time</Table.HeadCell>
         <Table.HeadCell>Message</Table.HeadCell>

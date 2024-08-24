@@ -70,13 +70,10 @@ export default function CreateJoinGame() {
           />
 
           <Button type="submit" color="success" onClick={() => joinGame("Contestant")}>
-            Join as Contestant
+            Join
           </Button>
           <Button type="submit" color="gray" onClick={() => joinGame("Spectator")}>
             Join as Spectator
-          </Button>
-          <Button type="submit" color="gray" onClick={() => joinGame("Host")}>
-            Join as Host
           </Button>
 
           <HR.Text text="or" />

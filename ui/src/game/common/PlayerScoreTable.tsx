@@ -6,7 +6,7 @@ export default function PlayerScoreTable() {
   const { game } = useContext(GameContext);
 
   return (
-    <Table striped>
+    <Table striped className="drop-shadow-none">
       <Table.Head>
         <Table.HeadCell>Pos</Table.HeadCell>
         <Table.HeadCell>Player</Table.HeadCell>
@@ -19,9 +19,9 @@ export default function PlayerScoreTable() {
           .map((p, i) => {
             return (
               <Table.Row key={i}>
-                <Table.Cell>{i + 1}</Table.Cell>
-                <Table.Cell>{p.username}</Table.Cell>
-                <Table.Cell>{p.score}</Table.Cell>
+                <Table.Cell className="py-1">{i + 1}</Table.Cell>
+                <Table.Cell className="py-1">{p.username}</Table.Cell>
+                <Table.Cell className="py-1">{p.score}</Table.Cell>
               </Table.Row>
             );
           })}
