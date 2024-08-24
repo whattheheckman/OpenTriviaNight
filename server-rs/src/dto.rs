@@ -113,7 +113,8 @@ impl GameError {
             GameError::MissingQuestions => {
                 "Game must contain at least 1 round, where all rounds contain at least 1 category, with at least 1 question"
             },
-            GameError::NewPlayerCannotJoinAfterStart => "New Contestants cannot join a game after it has started."
+            GameError::NewPlayerCannotJoinAfterStart => "New Contestants cannot join a game after it has started.",
+            GameError::AlreadyAnswered => "Another player buzzed in first."
         };
     }
 }

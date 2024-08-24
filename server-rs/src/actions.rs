@@ -21,6 +21,7 @@ pub enum GameError {
     PlayerNotFound,
     MissingQuestions,
     NewPlayerCannotJoinAfterStart,
+    AlreadyAnswered,
 }
 
 impl AppState {
@@ -228,23 +229,30 @@ fn answer_question(
     username: String,
 ) -> Result<(), GameError> {
     let game = &mut game_entry.value_mut().game;
-    if let GameState::WaitingForAnswer { question } = game.state.clone() {
-        let player = match game.players.iter().find(|x| x.username == username) {
-            Some(x) => x,
-            None => return Err(GameError::PlayerNotFound),
-        };
+    match game.state.clone() {
+        GameState::WaitingForAnswer { question } => {
+            let player = match game.players.iter().find(|x| x.username == username) {
+                Some(x) => x,
+                None => return Err(GameError::PlayerNotFound),
+            };
 
-        game.state = GameState::CheckAnswer {
-            question: question.clone(),
-            player: player.clone(),
-        };
+            game.state = GameState::CheckAnswer {
+                question: question.clone(),
+                player: player.clone(),
+            };
 
-        game.log.push(GameLog::PlayerBuzzedIn {
-            time: get_time(),
-            username: username.clone(),
-        });
-    } else {
-        return Err(GameError::InvalidGameState);
+            game.log.push(GameLog::PlayerBuzzedIn {
+                time: get_time(),
+                username: username.clone(),
+            });
+        }
+        GameState::CheckAnswer {
+            question: _,
+            player: _,
+        } => {
+            return Err(GameError::AlreadyAnswered);
+        }
+        _ => return Err(GameError::InvalidGameState),
     }
 
     return Ok(());
