@@ -34,9 +34,12 @@ export default function CreateGame() {
       <form onSubmit={handleCreateGame} className="gap-4 flex flex-col">
         <LabeledTextInput
           className="max-w-2xl"
-          type="text"
           label="Your Name"
           name="username"
+          type="text"
+          placeholder="John"
+          minLength={1}
+          maxLength={20}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />

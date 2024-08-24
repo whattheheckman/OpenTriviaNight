@@ -52,6 +52,8 @@ export default function CreateJoinGame() {
             name="gameId"
             type="text"
             placeholder="ABCD"
+            minLength={4}
+            maxLength={4}
             value={gameId}
             onChange={(e) => setGameId(e.target.value)}
             errorMessage={gameIdErrorMessage}
@@ -61,6 +63,8 @@ export default function CreateJoinGame() {
             name="username"
             type="text"
             placeholder="John"
+            minLength={1}
+            maxLength={20}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
