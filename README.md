@@ -99,12 +99,12 @@ When the connection is successfully established, the backend adds the player to 
 
 Internally, the WebSocket thread on the server subscribes to a Channel. Each Game has a single Channel associated to it, and all game actions are broadcast via this Channel. This way, all players are always kept up-to-date about the state of the game, as all actions completed in the game result in a message being sent to this Channel.
 
-When the client wants to send a request, they send a `UpdateGameRequest` (see [dto.rs](/server-rs/src/dto.rs#L58)) specifying the action they are requesting. This is sent fire-and-forget, there is no specific response generated and tracked for the request. 
+When the client wants to send a request, they send a [`UpdateGameRequest`](/server-rs/src/dto.rs#L58) specifying the action they are requesting. This is sent fire-and-forget, there is no specific response generated and tracked for the request. 
 
-If the request is successful, the server will send an appropiate `GameMessage` (see [dto.rs](/server-rs/src/dto.rs#L12)) on the WebSockets for all players. 
+If the request is successful, the server will send an appropiate [`GameMessage`](/server-rs/src/dto.rs#L12) on the WebSockets for all players. 
 
 If the request errors out, a [`GameMessage::ReportError`](/server-rs/src/dto.rs#L22) will be generated, and the user who initiated the request will receive the message in their WebSocket. This usually includes a user-friendly error message that can be displayed. A common source of errors is when 2 players buzz in to answer a question at the same time, one of the players will always receive an error as their request will have been processed after the first player to buzz in.
 
 On the server, all games are stored in a `Arc<DashMap<K, V>>`, where `K` is a `String` and `V` is a `GameEntry`. Using a [`DashMap`](https://docs.rs/dashmap/latest/dashmap/) means that all operations on a `GameEntry` require a lock, which makes operations on games completely thread-safe.
 
-All requests are processed in the [`handle_game_request` method](/server-rs/src/actions.rs#L113). This method takes a `RefMut` of the game entry, which ensures that it is only called after a lock has been obtained on the whole game.
+All requests are processed in the [`handle_game_request`](/server-rs/src/actions.rs#L113) method. This method takes a `RefMut` of the game entry, which ensures that it is only called after a lock has been obtained on the whole game.
