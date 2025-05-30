@@ -4,11 +4,12 @@ import { CreateGameRequest, Game } from "../../Models";
 import { GameContext } from "../../GameContext";
 import LabeledTextInput from "../../LabeledTextInput";
 import CreateRound from "./CreateRound";
-import { HiPlus } from "react-icons/hi";
+import { HiPlus, HiOutlineSave, HiOutlineUpload } from "react-icons/hi";
 import useApiClient from "../../useApiClient";
 
 export default function CreateGame() {
-  const { setGame, setRole, setGameId, username, setUsername } = useContext(GameContext);
+  const { setGame, setRole, setGameId, username, setUsername } =
+    useContext(GameContext);
   const apiClient = useApiClient();
   const [request, setRequest] = useState<CreateGameRequest>({
     rounds: [[]],
@@ -19,6 +20,22 @@ export default function CreateGame() {
       r.rounds.push([]);
       return { ...r };
     });
+  };
+
+  const saveGameToFile = () => {
+    if (request.rounds.length <= 0){
+      console.log("not enough saved rounds")
+      alert("No rounds to save to file")
+      return;
+    }
+    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+      JSON.stringify(request)
+    )}`;
+    const link = document.createElement("a");
+    link.href = jsonString;
+    link.download = username + "-saved-trivia-game.json";
+
+    link.click();
   };
 
   const handleCreateGame = (e: React.FormEvent) => {
@@ -46,15 +63,27 @@ export default function CreateGame() {
         />
 
         {request.rounds.map((round, roundIdx) => {
-          return <CreateRound key={roundIdx} round={round} roundNumber={roundIdx} setRequest={setRequest} />;
+          return (
+            <CreateRound
+              key={roundIdx}
+              round={round}
+              roundNumber={roundIdx}
+              setRequest={setRequest}
+            />
+          );
         })}
 
-        <Button color="info" onClick={addRound}>
+        <Button color="info" onClick={addRound} size="xm">
           <HiPlus className="h-5 mr-2" />
           Add Round
         </Button>
 
-        <Button type="submit" color="success">
+        <Button onClick={saveGameToFile}>
+          <HiOutlineSave fontSize="20" className="mr-2"  />
+          Save Game to File...
+        </Button>
+
+        <Button type="submit" size="xl" gradientDuoTone="purpleToBlue">
           Create Game
         </Button>
       </form>
