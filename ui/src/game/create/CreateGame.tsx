@@ -1,15 +1,17 @@
-import { Button } from "flowbite-react";
+import { Button, Modal } from "flowbite-react";
 import { useContext, useState } from "react";
 import { CreateGameRequest, Game } from "../../Models";
 import { GameContext } from "../../GameContext";
 import LabeledTextInput from "../../LabeledTextInput";
 import CreateRound from "./CreateRound";
+import UploadGameFromFile from "./UploadGameFromFile"
 import { HiPlus, HiOutlineSave, HiOutlineUpload } from "react-icons/hi";
 import useApiClient from "../../useApiClient";
 
 export default function CreateGame() {
   const { setGame, setRole, setGameId, username, setUsername } =
     useContext(GameContext);
+  const [loadGameModalOpen, setLoadGameModalOpen] = useState(false);
   const apiClient = useApiClient();
   const [request, setRequest] = useState<CreateGameRequest>({
     rounds: [[]],
@@ -36,6 +38,13 @@ export default function CreateGame() {
     link.download = username + "-saved-trivia-game.json";
 
     link.click();
+  };
+
+  const loadGameFromFile = () => {
+    setLoadGameModalOpen(true);
+    return (
+      null
+    );
   };
 
   const handleCreateGame = (e: React.FormEvent) => {
@@ -77,6 +86,12 @@ export default function CreateGame() {
           <HiPlus className="h-5 mr-2" />
           Add Round
         </Button>
+        
+        
+        <Button onClick={loadGameFromFile}>
+          <HiOutlineUpload fontSize="20" className="mr-2"  />
+          Load Game from File...
+        </Button>
 
         <Button onClick={saveGameToFile}>
           <HiOutlineSave fontSize="20" className="mr-2"  />
@@ -86,6 +101,20 @@ export default function CreateGame() {
         <Button type="submit" size="xl" gradientDuoTone="purpleToBlue">
           Create Game
         </Button>
+
+        <Modal show={loadGameModalOpen} size="7xl" dismissible onClose={() => setLoadGameModalOpen(false)}>
+                <Modal.Header>
+                  <span>Load Saved Game from File</span>
+                </Modal.Header>
+                <Modal.Body>
+                  <UploadGameFromFile
+                    onAdd={(game) => {
+                      setGame(game);
+                      setLoadGameModalOpen(false);
+                    }}
+                  />
+                </Modal.Body>
+              </Modal>
       </form>
     </div>
   );
