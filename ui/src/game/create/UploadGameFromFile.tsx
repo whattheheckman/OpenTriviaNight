@@ -4,12 +4,12 @@ import { useState } from "react";
 import { HiCheck } from "react-icons/hi";
 
 type Props = {
-  onAdd: (loadedGame: CreateGameRequest) => void;
+  onAdd: (newGameRequest: CreateGameRequest) => void;
 };
 
 export default function UploadGameFromFile({ onAdd }: Props) {
   const [fileName, setFileName] = useState<string>("");
-  const [parsedGame, setParsedGame] = useState<CreateGameRequest | null>(null);
+  const [parsedGameRequest, setParsedGameRequest] = useState<CreateGameRequest | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.[0]) return;
@@ -28,7 +28,7 @@ export default function UploadGameFromFile({ onAdd }: Props) {
           throw new Error("Invalid game file format");
         }
         
-        setParsedGame(gameData);
+        setParsedGameRequest(gameData);
       } catch (error) {
         console.error("Error parsing game file:", error);
         alert("Invalid game file format");
@@ -77,9 +77,9 @@ export default function UploadGameFromFile({ onAdd }: Props) {
         </Label>
       </div>
 
-      {parsedGame && (
+      {parsedGameRequest && (
         <div className="my-4">
-          {parsedGame.rounds.map((round, roundIndex) => (
+          {parsedGameRequest.rounds.map((round, roundIndex) => (
             <div key={roundIndex} className="mb-6">
               <h3 className="text-lg font-semibold mb-2">
                 Round {roundIndex + 1}
@@ -112,7 +112,7 @@ export default function UploadGameFromFile({ onAdd }: Props) {
             className="mt-4"
             type="button"
             color="success"
-            onClick={() => onAdd(parsedGame)}
+            onClick={() => onAdd(parsedGameRequest)}
           >
             <HiCheck className="h-5 mr-2" />
             Use these Questions

@@ -108,8 +108,8 @@ export default function CreateGame() {
                 </Modal.Header>
                 <Modal.Body>
                   <UploadGameFromFile
-                    onAdd={(game) => {
-                      setGame(game);
+                    onAdd={(newGameRequest) => {
+                      setRequest(newGameRequest);
                       setLoadGameModalOpen(false);
                     }}
                   />
