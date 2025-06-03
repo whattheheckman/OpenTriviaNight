@@ -35,7 +35,7 @@ export default function CreateGame() {
     )}`;
     const link = document.createElement("a");
     link.href = jsonString;
-    link.download = username + "-saved-trivia-game.json";
+    link.download = username + "-open-trivia-night-game.json";
 
     link.click();
   };
