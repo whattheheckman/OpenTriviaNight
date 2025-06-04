@@ -4,7 +4,7 @@ import { CreateGameRequest, Game } from "../../Models";
 import { GameContext } from "../../GameContext";
 import LabeledTextInput from "../../LabeledTextInput";
 import CreateRound from "./CreateRound";
-import UploadGameFromFile from "./UploadGameFromFile"
+import UploadGameFromFile from "./UploadGameFromFile";
 import { HiPlus, HiOutlineSave, HiOutlineUpload } from "react-icons/hi";
 import useApiClient from "../../useApiClient";
 
@@ -25,9 +25,9 @@ export default function CreateGame() {
   };
 
   const saveGameToFile = () => {
-    if (request.rounds.length <= 0){
-      console.log("not enough saved rounds")
-      alert("No rounds to save to file")
+    if (request.rounds.length <= 0) {
+      console.log("not enough saved rounds");
+      alert("No rounds to save to file");
       return;
     }
     const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
@@ -42,9 +42,7 @@ export default function CreateGame() {
 
   const loadGameFromFile = () => {
     setLoadGameModalOpen(true);
-    return (
-      null
-    );
+    return null;
   };
 
   const handleCreateGame = (e: React.FormEvent) => {
@@ -58,6 +56,25 @@ export default function CreateGame() {
 
   return (
     <div>
+      <Modal
+        show={loadGameModalOpen}
+        size="7xl"
+        dismissible
+        onClose={() => setLoadGameModalOpen(false)}
+      >
+        <Modal.Header>
+          <span>Load Saved Game from File</span>
+        </Modal.Header>
+        <Modal.Body>
+          <UploadGameFromFile
+            onAdd={(newGameRequest) => {
+              setRequest(newGameRequest);
+              setLoadGameModalOpen(false);
+            }}
+          />
+        </Modal.Body>
+      </Modal>
+
       <form onSubmit={handleCreateGame} className="gap-4 flex flex-col">
         <LabeledTextInput
           className="max-w-2xl"
@@ -86,35 +103,20 @@ export default function CreateGame() {
           <HiPlus className="h-5 mr-2" />
           Add Round
         </Button>
-        
-        
+
         <Button onClick={loadGameFromFile}>
-          <HiOutlineUpload fontSize="20" className="mr-2"  />
+          <HiOutlineUpload fontSize="20" className="mr-2" />
           Load Game from File...
         </Button>
 
         <Button onClick={saveGameToFile}>
-          <HiOutlineSave fontSize="20" className="mr-2"  />
+          <HiOutlineSave fontSize="20" className="mr-2" />
           Save Game to File...
         </Button>
 
         <Button type="submit" size="xl" gradientDuoTone="purpleToBlue">
           Create Game
         </Button>
-
-        <Modal show={loadGameModalOpen} size="7xl" dismissible onClose={() => setLoadGameModalOpen(false)}>
-                <Modal.Header>
-                  <span>Load Saved Game from File</span>
-                </Modal.Header>
-                <Modal.Body>
-                  <UploadGameFromFile
-                    onAdd={(newGameRequest) => {
-                      setRequest(newGameRequest);
-                      setLoadGameModalOpen(false);
-                    }}
-                  />
-                </Modal.Body>
-              </Modal>
       </form>
     </div>
   );
