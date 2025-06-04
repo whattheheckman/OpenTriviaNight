@@ -63,7 +63,7 @@ export default function CreateGame() {
         onClose={() => setLoadGameModalOpen(false)}
       >
         <Modal.Header>
-          <span>Load Saved Game from File</span>
+          <span>Load Saved Questions from File</span>
         </Modal.Header>
         <Modal.Body>
           <UploadGameFromFile
@@ -87,7 +87,17 @@ export default function CreateGame() {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
+        <div className="flex gap-2 self-center items-center ">
+          <Button onClick={loadGameFromFile}>
+            <HiOutlineUpload fontSize="20 md:" className="mr-2" />
+            Load Questions from File
+          </Button>
 
+          <Button onClick={saveGameToFile}>
+            <HiOutlineSave fontSize="20" className="mr-2" />
+            Save Questions to File
+          </Button>
+        </div>
         {request.rounds.map((round, roundIdx) => {
           return (
             <CreateRound
@@ -98,22 +108,11 @@ export default function CreateGame() {
             />
           );
         })}
-
         <Button color="info" onClick={addRound} size="xm">
           <HiPlus className="h-5 mr-2" />
           Add Round
         </Button>
-
-        <Button onClick={loadGameFromFile}>
-          <HiOutlineUpload fontSize="20" className="mr-2" />
-          Load Game from File...
-        </Button>
-
-        <Button onClick={saveGameToFile}>
-          <HiOutlineSave fontSize="20" className="mr-2" />
-          Save Game to File...
-        </Button>
-
+        
         <Button type="submit" size="xl" gradientDuoTone="purpleToBlue">
           Create Game
         </Button>
