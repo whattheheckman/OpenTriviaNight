@@ -1,7 +1,7 @@
 import { Button, HR, Modal } from "flowbite-react";
 import { CreateGameRequest, Category, Question } from "../../Models";
 import CreateCategory from "./CreateCategory";
-import { HiPlus, HiTrash} from "react-icons/hi";
+import { HiPlus, HiTrash } from "react-icons/hi";
 import { useState } from "react";
 import GenerateCategory from "./GenerateCategory";
 
@@ -14,7 +14,11 @@ type Props = {
 export default function CreateRound({ round, roundNumber, setRequest }: Props) {
   const [genCategoryOpen, setGenCategoryOpen] = useState(false);
 
-  const addCategory = (round: number, category?: string, questions?: Question[]) => {
+  const addCategory = (
+    round: number,
+    category?: string,
+    questions?: Question[]
+  ) => {
     setRequest((r) => {
       const newQuestions = questions
         ? questions
@@ -29,11 +33,17 @@ export default function CreateRound({ round, roundNumber, setRequest }: Props) {
           ];
 
       const rounds = r.rounds;
-      let newCategoryName = category ? category : `Category ${rounds[round].length + 1}`;
+      let newCategoryName = category
+        ? category
+        : `Category ${rounds[round].length + 1}`;
       if (newCategoryName in rounds[round]) {
         newCategoryName += Math.round(Math.random() * 100);
       }
-      rounds[round].push({ categoryId: crypto.randomUUID(), name: newCategoryName, questions: newQuestions });
+      rounds[round].push({
+        categoryId: crypto.randomUUID(),
+        name: newCategoryName,
+        questions: newQuestions,
+      });
       return { ...r, rounds: rounds };
     });
   };
@@ -50,16 +60,26 @@ export default function CreateRound({ round, roundNumber, setRequest }: Props) {
       <HR.Text text={`Round ${roundNumber + 1}`} />
       <div className="flex gap-2 self-center">
         <Button size="sm" onClick={() => addCategory(roundNumber)}>
-          <HiPlus className="h-5 mr-2" />
-          <span>Add Category</span>
+          <span className="pt-2 md:pt-0 mr-2 text-2xl md:text-xl ">
+            <HiPlus />
+          </span>
+          <span className="text-left">Add Category</span>
         </Button>
-        <Button gradientDuoTone="pinkToOrange" size="sm" onClick={() => setGenCategoryOpen(true)}>
-          <HiPlus className="h-5 mr-2" />
-          Generate Category
+        <Button
+          gradientDuoTone="pinkToOrange"
+          size="sm"
+          onClick={() => setGenCategoryOpen(true)}
+        >
+          <span className="pt-2 md:pt-0 mr-2 text-2xl md:text-xl ">
+            <HiPlus />
+          </span>
+          <span className="text-left">Generate Category</span>
         </Button>
         <Button className="" size="sm" color="red" onClick={removeRound}>
-          <HiTrash className="h-5 mr-2" />
-          Remove Round
+          <span className="pt-2 md:pt-0 mr-2 text-2xl md:text-xl ">
+            <HiTrash />
+          </span>
+          <span className=" text-left ">Remove Round</span>
         </Button>
       </div>
       <div className="flex gap-2 flex-wrap mt-4">
@@ -78,7 +98,12 @@ export default function CreateRound({ round, roundNumber, setRequest }: Props) {
         <div className="flex flex-col gap-2"></div>
       </div>
 
-      <Modal show={genCategoryOpen} size="7xl" dismissible onClose={() => setGenCategoryOpen(false)}>
+      <Modal
+        show={genCategoryOpen}
+        size="7xl"
+        dismissible
+        onClose={() => setGenCategoryOpen(false)}
+      >
         <Modal.Header>
           <span>Generate Category</span>
         </Modal.Header>

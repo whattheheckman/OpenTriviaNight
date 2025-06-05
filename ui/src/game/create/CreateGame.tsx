@@ -5,7 +5,7 @@ import { GameContext } from "../../GameContext";
 import LabeledTextInput from "../../LabeledTextInput";
 import CreateRound from "./CreateRound";
 import UploadGameFromFile from "./UploadGameFromFile";
-import { HiPlus, HiOutlineSave, HiOutlineUpload } from "react-icons/hi";
+import { HiPlus, HiOutlineSave, HiOutlineUpload, HiPlay } from "react-icons/hi";
 import useApiClient from "../../useApiClient";
 
 export default function CreateGame() {
@@ -87,15 +87,31 @@ export default function CreateGame() {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
-        <div className="flex gap-2 self-center items-center ">
-          <Button onClick={loadGameFromFile}>
-            <HiOutlineUpload fontSize="20 md:" className="mr-2" />
-            Load Questions from File
+        <div className="flex gap-2 self-center items-center  block md:max-w-5xl">
+          <Button className=" items-center" onClick={loadGameFromFile}>
+            {/* Magic numbers for sizing and aligning to center based on media queries */}
+            <span className="pt-2 md:pt-0 mr-2 text-2xl md:text-xl ">
+              <HiOutlineUpload />
+            </span>
+            <span className=" text-left ">Upload Questions</span>
           </Button>
 
-          <Button onClick={saveGameToFile}>
-            <HiOutlineSave fontSize="20" className="mr-2" />
-            Save Questions to File
+          <Button className=" items-center" onClick={saveGameToFile}>
+            <span className="pt-2 md:pt-0 mr-2 text-2xl md:text-xl ">
+              <HiOutlineSave />
+            </span>
+            <span className=" text-left ">Download Questions</span>
+          </Button>
+
+          <Button
+            type="submit"
+            gradientDuoTone="purpleToBlue"
+            className=" items-center"
+          >
+            <span className="pt-2 md:pt-0 mr-2 text-2xl md:text-xl ">
+              <HiPlay />
+            </span>
+            <span className=" text-left ">Create Game</span>
           </Button>
         </div>
         {request.rounds.map((round, roundIdx) => {
@@ -108,12 +124,18 @@ export default function CreateGame() {
             />
           );
         })}
-        <Button color="info" onClick={addRound} size="xm">
-          <HiPlus className="h-5 mr-2" />
-          Add Round
+        <Button color="info" onClick={addRound}>
+          <span className="pt--1 md:pt-0 mr-2 text-2xl md:text-xl ">
+            <HiPlus />
+          </span>
+
+          <span className=" text-left ">Add Round</span>
         </Button>
-        
+
         <Button type="submit" size="xl" gradientDuoTone="purpleToBlue">
+          <span className="pt--2 md:pt-1 mr-2 text-2xl md:text-xl ">
+            <HiPlay />
+          </span>
           Create Game
         </Button>
       </form>
