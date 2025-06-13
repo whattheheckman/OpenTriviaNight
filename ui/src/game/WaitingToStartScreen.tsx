@@ -3,23 +3,27 @@ import { GameContext } from "../GameContext";
 import { Button, Spinner, Table } from "flowbite-react";
 import useApiClient from "../useApiClient";
 import GameIdCopyButton from "./common/GameIdCopyButton";
+import QRCode from "react-qr-code";
 
 export default function WaitingToStartScreen() {
-  const { game, username } = useContext(GameContext);
+  const { game, username, prefs } = useContext(GameContext);
   const apiClient = useApiClient();
 
   if (!game) {
     return <></>;
   }
 
-  const isHost = game.players.find((x) => x.username === username)?.role === "Host";
+  const isHost =
+    game.players.find((x) => x.username === username)?.role === "Host";
 
   return (
     <div className="flex flex-col max-w-screen-md mx-auto mb-8 items-stretch">
       <div className="text-center my-4">
         <Spinner />
       </div>
-      <h1 className="text-lg font-semibold self-center mb-5">Waiting for Host to Start Game</h1>
+      <h1 className="text-lg font-semibold self-center mb-5">
+        Waiting for Host to Start Game
+      </h1>
 
       <Table striped>
         <Table.Head>
@@ -44,13 +48,28 @@ export default function WaitingToStartScreen() {
                 <GameIdCopyButton className="text-gray-500 hover:bg-gray-100 active:bg-gray-200" />
                 <span className="py-2 pl-1">to join</span>
               </div>
+              <div>
+                {!prefs.hideGameId ? (
+                  <QRCode
+                    style={{ height: "auto", maxWidth: "100%" }}
+                    value={window.location.href + "?gameId=" + game.id}
+                  />
+                ) : (
+                  <></>
+                )}
+              </div>
             </Table.Cell>
           </Table.Row>
         </Table.Body>
       </Table>
 
       {isHost ? (
-        <Button className="mt-4" color="success" size="lg" onClick={apiClient.startGame}>
+        <Button
+          className="mt-4"
+          color="success"
+          size="lg"
+          onClick={apiClient.startGame}
+        >
           Start Game
         </Button>
       ) : (
