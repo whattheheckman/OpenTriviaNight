@@ -27,6 +27,8 @@ export default function GameLogTable() {
         return `Question ${GameHelper.getQuestionTag(game!, log.questionId)} passed (Answer: "${
           GameHelper.getQuestionById(game!, log.questionId).question.correctAnswer
         }")`;
+      case "ManualScoreUpdated":
+        return `Score for ${log.username} updated from ${log.oldScore} to ${log.newScore}`;
     }
   };
 

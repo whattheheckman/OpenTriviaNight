@@ -25,6 +25,11 @@ type UpdateGameRequest =
     }
   | {
       type: "EndQuestion";
+    }
+  | {
+      type: "UpdatePlayerScore";
+      updateUsername: string;
+      newScore: number;
     };
 
 export default function useApiClient() {
@@ -122,6 +127,12 @@ export default function useApiClient() {
     endQuestion: useCallback(() => {
       return executeWs({ type: "EndQuestion" });
     }, [executeWs]),
+    updatePlayerScore: useCallback(
+      (updateUsername: string, newScore: number) => {
+        return executeWs({ type: "UpdatePlayerScore", updateUsername: updateUsername, newScore: newScore });
+      },
+      [executeWs]
+    ),
 
     getQuestionsFromOpenTDB: useCallback(
       ({ category, difficulty }: { category: number; difficulty: string }) => {

@@ -130,6 +130,10 @@ pub fn handle_game_request(
         UpdateGameRequest::AnswerQuestion => answer_question(game_entry, username.clone()),
         UpdateGameRequest::ConfirmAnswer { is_correct } => confirm_answer(game_entry, is_correct),
         UpdateGameRequest::EndQuestion => end_question(game_entry, role),
+        UpdateGameRequest::UpdatePlayerScore {
+            update_username,
+            new_score,
+        } => update_player_score(game_entry, role, update_username, new_score),
     };
 
     match result {
@@ -331,6 +335,35 @@ fn end_question(
         });
     } else {
         return Err(GameError::InvalidGameState);
+    }
+
+    return Ok(());
+}
+
+fn update_player_score(
+    game_entry: &mut RefMut<String, GameEntry>,
+    role: PlayerRole,
+    update_username: String,
+    new_score: isize,
+) -> Result<(), GameError> {
+    if role != PlayerRole::Host {
+        return Err(GameError::InsufficientPermissions);
+    }
+
+    let player_to_update = get_player(&mut game_entry.game, update_username.clone());
+
+    match player_to_update {
+        None => return Err(GameError::PlayerNotFound),
+        Some(player) => {
+            let old_score = player.score;
+            player.score = new_score;
+            game_entry.game.log.push(GameLog::ManualScoreUpdated {
+                time: get_time(),
+                username: update_username,
+                old_score: old_score,
+                new_score: new_score,
+            })
+        }
     }
 
     return Ok(());

@@ -122,4 +122,11 @@ pub enum GameLog {
         time: u128,
         question_id: String,
     },
+    #[serde(rename_all = "camelCase")]
+    ManualScoreUpdated {
+        time: u128,
+        username: String,
+        old_score: isize,
+        new_score: isize,
+    },
 }

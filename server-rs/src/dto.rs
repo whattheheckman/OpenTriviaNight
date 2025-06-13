@@ -69,6 +69,11 @@ pub enum UpdateGameRequest {
         is_correct: bool,
     },
     EndQuestion,
+    #[serde(rename_all = "camelCase")]
+    UpdatePlayerScore {
+        update_username: String,
+        new_score: isize,
+    },
 }
 
 #[derive(Serialize, Deserialize, Debug)]
