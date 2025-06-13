@@ -57,7 +57,7 @@ export default function ContestantScreen() {
     <div className="mx-auto">
       <Button
         size="xl"
-        className="flex items-center text-lg h-32 w-32 rounded-full bg-gradient-to-r from-red-400 via-red-500 to-red-600 text-white hover:bg-gradient-to-br focus:ring-red-300 dark:focus:ring-red-800"
+        className="flex items-center text-lg h-32 w-32 rounded-full bg-linear-to-r from-red-400 via-red-500 to-red-600 text-white hover:bg-linear-to-br focus:ring-red-300 dark:focus:ring-red-800"
         disabled={game.state.state !== "WaitingForAnswer"}
         onClick={apiClient.answerQuestion}
       >

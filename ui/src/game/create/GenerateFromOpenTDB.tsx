@@ -163,7 +163,7 @@ export default function GenerateFromOpenTDB({ updateQuestions }: Props) {
       </div>
 
       <Button
-        className="mt-4 bg-gradient-to-br from-pink-500 to-orange-400 text-white hover:bg-gradient-to-bl focus:ring-pink-200 dark:focus:ring-pink-800"
+        className="mt-4 bg-linear-to-br from-pink-500 to-orange-400 text-white hover:bg-linear-to-bl focus:ring-pink-200 dark:focus:ring-pink-800"
         onClick={generateQuestions}
       >
         <HiOutlineRefresh className="h-5 mr-2" />
