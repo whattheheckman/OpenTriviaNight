@@ -189,12 +189,7 @@ async fn handle_socket(
                 None => return,
             };
 
-            actions::handle_game_request(
-                &mut game_entry,
-                ws_rx_username.clone(),
-                role.clone(),
-                request,
-            );
+            actions::handle_game_request(&mut game_entry, ws_rx_username.clone(), request);
         }
         return;
     });

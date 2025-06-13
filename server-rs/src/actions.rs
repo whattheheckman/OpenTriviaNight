@@ -113,10 +113,14 @@ impl AppState {
 pub fn handle_game_request(
     game_entry: &mut RefMut<String, GameEntry>,
     username: String,
-    role: PlayerRole,
     request: UpdateGameRequest,
 ) -> () {
     game_entry.last_updated = Instant::now();
+    let current_player = get_player(&mut game_entry.game, username.clone());
+    let role = match current_player {
+        Some(player) => player.role.clone(),
+        None => PlayerRole::Contestant,
+    };
 
     let result = match request {
         UpdateGameRequest::StartGame => start_game(game_entry, role),
@@ -171,7 +175,21 @@ fn leave_game(
     username: String,
 ) -> Result<(), GameError> {
     // Send a message to the websocket to tell it to cleanly close the session for the specified user
-    let _ = game_entry.sender.send(GameMessage::EndSession { username });
+    let _ = game_entry.sender.send(GameMessage::EndSession {
+        username: username.clone(),
+    });
+
+    if game_entry.game.state == GameState::WaitingToStart {
+        let player_index = game_entry
+            .game
+            .players
+            .iter()
+            .position(|x| x.username == username);
+
+        if let Some(index) = player_index {
+            game_entry.game.players.remove(index);
+        }
+    }
     return Ok(());
 }
 
