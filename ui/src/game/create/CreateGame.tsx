@@ -30,7 +30,7 @@ export default function CreateGame() {
       alert("No rounds to save to file");
       return;
     }
-    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+    const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
       JSON.stringify(request)
     )}`;
     const link = document.createElement("a");
