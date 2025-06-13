@@ -24,15 +24,10 @@ export default function CreateGame() {
   };
 
   const saveGameToFile = () => {
-    if (request.rounds.length <= 0) {
-      console.log("not enough saved rounds");
-      alert("No rounds to save to file");
-      return;
-    }
     const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(request))}`;
     const link = document.createElement("a");
     link.href = jsonString;
-    link.download = username + "-open-trivia-night-game.json";
+    link.download = `${username}-open-trivia-night-game.json`;
 
     link.click();
   };
