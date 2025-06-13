@@ -50,7 +50,7 @@ export default function UploadGameFromFile({ onAdd }: Props) {
 
   return (
     <div>
-      <div className="flex w-full items-center justify-center">
+      <div className="flex w-full items-center justify-center relative">
         <Label
           htmlFor="dropzone-file"
           className="flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100"
@@ -72,7 +72,7 @@ export default function UploadGameFromFile({ onAdd }: Props) {
               />
             </svg>
             <p className="mb-2 text-sm text-gray-500">
-              <span className="font-semibold">Click to upload</span>
+              <span className="font-semibold">Click to upload, or Drag and Drop here</span>
             </p>
             <p className="text-xs text-gray-500">Only Open Trivia Night saved games are supported</p>
           </div>
