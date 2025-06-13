@@ -19,7 +19,7 @@ export default function About() {
 
       <h2 className="text-xl font-semibold mt-4">How to Play - Contestant</h2>
       <p>
-        First, the Host of the game needs to provide you with a Game ID. This is a 6-character code that you will use to join the game they
+        First, the Host of the game needs to provide you with a Game ID. This is a 4-character code that you will use to join the game they
         have created. Once everybody is in, the Host can start the game.
       </p>
       <p>The game loop is as follows:</p>
@@ -73,12 +73,17 @@ export default function About() {
         generated Game ID with them.
       </p>
 
+      <p>
+        Before creating the game, you have the option of downloading the current configured questions to a file. This allows you to quickly
+        create the same game in the future by uploading the file back to populate all the questions.
+      </p>
+
       <h3 className="text-lg font-semibold mt-2">Hosting the Game</h3>
       <p>Hosting the game consists of 3 simple tasks:</p>
       <ol className="list-decimal list-inside space-y-3">
         <li>
           Selecting and reading out questions picked by the last Contestant to win points. When the game starts, the first question chooser
-          is picked by you.
+          is picked by you. The last Contestant to answer is highlight in orange at the bottom of the screen.
         </li>
         <li>
           When you have read out the selected question, you should "release" the buzzers (by clicking the 'Finished Reading' button) to
@@ -89,6 +94,11 @@ export default function About() {
           will then decide if it is correct or not.
         </li>
       </ol>
+
+      <p>
+        The Host also has the power to manually change players scores. Simply open the game menu (click the Open Trivia Night header), open
+        the player table, then select Edit.
+      </p>
 
       <hr />
 
