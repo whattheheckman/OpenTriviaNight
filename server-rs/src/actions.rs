@@ -291,7 +291,7 @@ fn confirm_answer(
         if is_correct {
             player_to_update.score += question.value;
             game_entry.game.last_winner = username.clone();
-            mark_question_answered(game_entry, question.question_id)?;
+            mark_question_answered(game_entry, question.question_id.clone())?;
         } else {
             player_to_update.score -= question.value;
             game_entry.game.state = GameState::WaitingForAnswer {
@@ -304,6 +304,7 @@ fn confirm_answer(
             username,
             is_correct,
             points_change: question.value,
+            question_id: question.question_id,
         });
     } else {
         return Err(GameError::InvalidGameState);
@@ -321,13 +322,13 @@ fn end_question(
     }
 
     if let GameState::WaitingForAnswer { question } = game_entry.game.state.clone() {
-        if let Err(e) = mark_question_answered(game_entry, question.question_id) {
+        if let Err(e) = mark_question_answered(game_entry, question.question_id.clone()) {
             return Err(e);
         }
-        game_entry
-            .game
-            .log
-            .push(GameLog::QuestionPassed { time: get_time() });
+        game_entry.game.log.push(GameLog::QuestionPassed {
+            time: get_time(),
+            question_id: question.question_id,
+        });
     } else {
         return Err(GameError::InvalidGameState);
     }

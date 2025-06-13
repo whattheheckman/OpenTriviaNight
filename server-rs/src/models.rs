@@ -115,8 +115,11 @@ pub enum GameLog {
         username: String,
         is_correct: bool,
         points_change: isize,
+        question_id: String,
     },
+    #[serde(rename_all = "camelCase")]
     QuestionPassed {
         time: u128,
+        question_id: String,
     },
 }

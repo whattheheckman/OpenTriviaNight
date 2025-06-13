@@ -19,10 +19,14 @@ export default function GameLogTable() {
         return `${log.username} buzzed in`;
       case "AnswerConfirmed":
         return log.isCorrect
-          ? `${log.username} answered correctly and has been awarded ${log.pointsChange} points`
+          ? `${log.username} answered correctly and has been awarded ${log.pointsChange} points (Answer: "${
+              GameHelper.getQuestionById(game!, log.questionId).question.correctAnswer
+            }")`
           : `${log.username} answered incorrectly and lost ${log.pointsChange} points`;
       case "QuestionPassed":
-        return `Question was passed`;
+        return `Question ${GameHelper.getQuestionTag(game!, log.questionId)} passed (Answer: "${
+          GameHelper.getQuestionById(game!, log.questionId).question.correctAnswer
+        }")`;
     }
   };
 

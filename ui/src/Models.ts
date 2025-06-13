@@ -80,8 +80,8 @@ export type GameLog =
   | { type: "GameStarted"; time: number }
   | { type: "QuestionPicked"; time: number; questionId: string }
   | { type: "PlayerBuzzedIn"; time: number; username: string }
-  | { type: "AnswerConfirmed"; time: number; username: string; isCorrect: boolean; pointsChange: number }
-  | { type: "QuestionPassed"; time: number };
+  | { type: "AnswerConfirmed"; time: number; username: string; isCorrect: boolean; pointsChange: number; questionId: string }
+  | { type: "QuestionPassed"; time: number; questionId: string };
 
 export type GameOverview = {
   players: [Player];

@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import LabeledTextInput from "../../LabeledTextInput";
 import { GameContext } from "../../GameContext";
-import { Button, HR, HRText } from "flowbite-react";
+import { Button, HRText } from "flowbite-react";
 import CreateGame from "./CreateGame";
 import About from "../../About";
 import useApiClient from "../../useApiClient";
