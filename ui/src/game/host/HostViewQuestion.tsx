@@ -64,7 +64,7 @@ export default function HostViewQuestion() {
         <Button color="green" onClick={() => confirmAnswer(true)}>
           Correct!
         </Button>
-        <Button color="warning" onClick={() => confirmAnswer(false)}>
+        <Button color="yellow" onClick={() => confirmAnswer(false)}>
           Incorrect
         </Button>
       </div>
@@ -85,7 +85,7 @@ export default function HostViewQuestion() {
   }
 
   return (
-    <div className="flex flex-col grow bg-orange-400 w-full m-4 rounded-xl">
+    <div className="flex flex-col grow bg-orange-400 m-4 rounded-xl">
       <div className="flex flex-col items-center justify-between p-4 grow">
         <div className="text-lg">
           <span>

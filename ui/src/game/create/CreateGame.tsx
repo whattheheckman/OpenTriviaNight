@@ -51,6 +51,8 @@ export default function CreateGame() {
     });
   };
 
+  const hasAnyQuestions = () => request.rounds.every(x => x.length === 0);
+
   return (
     <div>
       <Modal show={loadGameModalOpen} size="7xl" dismissible onClose={() => setLoadGameModalOpen(false)}>
@@ -80,14 +82,14 @@ export default function CreateGame() {
           onChange={(e) => setUsername(e.target.value)}
         />
         <div className="flex flex-wrap gap-2 self-center items-center justify-center">
-          <Button onClick={loadGameFromFile} className="w-64">
+          <Button onClick={loadGameFromFile} className="w-64" disabled={!hasAnyQuestions()}>
             <span className="mr-2 text-xl">
               <HiOutlineUpload />
             </span>
             <span>Upload Questions</span>
           </Button>
 
-          <Button onClick={saveGameToFile} className="w-64">
+          <Button onClick={saveGameToFile} className="w-64" disabled={hasAnyQuestions()}>
             <span className="mr-2 text-xl">
               <HiOutlineSave />
             </span>

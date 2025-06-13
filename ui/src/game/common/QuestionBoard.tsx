@@ -24,7 +24,9 @@ export default function QuestionBoard({ onQuestionClick }: { onQuestionClick?: (
 
               {questions.map((q) => {
                 return q.answered ? (
-                  <div key={q.questionId} className="bg-gray-200 min-h-12 flex-1 rounded-lg"></div>
+                  <div key={q.questionId} className="flex items-center justify-center bg-gray-200 min-h-12 flex-1 rounded-lg text-gray-300 hover:text-black focus:text-black">
+                    {q.correctAnswer}
+                  </div>
                 ) : onQuestionClick ? (
                   <Button
                     key={q.questionId}

@@ -57,8 +57,7 @@ export default function ContestantScreen() {
     <div className="mx-auto">
       <Button
         size="xl"
-        gradientMonochrome="failure"
-        className="flex items-center text-lg p-4 rounded-full aspect-square"
+        className="flex items-center text-lg h-32 w-32 rounded-full bg-gradient-to-r from-red-400 via-red-500 to-red-600 text-white hover:bg-gradient-to-br focus:ring-red-300 dark:focus:ring-red-800"
         disabled={game.state.state !== "WaitingForAnswer"}
         onClick={apiClient.answerQuestion}
       >
@@ -73,7 +72,8 @@ export default function ContestantScreen() {
         <div className="flex flex-col grow">
           <QuestionBoard />
           <Button className="mx-4 mb-2" outline onClick={() => setBoardShown(false)}>
-            <HiChevronLeft className="h-5 mr-1" /> Return
+            <HiChevronLeft className="h-5 mr-1" />
+            <span>Return</span>
           </Button>
         </div>
       ) : (

@@ -56,7 +56,7 @@ export default function HeaderModal({ onLeaveGame }: { onLeaveGame: () => void }
       </Accordion>
 
       {game && (
-        <Button className="mt-12" color="failure" onClick={leaveGame}>
+        <Button className="mt-12" color="red" onClick={leaveGame}>
           Leave Game
         </Button>
       )}

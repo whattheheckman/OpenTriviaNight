@@ -84,7 +84,7 @@ export default function CreateCategory({ category, categoryIndex, roundNumber, s
       <div className="flex flex-col gap-2">
         {category.questions.map((question, questionIdx) => {
           return (
-            <div key={questionIdx} className="px-2 pt-2 rounded-lg bg-orange-200">
+            <div key={questionIdx} className="p-2 rounded-xl bg-orange-200">
               <div className="flex flex-col gap-1">
                 <Textarea
                   className="p-1 px-2 bg-white"
@@ -95,7 +95,7 @@ export default function CreateCategory({ category, categoryIndex, roundNumber, s
                   onChange={(e) => handleQuestionDataChange(e, questionIdx)}
                 />
 
-                <div className="flex flex-row gap-2">
+                <div className="flex flex-row gap-2 items-end">
                   <LabeledTextInput
                     className="grow"
                     label="Correct Answer"
@@ -113,7 +113,7 @@ export default function CreateCategory({ category, categoryIndex, roundNumber, s
                     value={question.value}
                     onChange={(e) => handleQuestionDataChange(e, questionIdx)}
                   />
-                  <Button className="self-end mb-2 items-center p-0 py-1" size="xs" color="red" onClick={() => removeQuestion(questionIdx)}>
+                  <Button className="self-end items-center p-1" size="xs" color="red" onClick={() => removeQuestion(questionIdx)}>
                     Remove
                   </Button>
                 </div>
@@ -121,7 +121,7 @@ export default function CreateCategory({ category, categoryIndex, roundNumber, s
             </div>
           );
         })}
-        <Button color="info" size="sm" onClick={addQuestion}>
+        <Button color="blue" size="sm" onClick={addQuestion}>
           <HiPlus className="h-5" />
           Add Question
         </Button>
