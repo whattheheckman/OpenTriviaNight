@@ -1,4 +1,4 @@
-import { Accordion, Button } from "flowbite-react";
+import { Accordion, AccordionContent, AccordionPanel, AccordionTitle, Button } from "flowbite-react";
 import PlayerScoreTable from "./common/PlayerScoreTable";
 import { useContext } from "react";
 import { GameContext } from "../GameContext";
@@ -11,19 +11,19 @@ export default function GameFinishedScreen() {
     <div className="flex flex-col text-center items-stretch gap-4 my-4 mx-auto">
       <span className="text-xl">Game Finished!</span>
       <Accordion>
-        <Accordion.Panel>
-          <Accordion.Title className="py-2">Results</Accordion.Title>
-          <Accordion.Content className="p-0">
+        <AccordionPanel>
+          <AccordionTitle className="py-2">Results</AccordionTitle>
+          <AccordionContent className="p-0">
             <PlayerScoreTable />
-          </Accordion.Content>
-        </Accordion.Panel>
+          </AccordionContent>
+        </AccordionPanel>
 
-        <Accordion.Panel>
-          <Accordion.Title className="py-2">Game Log</Accordion.Title>
-          <Accordion.Content className="p-0">
+        <AccordionPanel>
+          <AccordionTitle className="py-2">Game Log</AccordionTitle>
+          <AccordionContent className="p-0">
             <GameLogTable />
-          </Accordion.Content>
-        </Accordion.Panel>
+          </AccordionContent>
+        </AccordionPanel>
       </Accordion>
       <Button onClick={() => setGame(undefined)}>Leave Game</Button>
     </div>

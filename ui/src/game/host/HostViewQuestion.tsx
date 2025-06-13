@@ -61,7 +61,7 @@ export default function HostViewQuestion() {
         <span className="my-4">
           The correct answer is: <span className="font-bold">{question.correctAnswer}</span>
         </span>
-        <Button color="success" onClick={() => confirmAnswer(true)}>
+        <Button color="green" onClick={() => confirmAnswer(true)}>
           Correct!
         </Button>
         <Button color="warning" onClick={() => confirmAnswer(false)}>
@@ -85,7 +85,7 @@ export default function HostViewQuestion() {
   }
 
   return (
-    <div className="flex flex-col grow bg-orange-400 w-100 m-4 rounded-xl">
+    <div className="flex flex-col grow bg-orange-400 w-full m-4 rounded-xl">
       <div className="flex flex-col items-center justify-between p-4 grow">
         <div className="text-lg">
           <span>

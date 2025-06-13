@@ -1,4 +1,14 @@
-import { Button, Label, Table, FileInput } from "flowbite-react";
+import {
+  Button,
+  FileInput,
+  Label,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeadCell,
+  TableRow,
+} from "flowbite-react";
 import { CreateGameRequest } from "../../Models";
 import { useState } from "react";
 import { HiCheck } from "react-icons/hi";
@@ -13,28 +23,28 @@ export default function UploadGameFromFile({ onAdd }: Props) {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.[0]) return;
-    
+
     const file = e.target.files[0];
     setFileName(file.name);
-    
+
     const reader = new FileReader();
     reader.onload = (event) => {
       try {
         const fileContent = event.target?.result as string;
         const gameData = JSON.parse(fileContent) as CreateGameRequest;
-        
+
         // Validate the parsed data has the expected structure
         if (!gameData.rounds || !Array.isArray(gameData.rounds)) {
           throw new Error("Invalid game file format");
         }
-        
+
         setParsedGameRequest(gameData);
       } catch (error) {
         console.error("Error parsing game file:", error);
         alert("Invalid game file format");
       }
     };
-    
+
     reader.readAsText(file);
   };
 
@@ -62,18 +72,11 @@ export default function UploadGameFromFile({ onAdd }: Props) {
               />
             </svg>
             <p className="mb-2 text-sm text-gray-500">
-              <span className="font-semibold">Click to upload</span> 
+              <span className="font-semibold">Click to upload</span>
             </p>
-            <p className="text-xs text-gray-500">
-              Only Open Trivia Night saved games are supported
-            </p>
+            <p className="text-xs text-gray-500">Only Open Trivia Night saved games are supported</p>
           </div>
-          <FileInput
-            id="dropzone-file"
-            className="hidden"
-            onChange={handleFileChange}
-            accept=".json"
-          />
+          <FileInput id="dropzone-file" className="absolute top-0 left-0 bottom-0 w-full h-full opacity-0 cursor-pointer" onChange={handleFileChange} accept=".json" />
         </Label>
       </div>
 
@@ -81,39 +84,32 @@ export default function UploadGameFromFile({ onAdd }: Props) {
         <div className="my-4">
           {parsedGameRequest.rounds.map((round, roundIndex) => (
             <div key={roundIndex} className="mb-6">
-              <h3 className="text-lg font-semibold mb-2">
-                Round {roundIndex + 1}
-              </h3>
+              <h3 className="text-lg font-semibold mb-2">Round {roundIndex + 1}</h3>
               {round.map((category) => (
                 <div key={category.categoryId} className="mb-4">
                   <h4 className="font-medium mb-2">{category.name}</h4>
                   <Table striped>
-                    <Table.Head>
-                      <Table.HeadCell>Question</Table.HeadCell>
-                      <Table.HeadCell>Correct Answer</Table.HeadCell>
-                      <Table.HeadCell>Value</Table.HeadCell>
-                    </Table.Head>
-                    <Table.Body>
+                    <TableHead>
+                      <TableHeadCell>Question</TableHeadCell>
+                      <TableHeadCell>Correct Answer</TableHeadCell>
+                      <TableHeadCell>Value</TableHeadCell>
+                    </TableHead>
+                    <TableBody>
                       {category.questions.map((q) => (
-                        <Table.Row key={q.questionId}>
-                          <Table.Cell>{q.detail}</Table.Cell>
-                          <Table.Cell>{q.correctAnswer}</Table.Cell>
-                          <Table.Cell>{q.value}</Table.Cell>
-                        </Table.Row>
+                        <TableRow key={q.questionId}>
+                          <TableCell>{q.detail}</TableCell>
+                          <TableCell>{q.correctAnswer}</TableCell>
+                          <TableCell>{q.value}</TableCell>
+                        </TableRow>
                       ))}
-                    </Table.Body>
+                    </TableBody>
                   </Table>
                 </div>
               ))}
             </div>
           ))}
 
-          <Button
-            className="mt-4"
-            type="button"
-            color="success"
-            onClick={() => onAdd(parsedGameRequest)}
-          >
+          <Button className="mt-4" type="button" color="green" onClick={() => onAdd(parsedGameRequest)}>
             <HiCheck className="h-5 mr-2" />
             Use these Questions
           </Button>

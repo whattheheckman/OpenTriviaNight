@@ -1,4 +1,14 @@
-import { Button, ButtonGroup, Label, Table } from "flowbite-react";
+import {
+  Button,
+  ButtonGroup,
+  Label,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeadCell,
+  TableRow,
+} from "flowbite-react";
 import { Question } from "../../Models";
 import GenerateFromOpenTDB from "./GenerateFromOpenTDB";
 import { useState } from "react";
@@ -24,7 +34,7 @@ export default function GenerateCategory({ onAdd }: Props) {
   return (
     <div>
       <div className="flex flex-col mb-2">
-        <Label value="Question Source" />
+        <Label>Question Source</Label>
 
         <ButtonGroup>
           <Button className="grow" color={source == "openTriviaDb" ? "blue" : "gray"} onClick={() => setSource("openTriviaDb")}>Open Trivia DB</Button>
@@ -40,23 +50,25 @@ export default function GenerateCategory({ onAdd }: Props) {
 
       {questions.length > 0
         ? <Table className="my-4" striped>
-          <Table.Head>
-            <Table.HeadCell>Question</Table.HeadCell>
-            <Table.HeadCell>Correct Answer</Table.HeadCell>
-          </Table.Head>
-          <Table.Body>
+          <TableHead>
+            <TableHeadCell>Question</TableHeadCell>
+            <TableHeadCell>Correct Answer</TableHeadCell>
+          </TableHead>
+          <TableBody>
             {questions.map(q => {
-              return <Table.Row key={q.questionId}>
-                <Table.Cell className="py-2">{q.detail}</Table.Cell>
-                <Table.Cell className="py-2">{q.correctAnswer}</Table.Cell>
-              </Table.Row>
+              return (
+                <TableRow key={q.questionId}>
+                  <TableCell className="py-2">{q.detail}</TableCell>
+                  <TableCell className="py-2">{q.correctAnswer}</TableCell>
+                </TableRow>
+              );
             })}
-          </Table.Body>
+          </TableBody>
         </Table>
         : <></>}
 
       {questions.length > 0
-        ? <Button className="mt-4" type="button" color="success" onClick={finalize}><HiCheck className="h-5 mr-2" />Use these Questions</Button>
+        ? <Button className="mt-4" type="button" color="green" onClick={finalize}><HiCheck className="h-5 mr-2" />Use these Questions</Button>
         : <></>}
 
       <div className="text-xs mt-4 text-base leading-relaxed text-gray-400">
@@ -65,5 +77,5 @@ export default function GenerateCategory({ onAdd }: Props) {
         </span>
       </div>
     </div>
-  )
+  );
 }

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { GameContext } from "../GameContext";
-import { Drawer, Popover } from "flowbite-react";
+import { Drawer, DrawerHeader, DrawerItems, Popover } from "flowbite-react";
 import HeaderModal from "./HeaderModal";
 import GameIdCopyButton from "../game/common/GameIdCopyButton";
 import useApiClient from "../useApiClient";
@@ -41,7 +41,7 @@ export default function Header() {
           </div>
         }
       >
-        <div className="flex justify-between md:justify-center px-4 md:px-6 h-14 w-100 items-center bg-orange-400 border-b-2 border-black">
+        <div className="flex justify-between md:justify-center px-4 md:px-6 h-14 w-full items-center bg-orange-400 border-b-2 border-black">
           <button className="font-bold text-left md:text-center text-xl grow self-stretch" onClick={() => setModalOpen(true)}>
             Open Trivia Night
           </button>
@@ -57,13 +57,13 @@ export default function Header() {
       </Popover>
 
       <Drawer className="p-0 max-h-svh" edge open={modalOpen} onClose={() => setModalOpen(false)} position="top">
-        <Drawer.Header
+        <DrawerHeader
           className="cursor-pointer fixed top-0 left-0 right-0 p-4 bg-white z-10 h-12"
           titleIcon={HiInformationCircle}
           title="INFO"
           onClick={() => setModalOpen(!modalOpen)}
         />
-        <Drawer.Items className="overflow-y-auto mt-16 p-0">
+        <DrawerItems className="overflow-y-auto mt-16 p-0">
           <HeaderModal onLeaveGame={() => setModalOpen(false)} />
           <div className="flex justify-between p-4 mt-4 text-xs bg-gray-100 text-gray-400">
             <span>
@@ -78,7 +78,7 @@ export default function Header() {
               v{stats.version}
             </a>
           </div>
-        </Drawer.Items>
+        </DrawerItems>
       </Drawer>
     </>
   );

@@ -1,31 +1,31 @@
 import { useContext } from "react";
 import { GameContext } from "../../GameContext";
-import { Table } from "flowbite-react";
+import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from "flowbite-react";
 
 export default function PlayerScoreTable() {
   const { game } = useContext(GameContext);
 
   return (
     <Table striped className="drop-shadow-none">
-      <Table.Head>
-        <Table.HeadCell>Pos</Table.HeadCell>
-        <Table.HeadCell>Player</Table.HeadCell>
-        <Table.HeadCell>Score</Table.HeadCell>
-      </Table.Head>
-      <Table.Body>
+      <TableHead>
+        <TableHeadCell>Pos</TableHeadCell>
+        <TableHeadCell>Player</TableHeadCell>
+        <TableHeadCell>Score</TableHeadCell>
+      </TableHead>
+      <TableBody>
         {game?.players
           .filter((x) => x.role === "Contestant")
           .sort((a, b) => b.score - a.score)
           .map((p, i) => {
             return (
-              <Table.Row key={i}>
-                <Table.Cell className="py-1">{i + 1}</Table.Cell>
-                <Table.Cell className="py-1">{p.username}</Table.Cell>
-                <Table.Cell className="py-1">{p.score}</Table.Cell>
-              </Table.Row>
+              <TableRow key={i}>
+                <TableCell className="py-1">{i + 1}</TableCell>
+                <TableCell className="py-1">{p.username}</TableCell>
+                <TableCell className="py-1">{p.score}</TableCell>
+              </TableRow>
             );
           })}
-      </Table.Body>
+      </TableBody>
     </Table>
   );
 }

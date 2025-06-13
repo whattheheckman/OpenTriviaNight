@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Errors, GameContext } from "./GameContext";
 import { Game, GameMessage, PlayerRole, Preferences } from "./Models";
 import Header from "./layout/Header";
-import { Toast } from "flowbite-react";
+import { Toast, ToastToggle } from "flowbite-react";
 import CreateJoinGame from "./game/create/CreateJoinGame";
 import useWebSocket from "react-use-websocket";
 import useSessionStorageState from "use-session-storage-state";
@@ -152,7 +152,7 @@ function App() {
               return (
                 <Toast key={id} className="bg-orange-200" style={{ zIndex: 60 }}>
                   <span>{e}</span>
-                  <Toast.Toggle className="bg-orange-200" onDismiss={() => removeError(id)} />
+                  <ToastToggle className="bg-orange-200" onDismiss={() => removeError(id)} />
                 </Toast>
               );
             })}

@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import LabeledTextInput from "../../LabeledTextInput";
 import { GameContext } from "../../GameContext";
-import { Button, HR } from "flowbite-react";
+import { Button, HR, HRText } from "flowbite-react";
 import CreateGame from "./CreateGame";
 import About from "../../About";
 import useApiClient from "../../useApiClient";
@@ -44,8 +44,8 @@ export default function CreateJoinGame() {
 
   if (type === "join") {
     return (
-      <div className="flex flex-col gap-2 p-4 max-w-screen-lg mx-auto">
-        <form className="flex flex-col gap-2 max-w-screen-sm mx-auto" onSubmit={(e) => e.preventDefault()}>
+      <div className="flex flex-col gap-2 p-4 max-w-(--breakpoint-lg) mx-auto">
+        <form className="flex flex-col gap-2 max-w-(--breakpoint-sm) mx-auto" onSubmit={(e) => e.preventDefault()}>
           <h1 className="font-bold text-2xl">Join Game</h1>
           <LabeledTextInput
             label="Game ID"
@@ -69,16 +69,16 @@ export default function CreateJoinGame() {
             onChange={(e) => setUsername(e.target.value)}
           />
 
-          <Button type="submit" color="success" onClick={() => joinGame("Contestant")}>
+          <Button type="submit" color="green" onClick={() => joinGame("Contestant")}>
             Join
           </Button>
           <Button type="submit" color="gray" onClick={() => joinGame("Spectator")}>
             Join as Spectator
           </Button>
 
-          <HR.Text text="or" />
+          <HRText text="or" />
 
-          <Button color="success" outline onClick={() => setType("create")}>
+          <Button color="green" outline onClick={() => setType("create")}>
             Create a Game
           </Button>
         </form>

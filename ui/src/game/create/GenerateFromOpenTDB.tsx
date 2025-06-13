@@ -162,7 +162,11 @@ export default function GenerateFromOpenTDB({ updateQuestions }: Props) {
         </div>
       </div>
 
-      <Button className="mt-4" gradientDuoTone="pinkToOrange" onClick={generateQuestions}>
+      <Button
+        className="mt-4"
+        className="bg-gradient-to-br from-pink-500 to-orange-400 text-white hover:bg-gradient-to-bl focus:ring-pink-200 dark:focus:ring-pink-800"
+        onClick={generateQuestions}
+      >
         <HiOutlineRefresh className="h-5 mr-2" />
         Generate Questions
       </Button>

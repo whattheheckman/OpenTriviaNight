@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import PlayerScoreTable from "../game/common/PlayerScoreTable";
 import { GameContext } from "../GameContext";
-import { Accordion, Button } from "flowbite-react";
+import { Accordion, AccordionContent, AccordionPanel, AccordionTitle, Button } from "flowbite-react";
 import useApiClient from "../useApiClient";
 import GameLogTable from "../game/common/GameLogTable";
 import ManagePreferences from "../game/common/ManagePreferences";
@@ -19,21 +19,21 @@ export default function HeaderModal({ onLeaveGame }: { onLeaveGame: () => void }
   const gameInfo = game ? (
     <>
       <Accordion>
-        <Accordion.Panel>
-          <Accordion.Title className="py-2">Results</Accordion.Title>
-          <Accordion.Content className="p-0">
+        <AccordionPanel>
+          <AccordionTitle className="py-2">Results</AccordionTitle>
+          <AccordionContent className="p-0">
             <PlayerScoreTable />
-          </Accordion.Content>
-        </Accordion.Panel>
+          </AccordionContent>
+        </AccordionPanel>
       </Accordion>
 
       <Accordion collapseAll>
-        <Accordion.Panel>
-          <Accordion.Title className="py-2">Game Log</Accordion.Title>
-          <Accordion.Content className="p-0">
+        <AccordionPanel>
+          <AccordionTitle className="py-2">Game Log</AccordionTitle>
+          <AccordionContent className="p-0">
             <GameLogTable />
-          </Accordion.Content>
-        </Accordion.Panel>
+          </AccordionContent>
+        </AccordionPanel>
       </Accordion>
     </>
   ) : (
@@ -43,16 +43,16 @@ export default function HeaderModal({ onLeaveGame }: { onLeaveGame: () => void }
   );
 
   return (
-    <div className="flex flex-col gap-4 max-w-screen-md mx-auto px-4">
+    <div className="flex flex-col gap-4 max-w-(--breakpoint-md) mx-auto px-4">
       {gameInfo}
       
       <Accordion collapseAll>
-        <Accordion.Panel>
-          <Accordion.Title className="py-2">Preferences</Accordion.Title>
-          <Accordion.Content>
+        <AccordionPanel>
+          <AccordionTitle className="py-2">Preferences</AccordionTitle>
+          <AccordionContent>
             <ManagePreferences />
-          </Accordion.Content>
-        </Accordion.Panel>
+          </AccordionContent>
+        </AccordionPanel>
       </Accordion>
 
       {game && (

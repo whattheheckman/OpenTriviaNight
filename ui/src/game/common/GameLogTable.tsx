@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { GameContext } from "../../GameContext";
-import { Table } from "flowbite-react";
+import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from "flowbite-react";
 import { GameLog } from "../../Models";
 import { GameHelper } from "../../GameHelper";
 
@@ -28,21 +28,21 @@ export default function GameLogTable() {
 
   return (
     <Table striped className="drop-shadow-none">
-      <Table.Head>
-        <Table.HeadCell>Time</Table.HeadCell>
-        <Table.HeadCell>Message</Table.HeadCell>
-      </Table.Head>
-      <Table.Body>
+      <TableHead>
+        <TableHeadCell>Time</TableHeadCell>
+        <TableHeadCell>Message</TableHeadCell>
+      </TableHead>
+      <TableBody>
         {game?.log.map((log, i) => {
           const time = new Date(log.time);
           return (
-            <Table.Row key={i}>
-              <Table.Cell className="py-1">{time.toLocaleTimeString(undefined, { timeStyle: "medium" })}</Table.Cell>
-              <Table.Cell className="py-1">{getMessage(log)}</Table.Cell>
-            </Table.Row>
+            <TableRow key={i}>
+              <TableCell className="py-1">{time.toLocaleTimeString(undefined, { timeStyle: "medium" })}</TableCell>
+              <TableCell className="py-1">{getMessage(log)}</TableCell>
+            </TableRow>
           );
         })}
-      </Table.Body>
+      </TableBody>
     </Table>
   );
 }

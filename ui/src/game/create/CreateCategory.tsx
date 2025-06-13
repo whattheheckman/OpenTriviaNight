@@ -67,7 +67,7 @@ export default function CreateCategory({ category, categoryIndex, roundNumber, s
     <div className="mb-auto flex flex-col grow md:grow-0 gap-2 rounded-lg">
       <div className="flex gap-2">
         <TextInput
-          className="flex-grow font-semibold"
+          className="grow font-semibold"
           id="category-name"
           type="text"
           required

@@ -1,4 +1,4 @@
-import { Label, TextInput, TextInputProps } from "flowbite-react";
+import { HelperText, Label, TextInput, TextInputProps } from "flowbite-react";
 
 export default function LabeledTextInput({
   className,
@@ -14,7 +14,7 @@ export default function LabeledTextInput({
 }: { className?: string | undefined; label: string; errorMessage?: string } & TextInputProps) {
   return (
     <div className={`flex flex-col ${className}`}>
-      <Label value={label} />
+      <Label>{label}</Label>
       <TextInput
         id={name}
         name={name}
@@ -26,10 +26,10 @@ export default function LabeledTextInput({
         step="100"
         placeholder={placeholder}
         color={errorMessage ? "failure" : ""}
-        helperText={<span>{errorMessage}</span>}
         minLength={minLength}
         maxLength={maxLength}
       />
+      {errorMessage && <HelperText>{errorMessage}</HelperText>}
     </div>
   );
 }

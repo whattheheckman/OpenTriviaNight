@@ -82,7 +82,7 @@ export default function GenerateFromTriviaApi({ updateQuestions }: Props) {
     <div className="flex flex-col">
       <div className="flex flex-col sm:flex-row gap-2">
         <div className="flex-1 grow">
-          <Label className="mt-1" htmlFor="categories" value="Select Category" />
+          <Label className="mt-1" htmlFor="categories">Select Category</Label>
           <Select id="categories" required value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
             {CATEGORIES.map((c) => {
               return (
@@ -95,7 +95,7 @@ export default function GenerateFromTriviaApi({ updateQuestions }: Props) {
         </div>
 
         <div className="flex-1 grow">
-          <Label className="mt-2" htmlFor="difficulty" value="Select Difficulty" />
+          <Label className="mt-2" htmlFor="difficulty">Select Difficulty</Label>
           <Select id="difficulty" required value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
             <option value="easy">Easy</option>
             <option value="medium">Medium</option>
@@ -104,7 +104,10 @@ export default function GenerateFromTriviaApi({ updateQuestions }: Props) {
         </div>
       </div>
 
-      <Button className="mt-4" gradientDuoTone="pinkToOrange" onClick={generateQuestions}>
+      <Button
+        className="mt-4 bg-gradient-to-br from-pink-500 to-orange-400 text-white hover:bg-gradient-to-bl focus:ring-pink-200 dark:focus:ring-pink-800"
+        onClick={generateQuestions}
+      >
         <HiOutlineRefresh className="h-5 mr-2" />
         Generate Questions
       </Button>

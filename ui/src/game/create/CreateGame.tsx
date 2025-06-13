@@ -1,4 +1,4 @@
-import { Button, Modal } from "flowbite-react";
+import { Button, Modal, ModalBody, ModalHeader } from "flowbite-react";
 import { useContext, useState } from "react";
 import { CreateGameRequest, Game } from "../../Models";
 import { GameContext } from "../../GameContext";
@@ -9,8 +9,7 @@ import { HiPlus, HiOutlineSave, HiOutlineUpload, HiPlay } from "react-icons/hi";
 import useApiClient from "../../useApiClient";
 
 export default function CreateGame() {
-  const { setGame, setRole, setGameId, username, setUsername } =
-    useContext(GameContext);
+  const { setGame, setRole, setGameId, username, setUsername } = useContext(GameContext);
   const [loadGameModalOpen, setLoadGameModalOpen] = useState(false);
   const apiClient = useApiClient();
   const [request, setRequest] = useState<CreateGameRequest>({
@@ -30,9 +29,7 @@ export default function CreateGame() {
       alert("No rounds to save to file");
       return;
     }
-    const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
-      JSON.stringify(request)
-    )}`;
+    const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(request))}`;
     const link = document.createElement("a");
     link.href = jsonString;
     link.download = username + "-open-trivia-night-game.json";
@@ -56,23 +53,18 @@ export default function CreateGame() {
 
   return (
     <div>
-      <Modal
-        show={loadGameModalOpen}
-        size="7xl"
-        dismissible
-        onClose={() => setLoadGameModalOpen(false)}
-      >
-        <Modal.Header>
+      <Modal show={loadGameModalOpen} size="7xl" dismissible onClose={() => setLoadGameModalOpen(false)}>
+        <ModalHeader>
           <span>Load Saved Questions from File</span>
-        </Modal.Header>
-        <Modal.Body>
+        </ModalHeader>
+        <ModalBody>
           <UploadGameFromFile
             onAdd={(newGameRequest) => {
               setRequest(newGameRequest);
               setLoadGameModalOpen(false);
             }}
           />
-        </Modal.Body>
+        </ModalBody>
       </Modal>
 
       <form onSubmit={handleCreateGame} className="gap-4 flex flex-col">
@@ -87,53 +79,40 @@ export default function CreateGame() {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
-        <div className="flex gap-2 self-center items-center  block md:max-w-5xl">
-          <Button className=" items-center" onClick={loadGameFromFile}>
-            {/* Magic numbers for sizing and aligning to center based on media queries */}
-            <span className="pt-2 md:pt-0 mr-2 text-2xl md:text-xl ">
+        <div className="flex flex-wrap gap-2 self-center items-center justify-center">
+          <Button onClick={loadGameFromFile} className="w-64">
+            <span className="mr-2 text-xl">
               <HiOutlineUpload />
             </span>
-            <span className=" text-left ">Upload Questions</span>
+            <span>Upload Questions</span>
           </Button>
 
-          <Button className=" items-center" onClick={saveGameToFile}>
-            <span className="pt-2 md:pt-0 mr-2 text-2xl md:text-xl ">
+          <Button onClick={saveGameToFile} className="w-64">
+            <span className="mr-2 text-xl">
               <HiOutlineSave />
             </span>
-            <span className=" text-left ">Download Questions</span>
+            <span>Download Questions</span>
           </Button>
 
-          <Button
-            type="submit"
-            gradientDuoTone="purpleToBlue"
-            className=" items-center"
-          >
-            <span className="pt-2 md:pt-0 mr-2 text-2xl md:text-xl ">
+          <Button type="submit" color="green" className="w-64">
+            <span className="mr-2 text-xl">
               <HiPlay />
             </span>
-            <span className=" text-left ">Create Game</span>
+            <span>Create Game</span>
           </Button>
         </div>
         {request.rounds.map((round, roundIdx) => {
-          return (
-            <CreateRound
-              key={roundIdx}
-              round={round}
-              roundNumber={roundIdx}
-              setRequest={setRequest}
-            />
-          );
+          return <CreateRound key={roundIdx} round={round} roundNumber={roundIdx} setRequest={setRequest} />;
         })}
-        <Button color="info" onClick={addRound}>
-          <span className="pt--1 md:pt-0 mr-2 text-2xl md:text-xl ">
+        <Button color="blue" onClick={addRound} className="w-sm mx-auto">
+          <span className="mr-2 text-xl">
             <HiPlus />
           </span>
-
-          <span className=" text-left ">Add Round</span>
+          <span>Add Round</span>
         </Button>
 
-        <Button type="submit" size="xl" gradientDuoTone="purpleToBlue">
-          <span className="pt--2 md:pt-1 mr-2 text-2xl md:text-xl ">
+        <Button type="submit" size="xl" color="green" className="w-sm mx-auto">
+          <span className="mr-2 text-xl">
             <HiPlay />
           </span>
           Create Game

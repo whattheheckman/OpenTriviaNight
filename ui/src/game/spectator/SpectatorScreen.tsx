@@ -47,7 +47,7 @@ export default function SpectatorScreen() {
 
   return (
     <div className="flex flex-col grow mb-4">
-      <div className="flex flex-col flex-1 grow bg-orange-400 w-100 m-4 rounded-xl">
+      <div className="flex flex-col flex-1 grow bg-orange-400 w-full m-4 rounded-xl">
         <div className="flex flex-col items-center justify-between p-4 grow">
           <div className="text-lg">
             <span>
