@@ -68,7 +68,6 @@ export default function useApiClient() {
   );
 
   const executeWs = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (req: UpdateGameRequest) => {
       sendWsMessage(JSON.stringify(req));
     },

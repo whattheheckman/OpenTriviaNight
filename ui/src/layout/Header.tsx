@@ -20,7 +20,7 @@ export default function Header() {
         setStats(res);
       }
     });
-  }, [setStats]);
+  }, [setStats, apiClient]);
 
   useEffect(() => {
     if (game?.state.state === "WaitingToStart") {

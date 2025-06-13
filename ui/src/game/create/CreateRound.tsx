@@ -1,4 +1,4 @@
-import { Button, HR, HRText, Modal, ModalBody, ModalHeader } from "flowbite-react";
+import { Button, HRText, Modal, ModalBody, ModalHeader } from "flowbite-react";
 import { CreateGameRequest, Category, Question } from "../../Models";
 import CreateCategory from "./CreateCategory";
 import { HiPlus, HiTrash } from "react-icons/hi";
