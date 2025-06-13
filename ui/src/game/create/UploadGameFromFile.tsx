@@ -1,14 +1,4 @@
-import {
-  Button,
-  FileInput,
-  Label,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeadCell,
-  TableRow,
-} from "flowbite-react";
+import { Button, FileInput, Label, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from "flowbite-react";
 import { CreateGameRequest } from "../../Models";
 import { useState } from "react";
 import { HiCheck } from "react-icons/hi";
@@ -76,7 +66,12 @@ export default function UploadGameFromFile({ onAdd }: Props) {
             </p>
             <p className="text-xs text-gray-500">Only Open Trivia Night saved games are supported</p>
           </div>
-          <FileInput id="dropzone-file" className="absolute top-0 left-0 bottom-0 w-full h-full opacity-0 cursor-pointer" onChange={handleFileChange} accept=".json" />
+          <FileInput
+            id="dropzone-file"
+            className="absolute top-0 left-0 bottom-0 w-full h-full opacity-0 cursor-pointer"
+            onChange={handleFileChange}
+            accept=".json"
+          />
         </Label>
       </div>
 
@@ -90,9 +85,11 @@ export default function UploadGameFromFile({ onAdd }: Props) {
                   <h4 className="font-medium mb-2">{category.name}</h4>
                   <Table striped>
                     <TableHead>
-                      <TableHeadCell>Question</TableHeadCell>
-                      <TableHeadCell>Correct Answer</TableHeadCell>
-                      <TableHeadCell>Value</TableHeadCell>
+                      <TableRow>
+                        <TableHeadCell>Question</TableHeadCell>
+                        <TableHeadCell>Correct Answer</TableHeadCell>
+                        <TableHeadCell>Value</TableHeadCell>
+                      </TableRow>
                     </TableHead>
                     <TableBody>
                       {category.questions.map((q) => (

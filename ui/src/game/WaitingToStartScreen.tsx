@@ -1,15 +1,6 @@
 import { useContext } from "react";
 import { GameContext } from "../GameContext";
-import {
-  Button,
-  Spinner,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeadCell,
-  TableRow,
-} from "flowbite-react";
+import { Button, Spinner, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from "flowbite-react";
 import useApiClient from "../useApiClient";
 import GameIdCopyButton from "./common/GameIdCopyButton";
 
@@ -32,7 +23,9 @@ export default function WaitingToStartScreen() {
 
       <Table striped>
         <TableHead>
-          <TableHeadCell>Players</TableHeadCell>
+          <TableRow>
+            <TableHeadCell>Players</TableHeadCell>
+          </TableRow>
         </TableHead>
         <TableBody>
           {game.players.map((player) => (

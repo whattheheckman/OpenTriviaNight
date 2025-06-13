@@ -5,7 +5,7 @@ import { Button, HRText } from "flowbite-react";
 import CreateGame from "./CreateGame";
 import About from "../../About";
 import useApiClient from "../../useApiClient";
-import { PlayerRole } from "../../Models";
+import { Game, PlayerRole } from "../../Models";
 
 export default function CreateJoinGame() {
   const { username, setUsername, setRole, setGame, gameId, setGameId } = useContext(GameContext);
@@ -39,7 +39,16 @@ export default function CreateJoinGame() {
 
     setRole(role);
 
-    apiClient.getGame(gameId)?.then((res) => setGame(res));
+    apiClient.getGame(gameId)?.then((res: Game | undefined) => {
+      setGame(res);
+
+      // Use the role returned by the server as our current role
+      // This accounts for us joining as a Contestant but being assigned as Host (e.g. in a rejoin).
+      const matchedPlayer = res?.players.find((x) => x.username === username);
+      if (matchedPlayer) {
+        setRole(matchedPlayer.role);
+      }
+    });
   };
 
   if (type === "join") {
