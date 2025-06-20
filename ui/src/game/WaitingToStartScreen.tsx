@@ -64,6 +64,16 @@ export default function WaitingToStartScreen() {
           </TableRow>
         </TableBody>
       </Table>
+      <div>
+        {!prefs.hideGameId ? (
+          <QRCode
+            style={{ height: "auto", maxWidth: "100%" }}
+            value={window.location.href + "?gameId=" + game.id}
+          />
+        ) : (
+          <></>
+        )}
+      </div>
 
       {isHost ? (
         <Button className="mt-4" color="green" size="lg" onClick={apiClient.startGame}>
