@@ -1,36 +1,36 @@
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useMemo, useRef } from "react";
 import { GameContext } from "./GameContext";
 import { CreateGameRequest } from "./Models";
 
 type UpdateGameRequest =
   | {
-      type: "StartGame";
-    }
+    type: "StartGame";
+  }
   | {
-      type: "LeaveGame";
-    }
+    type: "LeaveGame";
+  }
   | {
-      type: "PickQuestion";
-      questionId: string;
-    }
+    type: "PickQuestion";
+    questionId: string;
+  }
   | {
-      type: "AllowAnswering";
-    }
+    type: "AllowAnswering";
+  }
   | {
-      type: "AnswerQuestion";
-    }
+    type: "AnswerQuestion";
+  }
   | {
-      type: "ConfirmAnswer";
-      isCorrect: boolean;
-    }
+    type: "ConfirmAnswer";
+    isCorrect: boolean;
+  }
   | {
-      type: "EndQuestion";
-    }
+    type: "EndQuestion";
+  }
   | {
-      type: "UpdatePlayerScore";
-      updateUsername: string;
-      newScore: number;
-    };
+    type: "UpdatePlayerScore";
+    updateUsername: string;
+    newScore: number;
+  };
 
 export default function useApiClient() {
   const { addError, sendWsMessage } = useContext(GameContext);
@@ -74,8 +74,8 @@ export default function useApiClient() {
     [sendWsMessage]
   );
 
-  return {
-    createGame: useCallback(
+  const apiClient = useRef({
+    createGame:
       (request: CreateGameRequest) => {
         return execute(async () => {
           const res = await fetch(`/api/games`, {
@@ -87,9 +87,7 @@ export default function useApiClient() {
           return await res.json();
         });
       },
-      [execute]
-    ),
-    getGame: useCallback(
+    getGame:
       (gameId: string) => {
         return execute(async () => {
           const res = await fetch(`/api/games/${gameId}`);
@@ -97,43 +95,35 @@ export default function useApiClient() {
           return await res.json();
         });
       },
-      [execute]
-    ),
-    leaveGame: useCallback(() => {
+    leaveGame: () => {
       return executeWs({ type: "LeaveGame" });
-    }, [executeWs]),
-    startGame: useCallback(() => {
+    },
+    startGame: () => {
       return executeWs({ type: "StartGame" });
-    }, [executeWs]),
-    pickQuestion: useCallback(
+    },
+    pickQuestion:
       (questionId: string) => {
         return executeWs({ type: "PickQuestion", questionId: questionId });
       },
-      [executeWs]
-    ),
-    answerQuestion: useCallback(() => {
+    answerQuestion: () => {
       return executeWs({ type: "AnswerQuestion" });
-    }, [executeWs]),
-    allowAnswering: useCallback(() => {
+    },
+    allowAnswering: () => {
       return executeWs({ type: "AllowAnswering" });
-    }, [executeWs]),
-    confirmAnswer: useCallback(
+    },
+    confirmAnswer:
       (isCorrect: boolean) => {
         return executeWs({ type: "ConfirmAnswer", isCorrect: isCorrect });
       },
-      [executeWs]
-    ),
-    endQuestion: useCallback(() => {
+    endQuestion: () => {
       return executeWs({ type: "EndQuestion" });
-    }, [executeWs]),
-    updatePlayerScore: useCallback(
+    },
+    updatePlayerScore:
       (updateUsername: string, newScore: number) => {
         return executeWs({ type: "UpdatePlayerScore", updateUsername: updateUsername, newScore: newScore });
       },
-      [executeWs]
-    ),
 
-    getQuestionsFromOpenTDB: useCallback(
+    getQuestionsFromOpenTDB:
       ({ category, difficulty }: { category: number; difficulty: string }) => {
         return execute(async () => {
           const res = await fetch(
@@ -144,9 +134,7 @@ export default function useApiClient() {
           return await res.json();
         });
       },
-      [execute]
-    ),
-    getQuestionsFromTriviaApi: useCallback(
+    getQuestionsFromTriviaApi:
       (category: string, difficulty: string) => {
         return execute(async () => {
           const res = await fetch(
@@ -157,14 +145,14 @@ export default function useApiClient() {
           return await res.json();
         });
       },
-      [execute]
-    ),
-    getStats: useCallback(() => {
+    getStats: () => {
       return execute(async () => {
         const res = await fetch(`/api/stats`);
         if (res.status >= 500) throw Error(`Error fetching stats`);
         return await res.json();
       });
-    }, [execute]),
-  };
+    },
+  });
+
+  return apiClient.current;
 }
