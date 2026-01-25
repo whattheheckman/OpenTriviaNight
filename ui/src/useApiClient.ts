@@ -75,26 +75,35 @@ export default function useApiClient() {
   );
 
   const apiClient = useRef({
-    createGame:
-      (request: CreateGameRequest) => {
-        return execute(async () => {
-          const res = await fetch(`/api/games`, {
-            method: "POST",
-            body: JSON.stringify(request),
-            headers: [["Content-Type", "application/json"]],
-          });
-          if (res.status >= 500) throw Error(`Error creating game: ${res.status}`);
-          return await res.json();
+    createGame: (request: CreateGameRequest) => {
+      return execute(async () => {
+        for (const roundIndex in request.rounds) {
+          for (const categoryIndex in request.rounds[roundIndex]) {
+            const category = request.rounds[roundIndex][categoryIndex];
+            for (const questionIndex in category.questions) {
+              category.questions[questionIndex].value = Number(
+                category.questions[questionIndex].value,
+              );
+            }
+          }
+        }
+        const res = await fetch(`/api/games`, {
+          method: "POST",
+          body: JSON.stringify(request),
+          headers: [["Content-Type", "application/json"]],
         });
-      },
-    getGame:
-      (gameId: string) => {
-        return execute(async () => {
-          const res = await fetch(`/api/games/${gameId}`);
-          if (res.status >= 500) throw Error(`Game could not be found`);
-          return await res.json();
-        });
-      },
+        if (res.status >= 500)
+          throw Error(`Error creating game: ${res.status}`);
+        return await res.json();
+      });
+    },
+    getGame: (gameId: string) => {
+      return execute(async () => {
+        const res = await fetch(`/api/games/${gameId}`);
+        if (res.status >= 500) throw Error(`Game could not be found`);
+        return await res.json();
+      });
+    },
     leaveGame: () => {
       return executeWs({ type: "LeaveGame" });
     },

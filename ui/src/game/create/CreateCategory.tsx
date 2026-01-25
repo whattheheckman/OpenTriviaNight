@@ -110,7 +110,7 @@ export default function CreateCategory({ category, categoryIndex, roundNumber, s
                     label="Value"
                     name="value"
                     type="number"
-                    value={question.value}
+                    value={Number(question.value)}
                     onChange={(e) => handleQuestionDataChange(e, questionIdx)}
                   />
                   <Button className="self-end items-center p-1" size="xs" color="red" onClick={() => removeQuestion(questionIdx)}>
